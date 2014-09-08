@@ -1,51 +1,102 @@
 graph topics {
-	splines=true;
-	overlap=scalexy;
+    overlap=false;
+    splines=true;
 
-	Hypermedia -- Hydra
-	Hypermedia -- JSONLD
-	JSONLD -- Hydra
-	Hypermedia -- HAL
-	Hypermedia -- Siren
+# Project Ideas
+    Baile [shape=box,color=red];
+    DoYouLikeIt[shape=box,color=red];
+    Hyperspace[shape=box,color=red];
+    Rossle[shape=box,color=red];
+    Laconia [shape=box,color=red];
 
-	Hypermedia -- REST
-	Hypermedia -- Atom
+# Key topics
+    EnterpriseIntegration[shape=circle,color=green,label="Enterprise\nIntegration"];
+    MicroservicesPlatform[shape=circle,color=green,label="Microservices\nPlatform"];
+    ARM[shape=circle,color=green];
 
-	REST -- Microservices
-	Microservices -- MicroservicesPlatform
-	MicroservicesPlatform -- Gilliam
-	MicroservicesPlatform -- PaaS
-	PaaS -- Microservices
+# Awkward labels
+    LinkedEnterpriseData[label="Linked\nEnterprise\nData"];
+    LinkedData[label="Linked\nData"];
+    CollectionJSON[label="Collection+JSON"];
+    DeviceFragmentation[label="Device\nFragmentation"];
+    ConwaysLaw[label="Conway's\nLaw"];
+	
 
-	REST -- LinkedData
-	LinkedData -- RDF
-	RDF -- Reasoning
-	Reasoning -- Logic
-	RDF -- Laconia
-	Laconia -- Microservices
+    Hypermedia -- Hydra
+    Hypermedia -- JSONLD
+    JSONLD -- Hydra
+    Hypermedia -- HAL
+    Hypermedia -- Siren
+    
+    Hypermedia -- REST
+    Hypermedia -- Atom
+    
+    REST -- Microservices
+    Microservices -- MicroservicesPlatform
+    MicroservicesPlatform -- Gilliam
+    MicroservicesPlatform -- PaaS
+    PaaS -- Microservices
+    
+    REST -- LinkedData
+    LinkedData -- RDF
+    RDF -- Reasoning
+    Reasoning -- Logic
+    RDF -- Laconia
+    Laconia -- Microservices
+    
+    LinkedData -- LinkedEnterpriseData
+    LinkedEnterpriseData -- EnterpriseIntegration
+    EnterpriseIntegration -- SOA
+    SOA -- Microservices
+    
+    REST -- Hyperspace
+    Hypermedia -- Hyperspace
+    
+    Affordances -- Hypermedia
+    ARM -- Affordances
+    ARM -- Mobile
+    Mobile -- Android
+    Mobile -- iOS
+    
+    ARM -- Hyperspace
+    ARM -- EnterpriseIntegration
+    ARM -- DeviceFragmentation
+    DeviceFragmentation -- Mobile
+    
+    Atom -- EnterpriseIntegration
+    Atom -- LinkedEnterpriseData
+    
+    OpenSource -- Motivation
+    OpenSource -- EnterpriseIntegration
+    
+    ARM -- Baile
+    REST -- Baile
+    Baile -- Mobile
+    
+    DoYouLikeIt -- Microservices
+    DoYouLikeIt -- REST
+    DoYouLikeIt -- Laconia
+    
+    Rossle -- LinkedData
+    Rossle -- Search
+    
+    Search -- EnterpriseIntegration
+    
+    SSM -- Agile
+    SSM -- UML
+    UML -- Modelling
+    SSM -- Modelling
+    
+    Agile -- Process
+    
+    HTML -- Hypermedia
+    CollectionJSON -- Hypermedia
 
-	LinkedData -- LinkedEnterpriseData
-	LinkedEnterpriseData -- EnterpriseIntegration
-	EnterpriseIntegration -- SOA
-	SOA -- Microservices
+    ConwaysLaw -- Microservices
+    ConwaysLaw -- Process
 
-	REST -- Hyperspace
-	Hypermedia -- Hyperspace
-
-	Affordances -- Hypermedia
-	ARM -- Affordances
-	ARM -- Mobile
-	Mobile -- Android
-	Mobile -- iOS
-
-	ARM -- Hyperspace
-	ARM -- EnterpriseIntegration
-	ARM -- DeviceFragmentation
-	DeviceFragmentation -- Mobile
-
-	Atom -- EnterpriseIntegration
-	Atom -- LinkedEnterpriseData
-
-	OpenSource -- Motivation
-	OpenSource -- EnterpriseIntegration
+    RDF -- FOAF
+    FOAF -- FederatedNetwork
+    FederatedNetwork -- OpenID
+    FederatedNetwork -- OAuth
 }

@@ -1,0 +1,51 @@
+graph topics {
+	splines=true;
+	overlap=scalexy;
+
+	Hypermedia -- Hydra
+	Hypermedia -- JSONLD
+	JSONLD -- Hydra
+	Hypermedia -- HAL
+	Hypermedia -- Siren
+
+	Hypermedia -- REST
+	Hypermedia -- Atom
+
+	REST -- Microservices
+	Microservices -- MicroservicesPlatform
+	MicroservicesPlatform -- Gilliam
+	MicroservicesPlatform -- PaaS
+	PaaS -- Microservices
+
+	REST -- LinkedData
+	LinkedData -- RDF
+	RDF -- Reasoning
+	Reasoning -- Logic
+	RDF -- Laconia
+	Laconia -- Microservices
+
+	LinkedData -- LinkedEnterpriseData
+	LinkedEnterpriseData -- EnterpriseIntegration
+	EnterpriseIntegration -- SOA
+	SOA -- Microservices
+
+	REST -- Hyperspace
+	Hypermedia -- Hyperspace
+
+	Affordances -- Hypermedia
+	ARM -- Affordances
+	ARM -- Mobile
+	Mobile -- Android
+	Mobile -- iOS
+
+	ARM -- Hyperspace
+	ARM -- EnterpriseIntegration
+	ARM -- DeviceFragmentation
+	DeviceFragmentation -- Mobile
+
+	Atom -- EnterpriseIntegration
+	Atom -- LinkedEnterpriseData
+
+	OpenSource -- Motivation
+	OpenSource -- EnterpriseIntegration
+}

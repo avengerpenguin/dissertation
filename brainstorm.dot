@@ -8,18 +8,18 @@ graph topics {
     Hyperspace[shape=box,color=red];
     Rossle[shape=box,color=red];
     Laconia [shape=box,color=red];
-
-# Key topics
-    ei_idea [shape=circle,color=green,label="Enterprise\nIntegration\nFramework?"];
-    mp_idea [shape=circle,color=green,label="Microservices\nPlatform"];
-    arm_game_idea [shape=circle,color=green,label="ARM Game?];
-
+    FederatedNetwork [shape=box,color=red];
+    
 # Awkward labels
     LinkedEnterpriseData[label="Linked\nEnterprise\nData"];
     LinkedData[label="Linked\nData"];
     CollectionJSON[label="Collection+JSON"];
     DeviceFragmentation[label="Device\nFragmentation"];
     ConwaysLaw[label="Conway's\nLaw"];
+    EnterpriseIntegration[label="Enterprise\nIntegration"];
+    OpenSource[label="Open\nSource"];
+    MicroservicesPlatform[label="Microservices\nPlatform"];
+
 	
 
     Hypermedia -- Hydra
@@ -39,8 +39,6 @@ graph topics {
     
     REST -- LinkedData
     LinkedData -- RDF
-    RDF -- Reasoning
-    Reasoning -- Logic
     RDF -- Laconia
     Laconia -- Microservices
     
@@ -82,21 +80,48 @@ graph topics {
     
     Search -- EnterpriseIntegration
     
-    SSM -- Agile
-    SSM -- UML
-    UML -- Modelling
-    SSM -- Modelling
-    
-    Agile -- Process
-    
     HTML -- Hypermedia
     CollectionJSON -- Hypermedia
 
     ConwaysLaw -- Microservices
-    ConwaysLaw -- Process
 
     RDF -- FOAF
     FOAF -- FederatedNetwork
     FederatedNetwork -- OpenID
     FederatedNetwork -- OAuth
+
+
+    ei_idea [shape=circle,color=green,label="Enterprise\nIntegration\nFramework?"];
+
+    ei_idea -- EnterpriseIntegration
+    ei_idea -- LinkedEnterpriseData
+    ei_idea -- Atom
+    ei_idea -- REST
+    ei_idea -- Microservices
+    ei_idea -- Hyperspace
+
+    mp_idea [shape=circle,color=green,label="Microservices\nPlatform"];
+
+    mp_idea -- MicroservicesPlatform
+    
+    arm_game_idea [shape=circle,color=green,label="ARM Game?"];
+
+    arm_game_idea -- Mobile
+    arm_game_idea -- ARM
+    arm_game_idea -- REST
+    arm_game_idea -- Baile
+    
+    fn_idea [shape=circle,color=green,label="Linked\nData\nSocial\nNetwork?"];
+
+    fn_idea -- FederatedNetwork
+    fn_idea -- LinkedData
+    fn_idea -- FOAF
+
+    ms_idea [shape=circle,color=green,label="Music\nSearch?"];
+
+    ms_idea -- Mobile
+    ms_idea -- Rossle
+    ms_idea -- Search
+    ms_idea -- LinkedData
+    
 }

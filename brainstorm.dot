@@ -10,9 +10,9 @@ graph topics {
     Laconia [shape=box,color=red];
 
 # Key topics
-    EnterpriseIntegration[shape=circle,color=green,label="Enterprise\nIntegration"];
-    MicroservicesPlatform[shape=circle,color=green,label="Microservices\nPlatform"];
-    ARM[shape=circle,color=green];
+    ei_idea [shape=circle,color=green,label="Enterprise\nIntegration\nFramework?"];
+    mp_idea [shape=circle,color=green,label="Microservices\nPlatform"];
+    arm_game_idea [shape=circle,color=green,label="ARM Game?];
 
 # Awkward labels
     LinkedEnterpriseData[label="Linked\nEnterprise\nData"];

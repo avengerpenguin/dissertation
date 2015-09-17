@@ -1,30 +1,124 @@
 \documentclass[10pt,a4paper]{article}
 
-%\usepackage{fullpage}
+\usepackage{fullpage}
 
-\title{Proposal for improving content discovery by a combination linked data, natural language processing and data mining techniques}
+\title{Proposal for advanced content discovery by a combination of linked data
+and data mining techniques}
+
 \author{Ross Fenning}
+
+\date{}
 
 \begin{document}
 
-\maketitle
-\thispagestyle{empty}
+\maketitle \thispagestyle{empty}
 
-\section{Background}
+\section{Introduction}
 
-Media companies produce ever larger numbers of articles, videos, podcasts, games, etc.
--- to which it is commonly referred as "content|.
+Media companies produce ever larger numbers of articles, videos, podcasts,
+games, etc. -- to which it is commonly referred as ``content''. A successful
+content-producing website not only has to develop systems to aid producing and
+publishing that content, but there are also calls to engineer effective
+mechanisms to aid consumers in finding that content.
+
+Approaches used in industry include providing a text-based search, hierarchical
+categorisation (and thus navigation thereof) and even more tailored recommended
+content based on past behaviour or content enjoyed by friends (or sometimes
+simply other consumers who share your preferences).
 
 \section{Problems}
 
-\section{Proposal}
-
-\section{Aims}
-
-By the end of this proposed research, I will have:
+There are several technical and conceptual problems with building effective
+content discovery mechanisms, including:
 
 \begin{itemize}
-\item briefly considered extending this work into language other than English.
+
+\item Large organisations can have content across multiple content management
+systems, in differing formats and data models. Organisations face a large-scale
+enterprise integration problem simply trying to gain a holistic view of all
+their content.
+
+\item Many content items are in fairly opaque formats, e.g video content may be
+stored as audio-visual binary data with minimal metadata to display on a
+containing web page. Video content producers may not be motivated to provide
+data attributes that might ultimately be most useful in determining if a user
+will enjoy the video.
+
+\item Even with more accessible formats such as text content we need information
+retrieval and natural language techniques to provide searchable data structures.
+There is not a clear leap from natural language content to more sophisticated
+formats suitable for more advanced data mining or machine learning approaches.
+
+\item Content is being published continuously, which means any search or
+discovery system needs to keep up with content as it is published and process it
+into the appropriate data structures. Any machine learning previously performed
+on the data set may need to be re-run.
+
 \end{itemize}
 
+\section{Proposal}
+
+In this proposal, I offer the following hypotheses for research:
+
+\begin{itemize}
+
+\item Research and software tools around the concept \emph{Linked Data} can aid
+us in rapidly acquiring a broad view (perhaps at the expense of depth) of an
+organisation's content whilst also providing a platform for simple enrichment of
+that content's metadata.
+
+\item We can establish at least a naïve mapping of an RDF graph of content items
+and other entities of interested. With such a mapping, we can explore applying
+machine learning -- particularly unsupervised learning -- across an
+organisation's whole content corpus in a relatively short time frame.
+
+\item This rapid ease of both acquiring data and providing initial insights with
+established algorithms is particularly in line with the principles of the
+\emph{Agile} and \emph{Lean} methodologies and we can thus hope to engineer a
+prototype-quality web page visualisation of the outcomes from initial data
+mining attempts. Such a prototype is arguably a suitable first iteration for a
+new content discovery portal, application or website feature an organisation
+might wish to develop and release to its visitors.
+
+\item We can adapt established machine learning approaches such as clustering
+for data published continuously in real time.
+
+\end{itemize}
+
+\section{Outcomes}
+
+The proposed outcomes are outlined here in stages to allow the possibility of
+only a subset thereof being achieved in the given time.
+
 \end{document}
+
+\begin{comment}
+
+This proposal essentially brings together the fields of linked data/semantic web
+and data mining, with some possibilities of stepping into natural language
+processing. The premise is to handle finding and curating amongst large
+quantities of online web content produced by media entities like the BBC. We can
+use linked data and the semantic web to acquire representations of those content
+items at scale and enrich what we know about them by following links, unifying
+with other data sources and by performing logical inference (perhaps even using
+linguistic semantics to aid what we can infer).
+
+Once we have adequately acquired data on content, we can look at machine
+learning techniques and visualising consequent models to users as a discovery
+portal of sorts. My first instinct is to look at clustering content items so as
+to provide onward journeys to similar items that might not otherwise have been
+seen by users (and perhaps conversely make use of dissimilarity to provide more
+tangential journeys). This is meant as a divergence from -- but a useful adjunct
+to -- information retrieval approaches where similarity focuses on keywords
+extracted from text. I may find time to explore the benefits of other machine
+learning techniques.
+
+I'm seeing some novelty in 1) handling unsupervised learning and enrichment of
+data as it arrives in real time (content is consistently published as opposed to
+working on static data sets); and 2) the benefits of the linked data research
+and tools that already exist that can provide methods for rapid acquisition and
+transformation of data ahead of machine learning. There are also possibilities
+to touch on natural language research and entity extraction to improve the
+enrichment side of the system to improve the machine learning side further.
+
+\end{comment}

@@ -1,4 +1,4 @@
 pdf: proposal.pdf
 
 proposal.pdf: proposal.tex
-	pdflatex proposal.tex
+	pdflatex -shell-escape proposal.tex

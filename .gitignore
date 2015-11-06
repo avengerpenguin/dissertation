@@ -1,0 +1,4 @@
+*.aux
+*.log
+*.pdf
+*-dot2tex-*.dot

@@ -1,8 +1,14 @@
 \documentclass[10pt,a4paper]{article}
 
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage[autosize]{dot2texi}
+\usepackage{xcolor}
+
 \usepackage{fullpage}
 
-\title{Proposal for advanced content discovery by a combination of linked data
+\title{Proposal for improving content discovery through combining linked data
 and data mining techniques}
 
 \author{Ross Fenning}
@@ -13,12 +19,12 @@ and data mining techniques}
 
 \maketitle \thispagestyle{empty}
 
-\section{Introduction}
+\section{Context}
 
 Media companies produce ever larger numbers of articles, videos, podcasts,
-games, etc. -- to which it is commonly referred as ``content''. A successful
+games, etc. -- commonly collectively known as ``content''. A successful
 content-producing website not only has to develop systems to aid producing and
-publishing that content, but there are also calls to engineer effective
+publishing that content, but there are also demands to engineer effective
 mechanisms to aid consumers in finding that content.
 
 Approaches used in industry include providing a text-based search, hierarchical
@@ -38,16 +44,11 @@ systems, in differing formats and data models. Organisations face a large-scale
 enterprise integration problem simply trying to gain a holistic view of all
 their content.
 
-\item Many content items are in fairly opaque formats, e.g video content may be
+\item Many content items are in fairly opaque formats, e.g. video content may be
 stored as audio-visual binary data with minimal metadata to display on a
 containing web page. Video content producers may not be motivated to provide
 data attributes that might ultimately be most useful in determining if a user
 will enjoy the video.
-
-\item Even with more accessible formats such as text content we need information
-retrieval and natural language techniques to provide searchable data structures.
-There is not a clear leap from natural language content to more sophisticated
-formats suitable for more advanced data mining or machine learning approaches.
 
 \item Content is being published continuously, which means any search or
 discovery system needs to keep up with content as it is published and process it
@@ -56,39 +57,82 @@ on the data set may need to be re-run.
 
 \end{itemize}
 
-\section{Proposal}
+\section{Hypotheses}
 
-In this proposal, I offer the following hypotheses for research:
+In this proposal, the following hypotheses are proposed for research:
 
 \begin{itemize}
 
-\item Research and software tools around the concept \emph{Linked Data} can aid
+\item Research and software tools around the concept of \emph{Linked Data} can aid
 us in rapidly acquiring a broad view (perhaps at the expense of depth) of an
 organisation's content whilst also providing a platform for simple enrichment of
 that content's metadata.
 
-\item We can establish at least a naïve mapping of an RDF graph of content items
-and other entities of interested. With such a mapping, we can explore applying
-machine learning -- particularly unsupervised learning -- across an
-organisation's whole content corpus in a relatively short time frame.
+\item We can establish at least a na\"ive mapping of an RDF graph representing a
+content item to an attribute set suitable for data mining. With such a mapping,
+we can explore applying machine learning -- particularly unsupervised learning
+-- across an organisation's whole content corpus.
 
-\item This rapid ease of both acquiring data and providing initial insights with
-established algorithms is particularly in line with the principles of the
-\emph{Agile} and \emph{Lean} methodologies and we can thus hope to engineer a
-prototype-quality web page visualisation of the outcomes from initial data
-mining attempts. Such a prototype is arguably a suitable first iteration for a
-new content discovery portal, application or website feature an organisation
-might wish to develop and release to its visitors.
+\item Linked Data and Semantic Web \emph{ontologies} and models available can
+provide data enrichment beyond attributes and keywords explicitly avaiable
+within content data or metadata.
 
 \item We can adapt established machine learning approaches such as clustering
 for data published continuously in real time.
 
+\item Many content-producers currently enrich their web pages with small
+amounts of semantic metadata to provide better presentation of that content
+as it is shared on social media. This enables simple collection of a full
+breadth of content with significantly less effort than direct integration
+with content management systems.
+
 \end{itemize}
 
-\section{Outcomes}
+\section{Proposal}
 
-The proposed outcomes are outlined here in stages to allow the possibility of
-only a subset thereof being achieved in the given time.
+It is thus proposed to do the following research activities:
+
+\begin{enumerate}
+
+\item Create a simple software system that will fetch a content item by its
+URI, extract semantic data readily available in the page (RDFa, microformats,
+social media metadata) and store an RDF graph.
+
+\item Define a simple mapping from these RDF graphs and experiment with
+unsupervised learning such as clustering. It should be possible to create a
+basic web page that visualises clusters of content as they emerge.
+
+\item Experiment further with the effectiveness of each of the following:
+\begin{itemize}
+\item Using established entity extraction on textual content to generate new
+attributes for a content item's RDF graph.
+\item Using linguistic knowledge from taxonomies (e.g. hypernyms) to infer
+further attributes that are implicit (i.e. intuitive to humans, but not
+explicitly present in the content).
+\item Using established ontologies and linked data to enrich a content item
+with transitive attributes from related entities (e.g. the birth place of an
+actor that appeared on a television programme).
+\item Identifying opportunities to apply domain knowledge from experts.
+\end {itemize}
+
+\end{enumerate}
+
+A desired outcome is an ecosystem of software services that can receive
+notifications of newly-published content, produce highly-enriched RDF graphs,
+perform real-time data mining and drive a single web page that allows navigation
+of any machine learning insights.
+
+That there is little in the literature around combining linked data and machine
+learning indicates that this research could point to the need for deeper
+exploration of one or more of the research activities above. It is hoped that
+this work will at least provide a good indication of which approaches appear to
+give the best opportunties for content metadata enrichment and insights.
+
+It is also hoped that this work provides a good balance of opening up further
+research opportunities around data mining of linked data graphs along with some
+practical tools and techniques that media organisations could apply immediately
+to get a little more effective at providing navigation and discovery of their
+content.
 
 \end{document}
 

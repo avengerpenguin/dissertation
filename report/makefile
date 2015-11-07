@@ -1,4 +1,5 @@
 pdf: report.pdf
 
 report.pdf: report.tex
-	pdflatex -shell-escape report.tex
+	mkdir -p out
+	pdflatex -halt-on-error -shell-escape -output-directory=out report.tex

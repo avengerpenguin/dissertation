@@ -2,3 +2,6 @@
 *.log
 *.pdf
 *-dot2tex-*.dot
+*~
+/bundle
+/.bundle

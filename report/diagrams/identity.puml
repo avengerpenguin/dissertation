@@ -1,0 +1,5 @@
+@startuml
+(*) -r-> "Receive URI"
+-r-> "Generate Feature Set"
+-r->(*)
+@enduml

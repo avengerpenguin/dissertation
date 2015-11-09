@@ -17,6 +17,6 @@ directories %w(proposal report) \
 
 guard :shell, :all_on_start => true do
   watch /^.*\.tex/ do |m|
-    `make`
+    `make -j report proposal`
   end
 end

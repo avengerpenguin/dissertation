@@ -1,4 +1,6 @@
-.PHONY: report proposal watch
+.PHONY: report proposal watch default
+
+default: proposal report
 
 report:
 	cd report && $(MAKE)
@@ -6,9 +8,9 @@ report:
 proposal:
 	cd proposal && $(MAKE)
 
-bundle/up2date: Gemfile
+bin/guard: Gemfile
 	bundle install --path bundle
-	touch bundle/up2date
+	bundle binstub guard
 
-watch: bundle/up2date
-	bundle exec guard
+watch: bin/guard
+	bin/guard

@@ -2,6 +2,7 @@
 *.log
 *.pdf
 *-dot2tex-*.dot
+*-dot2tex-*.tex
 *~
 /bundle
 /.bundle

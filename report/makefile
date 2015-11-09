@@ -1,5 +1,6 @@
-pdf: out/report.pdf
+.PHONY: pdf
 
-out/report.pdf: report.tex
-	mkdir -p out
-	pdflatex -halt-on-error -shell-escape -output-directory=out report.tex
+pdf: report.pdf
+
+report.pdf: report.tex
+	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex

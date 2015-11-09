@@ -5,7 +5,11 @@ and data mining techniques}
 
 \author{Ross Fenning}
 
+\usepackage[autosize]{dot2texi}
 \usepackage[Bjarne]{fncychap}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
 \begin{document}
 
 \maketitle
@@ -80,7 +84,73 @@ with content management systems.
 
 \end{itemize}
 
+\chapter{Background}
+
+There is some existing work in the literature around data mining and the
+semantic web.
+
 \chapter{System Design}
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,pgf,options=-t math,scale=0.8]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+        edge [len=2];
+
+        URI -> RDF [label="extract"];
+        RDF -> Features [label="generate"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Null content miner}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,pgf,options=-t math,scale=0.8]
+      digraph g {
+        rankdir=LR;
+        nodesep=20;
+
+        node [shape=circle,margin="0,0"]
+
+        URI -> RDFa [label="fetch"];
+        RDFa -> RDF [label="parse"];
+        RDF -> Features [label="generate"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Semantic web content miner}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,pgf,options=-t math,scale=0.8]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+
+        URI -> RDFa [label="parse"];
+        URI -> Entities [label="extract"];
+        URI -> Linked [label="scrape"];
+
+
+        RDFa -> RDF [label="\cup"];
+        Entities -> RDF [label="\cup"];
+        Linked -> RDF [label="\cup"];
+
+        RDF -> Features [label="generate"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Maximal web content miner}
+\end{figure}
+
+
 \chapter{Implementation}
 \chapter{Evaluation}
 \chapter{Conclusion}

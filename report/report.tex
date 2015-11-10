@@ -9,9 +9,20 @@
 \usepackage[autosize]{dot2texi}
 \usepackage[Bjarne]{fncychap}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows,snakes}
+\usetikzlibrary{shapes,arrows,decorations}
 \usepackage{listings}
+\usepackage{textcomp}
 \usepackage{mathtools}
+\usepackage{caption}
+
+\DeclareCaptionFont{white}{ \color{white} }
+\DeclareCaptionFormat{listing}{
+  \colorbox[cmyk]{0.43, 0.35, 0.35,0.01 }{
+    \parbox{\textwidth}{\hspace{15pt}#1#2#3}
+  }
+}
+\captionsetup[lstlisting]{ format=listing, labelfont=white, textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize} }
+
 
 \begin{document}
 
@@ -102,9 +113,7 @@ for metadata based on representing knowledge as a set of subject-predicate-objec
 graph structure using a declarative pattern and return a set of all variable
 bindings that satisfy that pattern.
 
-For example, the following SPARQL:
-
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:sparqlfoaf,caption={Example SPARQL query for people's names and email addresses},frame=single,captionpos=b]
   PREFIX foaf: <http://xmlns.com/foaf/0.1/>
   SELECT ?name ?email
   WHERE {
@@ -114,7 +123,8 @@ For example, the following SPARQL:
   }
 \end{lstlisting}
 
-\noindent queries an RDF graph that contains contact information and returns the
+For example, the following SPARQL in Listings~\ref{sparqlfoaf}
+queries an RDF graph that contains contact information and returns the
 names and email address of all ``Person'' entities therein. This query could be
 expressed as function $f: G \rightarrow S$ from the set of all graphs, $G$, to
 set, $S$, of values requested in the SELECT statement such that:

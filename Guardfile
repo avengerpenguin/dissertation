@@ -16,7 +16,8 @@ directories %w(proposal report) \
 # and, you'll have to watch "config/Guardfile" instead of "Guardfile"
 
 guard :shell, :all_on_start => true do
-  watch /^.*\.tex/ do |m|
-    `make -j report proposal`
+  watch /^report\/report\.tex/ do |m|
+    puts "File changed: #{m}"
+    `make github`
   end
 end

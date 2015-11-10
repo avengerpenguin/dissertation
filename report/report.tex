@@ -4,14 +4,19 @@
 
 \author{Ross Fenning}
 
+\usepackage{nag}
+\usepackage{rotating}
 \usepackage[autosize]{dot2texi}
 \usepackage[Bjarne]{fncychap}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows}
+\usetikzlibrary{shapes,arrows,snakes}
+\usepackage{listings}
+\usepackage{mathtools}
 
 \begin{document}
 
 \maketitle
+\tableofcontents
 
 \chapter{Introduction}
 
@@ -85,18 +90,71 @@ with content management systems.
 
 \chapter{Background}
 
-There is some existing work in the literature around data mining and the
-semantic web.
+Data mining activities such as machine learning rely on structuring data as
+\emph{feature sets}\cite{bishop2006pattern} -- a set or vector of properties or
+attributes that describe a single entity. The process of \emph{feature extraction}
+generates such feature sets from raw data and is a necessary early phase for
+many machine learning activities.
+
+The RDF\footnote{http://www.w3.org/TR/PR-rdf-syntax/} graph is a powerful model
+for metadata based on representing knowledge as a set of subject-predicate-object
+\emph{triples}. The query language, SPARQL, gives us a way to query the RDF
+graph structure using a declarative pattern and return a set of all variable
+bindings that satisfy that pattern.
+
+For example, the following SPARQL:
+
+\begin{lstlisting}
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  SELECT ?name ?email
+  WHERE {
+    ?person a foaf:Person.
+    ?person foaf:name ?name.
+    ?person foaf:mbox ?email.
+  }
+\end{lstlisting}
+
+\noindent queries an RDF graph that contains contact information and returns the
+names and email address of all ``Person'' entities therein. This query could be
+expressed as function $f: G \rightarrow S$ from the set of all graphs, $G$, to
+set, $S$, of values requested in the SELECT statement such that:
+
+\begin{displaymath}
+  S = \{(n, e) | \exists p . (p, type, Person) \in G\ \land (p, name, n) \in G \land (p, mbox, e) \in G\}
+\end{displaymath}
+
+This could be generalised:
+
+\begin{displaymath}
+  S = \{(a_1, a_2, ..., a_n) | f(G) \}
+\end{displaymath}
+
+\noindent and in the case where all $a_k \in S$ are literal (e.g. string or
+numeric) values, we can thus consider a given SPARQL query to be specific function
+capable of feature extraction from any RDF graph into sets of categorical or
+numeric features.
+
+Notably, Kiefer, Bernstein and Locher\cite{kiefer2008adding} proposed a novel
+approach called SPARQL-ML -- an extension to the
+SPARQL\cite{segaran2009programming} query language with new keywords to
+facilitate both generating and applying models. This means that the system capable
+of parsing and running standard queries must also run machine learning
+algorithms. Their work involved developing an extension to the SPARQL query
+engine for \emph{Apache Jena}\footnote{https://jena.apache.org/} that integrates
+with systems such as \emph{Weka}\footnote{http://www.cs.waikato.ac.nz/ml/weka/}.
+A more suitable software application for enterprise use might focus solely on
+converting RDF graphs into a neutral data structure that can plug into arbitrary
+data mining algorithms.
 
 \chapter{System Design}
 
 \begin{figure}[h]
   \begin{center}
-    \begin{dot2tex}[dot,pgf,options=-t math,scale=0.8]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
       digraph g {
         rankdir=LR;
 
-        node [shape=circle,margin="0,0"]
+        node [shape=circle,margin="0,0"];
         edge [len=2];
 
         URI -> RDF [label="extract"];
@@ -109,10 +167,9 @@ semantic web.
 
 \begin{figure}[h]
   \begin{center}
-    \begin{dot2tex}[dot,pgf,options=-t math,scale=0.8]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
       digraph g {
         rankdir=LR;
-        nodesep=20;
 
         node [shape=circle,margin="0,0"]
 
@@ -125,9 +182,38 @@ semantic web.
   \caption{Semantic web content miner}
 \end{figure}
 
+\begin{sidewaysfigure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"];
+
+        dummy [shape=none,label=""];
+        
+        URI [label="URI"];
+        RDF1 [label="RDF_1"];
+        RDF2 [label="RDF_2"];
+        RDFp [label="RDF'"];
+        
+        URI -> RDFa [label="fetch"];
+        RDFa -> RDF [label="parse"];
+        RDF -> RDF1 [label="DBPedia"];
+        RDF -> RDF2 [label="DBPedia"];
+        RDF -> RDFp [label="\cup"];
+        RDF1 -> RDFp [label="\cup"];
+        RDF2 -> RDFp [label="\cup"];
+        RDFp -> Features [label="generate"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Semantic web content miner with DBPedia enrichment}
+\end{sidewaysfigure}
+
 \begin{figure}[h]
   \begin{center}
-    \begin{dot2tex}[dot,pgf,options=-t math,scale=0.8]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
       digraph g {
         rankdir=LR;
 
@@ -153,5 +239,8 @@ semantic web.
 \chapter{Implementation}
 \chapter{Evaluation}
 \chapter{Conclusion}
+
+\bibliographystyle{plain}
+\bibliography{references}
 
 \end{document}

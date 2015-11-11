@@ -31,6 +31,37 @@ morekeywords={SELECT,CONSTRUCT,DESCRIBE,ASK,WHERE,FROM,NAMED,PREFIX,BASE,OPTIONA
 sensitive=true
 }
 
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily\footnotesize,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+\lstset{frame=single,captionpos=b}
+
 \begin{document}
 
 \maketitle
@@ -157,7 +188,7 @@ A more suitable software application for enterprise use might focus solely on
 converting RDF graphs into a neutral data structure that can plug into arbitrary
 data mining algorithms.
 
-\begin{lstlisting}[label=lst:sparqlfoaf,caption={Example SPARQL query for people's names and email addresses},frame=single,captionpos=b,language=sparql]
+\begin{lstlisting}[label=lst:sparqlfoaf,caption={Example SPARQL query for people's names and email addresses},language=sparql]
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?name ?email
 WHERE {
@@ -200,7 +231,7 @@ numeric) values, we can thus consider a given SPARQL query to be specific
 function capable of feature extraction from any RDF graph into sets of
 categorical or numeric features.
 
-\begin{lstlisting}[label=lst:sparqlabout,caption={SPARQL query to determine what },frame=single,captionpos=b,language=sparql]
+\begin{lstlisting}[label=lst:sparqlabout,caption={SPARQL query to determine what },language=sparql]
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT ?topic
 WHERE {
@@ -242,6 +273,7 @@ and F\:urnkranz proves to be a promising strategy given we can acquire an RDF
 graph model for content items in the first place.
 
 \section{RDF in the enterprise}
+\label{sec:linked-enterprise-data}
 
 \chapter{System Design}
 
@@ -264,8 +296,85 @@ context will guide all design decisions.
 
 \section{Context}
 
-\section{Dataflow Model}
+\section{Use Cases}
 
+\section{Data Pipeline}
+
+A core subsystem in the overall system is a conceptual data pipeline whose
+input is a URI or IRI identifying a content item published on an organisation's
+website and the output is feature sets ready for applying machine learning.
+
+In this section, a theoretical pipeline is inductively defined in steps such
+that an application of this pipeline would choose to implement some subset of
+all potential pipeline stages as appropriate for the relevant problem domain.
+
+In Chapter~\ref{chp:implementation}, aa system is engineered that implements
+as many of these pipeline stages as possible such that a running instance of
+the application can configure which components to use and which not to use.
+Then in Chapter~\ref{chp:evaluation}, an evalution of the system is given
+while it is running each component in isolation to demonstrate which of the
+theoretically-defined processes in this chapter appears to be most effective
+in generating feature sets specifically for clustering web content.
+
+This system requires some initial definition of some data structures in use:
+
+\begin{description}
+
+\item[IRI] \hfill \\
+The input to the system is a character string conformant to the
+IRI syntax defined in RFC 3987\footnote{http://tools.ietf.org/html/rfc3987}.
+This allows more generality offered by
+URIs\footnote{http://tools.ietf.org/html/rfc3986} but is trivially made
+compatible with systems that use URIs through the conversion algorithm defined
+in section~3.2 of RFC 3987. Note that the public URL by which the public can
+read or otherwise consume the content is a valid identifier, but we are not
+restricted to that.
+
+\item[Feature Set] \hfill \\
+The final output of this data pipeline is a data structure
+analogous to a relation or tuple per IRI fed into the system. Every IRI should
+have a literal value against all possible columns or fields. For binary fields,
+(e.g. the presence of absence of a concept tag), a more pragmatic structure
+might be a list of tags positively associated with the IRI rather than
+explicitly assigning $false$ to all tags to which the content item does not
+pertain. This is analogous to a spare matrix when dealing with a large number
+of dimensions.
+
+\item[Named RDF Graph] \hfill \\
+The structure used throughout most of the data pipeline
+is that of an RDF graph. This is used for all the benefits outlined in
+Section~\ref{sec:linked-enterprise-data} such as ease of transformation and
+combining of data sets. Named graphs are used such that all data acquired
+are keyed back to the IRI of the content item being processed. This also allows
+all graphs to be combined in a \emph{triplestore} if needed to allow SPARQL
+queries across the combined data for all content items. This can be modelled as
+a data structure in many programming languages, but where a serialisation is
+used (e.g. examples shown here or to send the data between components), the
+JSON-LD\cite{sporny2014json} syntax will be used.
+\end{description}
+
+\begin{centering}
+\begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
+{
+  "@id": "http://example.com/entity/1",
+  "@graph": []
+}
+\end{lstlisting}
+\end{centering}
+
+With the knowledge only of a content item's IRI, we are arguably only able to
+produce an empty named RDF graph. Such a graph for an example IRI
+\texttt{http://example.com/entity/} is illustrated in
+JSON-LD syntax in Listings~\ref{lst:jsonld-identity}.
+
+The most na\"ive feature set we can generate from such an RDF graph is clearly
+a singleton relation \texttt{("http://example.com/entity/")} where a single
+$IRI$ field has the value \texttt{"http://example.com/entity/"}. It is also
+clear that a set of one-dimension feature vectors with unique values in each
+is not suitable for any form of machine learning activity. This does, however,
+illustrate a baseline for a working software application that is -- at least
+in the syntactic sense -- transforming IRI inputs to feature sets outputs.
+Such a $null$ feature generator is depicted in Figure~\ref{fig:gen-null}.
 
 \begin{figure}[h]
   \begin{center}
@@ -276,13 +385,32 @@ context will guide all design decisions.
         node [shape=circle,margin="0,0"];
         edge [len=2];
 
-        URI -> RDF [label="extract"];
+        IRI -> RDF [label="extract"];
         RDF -> Features [label="generate"];
       }
     \end{dot2tex}
   \end{center}
-  \caption{Null content miner}
+  \caption{Null feature generator \label{fig:gen-null}}
 \end{figure}
+
+Note that Figure~\ref{fig:gen-null} shows all three data structures involved
+despite having no functional use. We can also see top-level definitions of the
+process where we first \emph{extract} semantic information in RDF from a
+content item indentified by IRI and then \emph{generate} features therefrom.
+More useful models can now be inductively defined by adding atomic
+subcomponents that may each add value to the overall transformation.
+
+There are two clear axes along which we can improve this pipeline: expand
+the size of the RDF graph we are extracting and improve how we convert this
+graph into features. In the first instance, we can consider the former and add
+a single pipeline stage for expanding the RDF graph.
+
+Tim Berners-Lee outlined four rules\cite{berners2011linked} for Linked Data,
+rule number three of which states ``When someone looks up a URI, provide useful
+information, using the standards''. If we assume that many pages have embedded
+some semantic web or RDF data, then a simple extraction strategy would be
+to deference the content item's IRI via an HTTP GET and pass the content
+to a parser capable of extracting RDFa, microformats, etc.
 
 \begin{figure}[h]
   \begin{center}
@@ -292,7 +420,7 @@ context will guide all design decisions.
 
         node [shape=circle,margin="0,0"]
 
-        URI -> RDFa [label="fetch"];
+        IRI -> RDFa [label="fetch"];
         RDFa -> RDF [label="parse"];
         RDF -> Features [label="generate"];
       }
@@ -311,12 +439,12 @@ context will guide all design decisions.
 
         dummy [shape=none,label=""];
         
-        URI [label="URI"];
+        IRI [label="IRI"];
         RDF1 [label="RDF_1"];
         RDF2 [label="RDF_2"];
         RDFp [label="RDF'"];
         
-        URI -> RDFa [label="fetch"];
+        IRI -> RDFa [label="fetch"];
         RDFa -> RDF [label="parse"];
         RDF -> RDF1 [label="DBPedia"];
         RDF -> RDF2 [label="DBPedia"];
@@ -338,9 +466,9 @@ context will guide all design decisions.
 
         node [shape=circle,margin="0,0"]
 
-        URI -> RDFa [label="parse"];
-        URI -> Entities [label="extract"];
-        URI -> Linked [label="scrape"];
+        IRI -> RDFa [label="parse"];
+        IRI -> Entities [label="extract"];
+        IRI -> Linked [label="scrape"];
 
 
         RDFa -> RDF [label="\cup"];
@@ -358,7 +486,11 @@ context will guide all design decisions.
 
 
 \chapter{Implementation}
+\label{chp:implementation}
+
 \chapter{Evaluation}
+\label{chp:evaluation}
+
 \chapter{Conclusion}
 
 \bibliographystyle{plain}

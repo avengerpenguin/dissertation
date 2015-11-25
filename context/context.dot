@@ -1,26 +1,71 @@
 digraph {
-    sep=0.5;
-    overlap=scale;
+    overlap=true;
+    ranksep=2.8;
 
+    // BBC Domains
     bbc [label="",shape="none",image="images/bbc-blocks-dark.png"];
+    public_service [label="",shape="none",image="images/uk.png"];
+    world_service [label="",shape="none",image="images/world_service.png"];
+    worldwide [label="",shape="none",image="images/worldwide.png"];
 
-    bbc -> public_service;
+    bbc -> public_service [label="Public Service"];
+    bbc -> world_service [label="World Service"];
+    bbc -> worldwide [label="Commercial"];
+
+
+    // BBC Brands
+    iplayer [label="",shape="none",image="images/iplayer_pink.png"];
+    cbbc [label="",shape="none",image="images/cbbc.jpg"];
+
     public_service -> cbbc;
     public_service -> cbeebies;
-    bbc -> world_service;
-    bbc -> worldwide;
-
-    iplayer [label="",shape="none",image="images/iplayer_pink.png"];
-    viewers [label="",shape="none",image="images/viewers.png"];
-    recipes;
-    news;
-
     public_service -> iplayer;
+
+    
+    // Content Types
+    recipes [label="",shape="none",image="images/recipe.png"];
+    news [label="",shape="none",image="images/news.png"];
+    newsround [label="",shape="none",image="images/news.png"];
+    ws_news [label="",shape="none",image="images/news.png"];
+    music [label="",shape="none",image="images/music.png"];
+    games [label="",shape="none",image="images/game.png"];
+
     public_service -> recipes;
     public_service -> news;
     public_service -> weather;
-
-    viewers -> iplayer;
-
     world_service -> ws_news;
+    cbbc -> clip;
+    cbbc -> games;
+    cbbc -> cbbc_iplayer;
+    cbbc -> activities;
+    cbbc -> music;
+    cbbc -> newsround [label="Newsround"];
+    
+
+    // Audience Personas
+    child [label="",shape="none",image="images/child.png"];
+    toddler [label="",shape="none",image="images/toddler.png"];
+    viewers [label="",shape="none",image="images/viewers.png"];
+    reader [label="",shape="none",image="images/reader.png"];
+    nigerian_reader [label="",shape="none",image="images/nigerian_reader.png"];
+
+    toddler -> cbeebies;
+    child -> games [label="Play"];
+    child -> music [label="Listen"];
+    child -> newsround [label="Read"];
+    viewers -> iplayer [label="Watch"];
+    reader -> news [label="Read"];
+    nigerian_reader -> ws_news [label="Read"];
+
+
+    // Producer Roles
+    writer [label="",shape="none",image="images/writer.png"];
+    chef [label="",shape="none",image="images/chef.png"];
+    
+    writer -> news [label="Write"];
+    chef -> recipes [label="Create"];
+    
+    
+
+    
 }

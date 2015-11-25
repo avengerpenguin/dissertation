@@ -257,7 +257,7 @@ g \in G \models f'(g, uri) = \{t \: | \: (uri, about, t) \in g\}
 $$
 
 An approach of generating attributes for a given resource was proposed by
-Paulheim and F\:urnkranz\cite{paulheim2012unsupervised}. They defined specific
+Paulheim and F\"urnkranz\cite{paulheim2012unsupervised}. They defined specific
 SPARQL queries and provided case study evidence for the effectiveness of
 each strategy.
 
@@ -412,6 +412,12 @@ some semantic web or RDF data, then a simple extraction strategy would be
 to deference the content item's IRI via an HTTP GET and pass the content
 to a parser capable of extracting RDFa, microformats, etc.
 
+Many tools such as the RDFLib\footnote{https://github.com/RDFLib/rdflib}
+provide functionality for taking a URL and returning an RDF graph of all data
+found when fetching the resource it represents, so this is arguably an ideal
+first choice in attempting to learn something about a content item from its
+IRI. 
+
 \begin{figure}[h]
   \begin{center}
     \begin{dot2tex}[dot,options=-t math,autosize,pgf]
@@ -426,8 +432,10 @@ to a parser capable of extracting RDFa, microformats, etc.
       }
     \end{dot2tex}
   \end{center}
-  \caption{Semantic web content miner}
+  \caption{Semantic web content miner\label{fig:gen-rdfa}}
 \end{figure}
+
+Figure~\ref{fig:gen-rdfa}
 
 \begin{sidewaysfigure}[h]
   \begin{center}

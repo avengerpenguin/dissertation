@@ -18,7 +18,7 @@ directories %w(proposal report) \
 guard :shell, :all_on_start => true do
   watch /^report\/report\.tex/ do |m|
     puts "File changed: #{m}"
-    `make github`
+    `make report`
     `pdftotext report/report.pdf - | wc -w`
   end
 end

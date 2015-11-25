@@ -1,0 +1,26 @@
+digraph {
+    sep=0.5;
+    overlap=scale;
+
+    bbc [label="",shape="none",image="images/bbc-blocks-dark.png"];
+
+    bbc -> public_service;
+    public_service -> cbbc;
+    public_service -> cbeebies;
+    bbc -> world_service;
+    bbc -> worldwide;
+
+    iplayer [label="",shape="none",image="images/iplayer_pink.png"];
+    viewers [label="",shape="none",image="images/viewers.png"];
+    recipes;
+    news;
+
+    public_service -> iplayer;
+    public_service -> recipes;
+    public_service -> news;
+    public_service -> weather;
+
+    viewers -> iplayer;
+
+    world_service -> ws_news;
+}

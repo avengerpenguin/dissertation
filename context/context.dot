@@ -1,6 +1,6 @@
 digraph {
     overlap=true;
-    ranksep=2.8;
+    ranksep=2.6;
 
     // BBC Domains
     bbc [label="",shape="none",image="images/bbc-blocks-dark.png"];

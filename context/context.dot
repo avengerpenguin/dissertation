@@ -1,6 +1,6 @@
 digraph {
-    overlap=true;
-    ranksep=2.6;
+    overlap=scale;
+    ranksep=0.2;
 
     // BBC Domains
     bbc [label="",shape="none",image="images/bbc-blocks-dark.png"];
@@ -29,14 +29,14 @@ digraph {
     ws_news [label="",shape="none",image="images/news.png"];
     music [label="",shape="none",image="images/music.png"];
     games [label="",shape="none",image="images/game.png"];
+    tv [label="",shape="none",image="images/tv.png"];
 
     public_service -> recipes;
     public_service -> news;
     public_service -> weather;
     world_service -> ws_news;
-    cbbc -> clip;
+    cbbc -> tv;
     cbbc -> games;
-    cbbc -> cbbc_iplayer;
     cbbc -> activities;
     cbbc -> music;
     cbbc -> newsround [label="Newsround"];
@@ -48,11 +48,13 @@ digraph {
     viewers [label="",shape="none",image="images/viewers.png"];
     reader [label="",shape="none",image="images/reader.png"];
     nigerian_reader [label="",shape="none",image="images/nigerian_reader.png"];
+    cook [label="",shape="none",image="images/cook.png"];
 
     toddler -> cbeebies;
     child -> games [label="Play"];
     child -> music [label="Listen"];
     child -> newsround [label="Read"];
+    child -> tv [label="Watch"];
     viewers -> iplayer [label="Watch"];
     reader -> news [label="Read"];
     nigerian_reader -> ws_news [label="Read"];
@@ -60,11 +62,17 @@ digraph {
 
     // Producer Roles
     writer [label="",shape="none",image="images/writer.png"];
+    cbbc_writer [label="",shape="none",image="images/writer.png"];
+    ws_writer [label="",shape="none",image="images/writer.png"];
     chef [label="",shape="none",image="images/chef.png"];
     
     writer -> news [label="Write"];
+    cbbc_writer -> newsround [label="Write"];
+    ws_writer -> ws_news [label="Write"];
     chef -> recipes [label="Create"];
-    
+    chef -> tv [label="Appear"];
+    cook -> recipes [label="Read"];
+
     
 
     

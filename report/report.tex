@@ -162,7 +162,12 @@ metadata in terms of acquiring, enriching and even transforming that data ahead
 of feature extraction.
 \end{enumerate}
 
+\section{Data Mining}
+
+TODO
+
 \section{RDF and Feature Extraction}
+\label{sec:rdf-and-features}
 
 The RDF graph is a powerful model
 for metadata based on representing knowledge as a set of
@@ -275,6 +280,8 @@ graph model for content items in the first place.
 \section{RDF in the enterprise}
 \label{sec:linked-enterprise-data}
 
+TODO
+
 \chapter{System Design}
 
 In this chapter, a system is inductively derived and concretely design to make
@@ -316,6 +323,8 @@ while it is running each component in isolation to demonstrate which of the
 theoretically-defined processes in this chapter appears to be most effective
 in generating feature sets specifically for clustering web content.
 
+\subsection{Definitions}
+
 This system requires some initial definition of some data structures in use:
 
 \begin{description}
@@ -353,6 +362,8 @@ used (e.g. examples shown here or to send the data between components), the
 JSON-LD\cite{sporny2014json} syntax will be used.
 \end{description}
 
+\subsection{Identity Graph}
+
 \begin{centering}
 \begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
 {
@@ -378,7 +389,7 @@ Such a $null$ feature generator is depicted in Figure~\ref{fig:gen-null}.
 
 \begin{figure}[h]
   \begin{center}
-    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
       digraph g {
         rankdir=LR;
 
@@ -386,7 +397,7 @@ Such a $null$ feature generator is depicted in Figure~\ref{fig:gen-null}.
         edge [len=2];
 
         IRI -> RDF [label="extract"];
-        RDF -> Features [label="generate"];
+        RDF -> Features [label="(IRI)"];
       }
     \end{dot2tex}
   \end{center}
@@ -400,10 +411,15 @@ content item indentified by IRI and then \emph{generate} features therefrom.
 More useful models can now be inductively defined by adding atomic
 subcomponents that may each add value to the overall transformation.
 
-There are two clear axes along which we can improve this pipeline: expand
-the size of the RDF graph we are extracting and improve how we convert this
-graph into features. In the first instance, we can consider the former and add
+There are three clear axes along which we can improve this pipeline:
+\emph{extract} more RDF data knowing only an item's IRI,
+expand or \emph{enrich} an existing RDF graph
+and then improve how we \emph{generate} features for data mining.
+In the first instance, we can consider the former and add
 a single pipeline stage for expanding the RDF graph.
+
+\subsection{RDF Extraction}
+\label{sec:rdf-extraction}
 
 Tim Berners-Lee outlined four rules\cite{berners2011linked} for Linked Data,
 rule number three of which states ``When someone looks up a URI, provide useful
@@ -420,26 +436,97 @@ IRI.
 
 \begin{figure}[h]
   \begin{center}
-    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
       digraph g {
         rankdir=LR;
 
         node [shape=circle,margin="0,0"]
 
-        IRI -> RDFa [label="fetch"];
+        IRI -> RDFa [label="derefernce"];
         RDFa -> RDF [label="parse"];
-        RDF -> Features [label="generate"];
+        RDF -> Features [label="(IRI)"];
       }
     \end{dot2tex}
   \end{center}
-  \caption{Semantic web content miner\label{fig:gen-rdfa}}
+  \caption{Semantic web data extraction\label{fig:gen-rdfa}}
 \end{figure}
 
-Figure~\ref{fig:gen-rdfa}
+Figure~\ref{fig:gen-rdfa} depicts the pipeline with a simple dereference
+step added. Note that the feature set generated is still the singleton
+relation with only the IRI value. Thus the next step should be to add a step
+that improves the feature set generation.
+
+\subsection{Feature Set Generation}
+
+Paulheim and F\"urnkranz\cite{paulheim2012unsupervised} described a number of
+SPARQL queries for generating feature sets from RDF data, which could inspire
+a simple query such as that shown in Listings~\ref{lst:simple-sparql}. This
+query generates a boolean \texttt{true} value for any properties that match
+and implies \texttt{false} for those that do not.
+
+\begin{lstlisting}[label=lst:simple-sparql,caption={Generates field \texttt{content\_?p\_?v} with value \texttt{true}},language=sparql]
+SELECT ?p ?v
+WHERE { ?iri ?p ?v . }
+\end{lstlisting}
+
+As also noted by Paulheim
+and F\"urnkranz, this overlooks the
+\emph{open world assumption}\cite{russel2010artificial}. However, application
+of clustering algorithms on binary data can employ asymmetric distance metrics
+such as Jaccard similarity coeffcient\cite{witten2005data}, which notably
+avoids deriving similarity from negative values. That is, two content items
+lacking a particular property will contribute no information about their
+(dis)similarity. Thus we safely avoid inadvertently grouping together one item
+that genuinely lacks the property with another that indeed has the property,
+but we lack the positive assertion thereof in the data extracted.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+
+        IRI -> RDFa [label="derefernce"];
+        RDFa -> RDF [label="parse"];
+        RDF -> Features [label="content\_?p\_?v"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Semantic web content extraction with basic SPARQL feature generation\label{fig:gen-rdfa-basic}}
+\end{figure}
+
+The basic pipeline in Figure~\ref{fig:gen-rdfa} can thus be augmented with this
+basic feature extraction to produce the pipeline depicated in
+Figure~\ref{fig:gen-rdfa-basic}.
+
+\subsection{RDF Enrichment}
+
+The third and final direction in which this data pipeline can be improved is
+in terms of data enrichment. A simple strategy here is to repeat the
+deferencing used in Section~\ref{sec:rdf-extraction}, but for each IRI
+found as the object of a triple in which the initial IRI is the subject.
+Formally:
+
+$$
+g \in G \models \exists p, o . (IRI, p, o) \in g \rightarrow g' = deref(o)
+$$
+
+That RDF graphs can be modelled as mathematical sets as in
+Section~\ref{sec:rdf-and-features} means we can express a graph enriched this
+way as a \emph{union} of the initial graph with each graph returned from all
+dereferencing:
+
+$$
+g \in G \models g' = g \cup \bigcup \: \{deref(o) \: | \: (IRI, p, o) \in g\}
+$$
+
+Figure~\ref{fig:object-deref}
 
 \begin{sidewaysfigure}[h]
   \begin{center}
-    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
       digraph g {
         rankdir=LR;
 
@@ -452,18 +539,18 @@ Figure~\ref{fig:gen-rdfa}
         RDF2 [label="RDF_2"];
         RDFp [label="RDF'"];
         
-        IRI -> RDFa [label="fetch"];
+        IRI -> RDFa [label="dereference"];
         RDFa -> RDF [label="parse"];
-        RDF -> RDF1 [label="DBPedia"];
-        RDF -> RDF2 [label="DBPedia"];
+        RDF -> RDF1 [label="derefence/parse"];
+        RDF -> RDF2 [label="dereference/parse"];
         RDF -> RDFp [label="\cup"];
         RDF1 -> RDFp [label="\cup"];
         RDF2 -> RDFp [label="\cup"];
-        RDFp -> Features [label="generate"];
+        RDFp -> Features [label="content\_?p\_?v"];
       }
     \end{dot2tex}
   \end{center}
-  \caption{Semantic web content miner with DBPedia enrichment}
+  \caption{Semantic web content miner with addtional dereferencing of linked entities}
 \end{sidewaysfigure}
 
 \begin{figure}[h]

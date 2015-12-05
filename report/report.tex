@@ -615,7 +615,7 @@ precise semantics of such a link (unless the publisher has kindly provided
 a \texttt{rel} attribute), but a weak relationship such as:
 
 $$
-(IRI_1, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, IRI_2)
+(IRI_1, ex:related, IRI_2)
 $$
 
 \noindent might prove -- through experiementation -- to be useful enough
@@ -662,13 +662,13 @@ to explore the following options:
 In the first approach, we can consider a relationship rule such as:
 
 $$
-(IRI, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, <\!\!http\!:\!\!//dbpedia.org/resource/Dog\!\!>)
+(IRI, ex:related, ex:Dog)
 $$
 
 \noindent and \emph{infer} the fact:
 
 $$
-(IRI, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, <\!\!http\!:\!\!//dbpedia.org/resource/Animal\!\!>)
+(IRI, ex:related, ex:Animal)
 $$
 
 \noindent and produce an enriched graph containing all additional facts
@@ -677,15 +677,15 @@ inferred in this way.
 When dealing with proper nouns and named entities, inferring facts based on
 domain knowledge may be more appropriate. For instance, the rule in n3 syntax:
 
-\begin{lstlistings}
+\begin{lstlisting}
   {
     ?article ex:takesPlaceIn ?city .
     ?city a ex:City .
     ?city ex:capitalOf ?country .
   } -> { ?iri ex:takesPlaceIn ?country }
-\end{lstlistings}
+\end{lstlisting}
 
-\noident might be useful ot help cluster articles that take place in the same
+\noindent might be useful ot help cluster articles that take place in the same
 country -- even if the countries are not always explicitly mentioned therein.
 Such an inference requires knowledge about cities and countries to
 write and domain experts for different types of content might be able to offer
@@ -706,31 +706,31 @@ related to the same concept -- so they would be candidates for clustering
 together -- but when RDF data are extracted, it is found that two
 different URIs have been used for each:
 
-$$
-(IRI_1, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)
-(IRI_2, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex2:anotherEntity)
-$$
+\begin{displaymath}
+(IRI_{1}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)\\
+(IRI_{2}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex2:anotherEntity)
+\end{displaymath}
 
-In the RDF graph for IRI_2, say, we might find the source had provided an
+In the RDF graph for $IRI_2$, say, we might find the source had provided an
 \texttt{owl:sameAs} assertion such as:
 
-$$
+\begin{displaymath}
 (ex2:anotherEntity, owl:sameAs, ex1:entity)
-$$
+\end{displaymath}
 
 This is possible in the case where the second item's data source uses its own
 set of identifiers for entities, but has chosen to provide equivalences to
 a more standard set of identifiers (e.g. DBpedia). With this information,
 our data pipeline can infer:
 
-$$
-(IRI_1, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)
-(IRI_2, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex2:anotherEntity)
-(IRI_2, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)
-$$
+\begin{displaymath}
+(IRI_{1}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)\\
+(IRI_{2}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex2:anotherEntity)\\
+(IRI_{2}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)
+\end{displaymath}
 
-\noident and the feature generation stage might provide the common features
-\texttt{dbprop_related_ex1_entity=true} for both content items.
+\noindent and the feature generation stage might provide the common features
+\texttt{dbprop\_related\_ex1\_entity=true} for both content items.
 
 \subsection{Improving Feature Generation}
 
@@ -773,7 +773,7 @@ more general ability to cluster programmes with Scottish actors, for instance.
 Appropriate experimentation should show whether more value is gained by
 adding these additional levels of indirection.
 
-\begin{Maximal Data Pipeline}
+\subsection{Maximal Data Pipeline}
 
 In this section, a data pipeline was inductively built up from a base,
 identify pipeline with suggestions for potential improvements in different

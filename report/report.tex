@@ -543,7 +543,7 @@ executed in parallel.
         
         IRI -> RDFa [label="dereference"];
         RDFa -> RDF [label="parse"];
-        RDF -> RDF1 [label="derefence/parse"];
+        RDF -> RDF1 [label="dereference/parse"];
         RDF -> RDF2 [label="dereference/parse"];
         RDF -> RDFp [label="\cup"];
         RDF1 -> RDFp [label="\cup"];
@@ -787,16 +787,34 @@ that depicated in Figure\ref{fig:maximal-pipeline}.
         rankdir=LR;
 
         node [shape=circle,margin="0,0"]
+        RDF1 [label="RDF_1"];
+        RDF2 [label="RDF_2"];
+        RDF3 [label="RDF_3"];
+        RDFp [label="RDF'"];
+        RDFp1 [label="RDF'_1"];
+        RDFp2 [label="RDF'_2"];
+        RDFp3 [label="RDF'_3"];
+        RDFp4 [label="RDF'_4"];
 
-        IRI -> RDFa [label="parse"];
-        IRI -> Entities [label="extract"];
-        IRI -> Linked [label="scrape"];
+        IRI -> RDF1 [label="parse"];
+        IRI -> RDF2 [label="extract"];
+        IRI -> RDF3 [label="scrape"];
 
+        RDF1 -> RDF [label="\cup"];
+        RDF2 -> RDF [label="\cup"];
+        RDF3 -> RDF [label="\cup"];
 
-        RDFa -> RDF [label="\cup"];
-        Entities -> RDF [label="\cup"];
-        Linked -> RDF [label="\cup"];
+        RDF -> RDFp1 [label="dereference/parse"];
+        RDF -> RDFp2 [label="hypernym inference"];
+        RDF -> RDFp3 [label="expert inference"];
+        RDF -> RDFp4 [label="OWL inference"];
 
+        RDF -> RDFp [label="\cup"];
+        RDFp1 -> RDFp [label="\cup"];
+        RDFp2 -> RDFp [label="\cup"];
+        RDFp3 -> RDFp [label="\cup"];
+        RDFp4 -> RDFp [label="\cup"];
+        
         RDF -> Features [label="generate"];
       }
     \end{dot2tex}

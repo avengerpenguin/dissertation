@@ -1,0 +1,35 @@
+@startuml component.png
+
+skinparam component {
+    style uml2
+    BorderColor black
+    BackgroundColor white
+    FontName Courier
+    ArrowColor black
+}
+
+skinparam interface {
+    BorderColor black
+    BackgroundColor white
+    FontName Courier
+}
+
+[Data Pipeline] as pipeline
+
+pipeline -l- ingest
+
+[Apache Spark] as spark
+
+spark -u- master
+
+pipeline -d-> master : jobs
+
+[Elasticsearch] as es
+
+es -r- HTTP
+
+spark -l-> HTTP : JSON-LD
+
+[Notifiers] -r-> ingest : IRIs
+
+@enduml

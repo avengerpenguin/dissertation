@@ -790,7 +790,7 @@ that depicated in Figure\ref{fig:maximal-pipeline}.
 
 \begin{sidewaysfigure}[p]
   \begin{center}
-    \begin{dot2tex}[dot,options=-t math,autosize,pgf]
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.9]
       digraph g {
         rankdir=LR;
 
@@ -823,12 +823,19 @@ that depicated in Figure\ref{fig:maximal-pipeline}.
         RDFp3 -> RDFp [label="\cup"];
         RDFp4 -> RDFp [label="\cup"];
         
-        RDFp -> Features [label="generate"];
+        RDFp -> Features [label="\text{content\_?p\_?v}"];
+        RDFp -> Features [label="\text{content\_?p1\_?p2\_?v}"];
       }
     \end{dot2tex}
   \end{center}
   \caption{\label{fig:maximal-pipeline}Maximal Data Pipeline}
 \end{sidewaysfigure}
+
+The goal of this work is to evaluate how the quality of unsupervised clustering
+changes with respect to enabling different combinations of the maximal
+data pipeline. In the next section, some of the technical architecture of this
+pipeline is outlined and the next chapter will cover how the overall system is
+then implemented.
 
 \section{Pipeline Architecture}
 

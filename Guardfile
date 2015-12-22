@@ -22,3 +22,10 @@ guard :shell, :all_on_start => true do
     `pdftotext report/report.pdf - | wc -w`
   end
 end
+
+guard :shell, :all_on_start => true do
+  watch /^report\/diagrams\/.*\.puml/ do |m|
+    puts "File changed: #{m}"
+    `make report`
+  end
+end

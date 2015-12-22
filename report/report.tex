@@ -303,7 +303,15 @@ context will guide all design decisions.
 
 \section{Context}
 
+%TODO
+
 \section{Use Cases}
+
+%TODO
+
+\section{Technical Architecture}
+
+%TODO
 
 \section{Data Pipeline}
 
@@ -796,18 +804,18 @@ that depicated in Figure\ref{fig:maximal-pipeline}.
         RDFp3 [label="RDF'_3"];
         RDFp4 [label="RDF'_4"];
 
-        IRI -> RDF1 [label="parse"];
-        IRI -> RDF2 [label="extract"];
-        IRI -> RDF3 [label="scrape"];
+        IRI -> RDF1 [label="\text{parse}"];
+        IRI -> RDF2 [label="\text{extract}"];
+        IRI -> RDF3 [label="\text{scrape}"];
 
         RDF1 -> RDF [label="\cup"];
         RDF2 -> RDF [label="\cup"];
         RDF3 -> RDF [label="\cup"];
 
-        RDF -> RDFp1 [label="dereference/parse"];
-        RDF -> RDFp2 [label="hypernym inference"];
-        RDF -> RDFp3 [label="expert inference"];
-        RDF -> RDFp4 [label="OWL inference"];
+        RDF -> RDFp1 [label="\text{dereference/parse}"];
+        RDF -> RDFp2 [label="\text{hypernym inference}"];
+        RDF -> RDFp3 [label="\text{expert inference}"];
+        RDF -> RDFp4 [label="\text{OWL inference}"];
 
         RDF -> RDFp [label="\cup"];
         RDFp1 -> RDFp [label="\cup"];
@@ -815,14 +823,14 @@ that depicated in Figure\ref{fig:maximal-pipeline}.
         RDFp3 -> RDFp [label="\cup"];
         RDFp4 -> RDFp [label="\cup"];
         
-        RDF -> Features [label="generate"];
+        RDFp -> Features [label="generate"];
       }
     \end{dot2tex}
   \end{center}
   \caption{\label{fig:maximal-pipeline}Maximal Data Pipeline}
 \end{sidewaysfigure}
 
-\section{Technical Architecture}
+\section{Pipeline Architecture}
 
 
 \chapter{Implementation}

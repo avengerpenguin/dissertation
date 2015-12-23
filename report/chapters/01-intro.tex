@@ -1,0 +1,69 @@
+\chapter{Introduction}
+
+Media companies produce ever larger numbers of articles, videos, podcasts,
+games, etc. -- commonly collectively known as ``content''. A successful
+content-producing website not only has to develop systems to aid producing and
+publishing that content, but there are also demands to engineer effective
+mechanisms to aid consumers in finding that content.
+
+Approaches used in industry include providing a text-based search, hierarchical
+categorisation (and thus navigation thereof) and even more tailored recommended
+content based on past behaviour or content enjoyed by friends (or sometimes
+simply other consumers who share your preferences).
+
+\section{Problems}
+
+There are several technical and conceptual problems with building effective
+content discovery mechanisms, including:
+
+\begin{itemize}
+
+\item Large organisations can have content across multiple content management
+systems, in differing formats and data models. Organisations face a large-scale
+enterprise integration problem simply trying to gain a holistic view of all
+their content.
+
+\item Many content items are in fairly opaque formats, e.g. video content may be
+stored as audio-visual binary data with minimal metadata to display on a
+containing web page. Video content producers may not be motivated to provide
+data attributes that might ultimately be most useful in determining if a user
+will enjoy the video.
+
+\item Content is being published continuously, which means any search or
+discovery system needs to keep up with content as it is published and process it
+into the appropriate data structures. Any machine learning previously performed
+on the data set may need to be re-run.
+
+\end{itemize}
+
+\section{Hypothesis}
+
+The following hypotheses are proposed for gaining new insights about an
+organisation's diverse corpus of content:
+
+\begin{itemize}
+
+\item Research and software tools around the concept of \emph{Linked Data} can
+aid us in rapidly acquiring a broad view (perhaps at the expense of depth) of an
+organisation's content whilst also providing a platform for simple enrichment of
+that content's metadata.
+
+\item We can establish at least a na\"ive mapping of an RDF graph representing a
+content item to an attribute set suitable for data mining. With such a mapping,
+we can explore applying machine learning -- particularly unsupervised learning
+-- across an organisation's whole content corpus.
+
+\item Linked Data and Semantic Web \emph{ontologies} and models available can
+provide data enrichment beyond attributes and keywords explicitly avaiable
+within content data or metadata.
+
+\item We can adapt established machine learning approaches such as clustering
+for data published continuously in real time.
+
+\item Many content-producers currently enrich their web pages with small
+amounts of semantic metadata to provide better presentation of that content
+as it is shared on social media. This enables simple collection of a full
+breadth of content with significantly less effort than direct integration
+with content management systems.
+
+\end{itemize}

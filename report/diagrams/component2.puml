@@ -1,4 +1,4 @@
-@startuml component.png
+@startuml component2.png
 
 skinparam component {
     style uml2
@@ -29,10 +29,21 @@ miner -l- clusters
 
 [Notifiers] -d-> ingest : New content
 
-database "Store" as store {
+database "Elasticsearch" as store {
+[RDF]
+[Feature Sets]
 [Clusters]
 }
 
-miner -u-> Clusters : Persist
+[Apache Spark] as spark
+
+spark -d-> RDF : JSON-LD
+spark -d-> [Feature Sets] : JSON
+spark -d-> Clusters : JSON
+
+spark -u- master
+
+miner -d-> master
+
 
 @enduml

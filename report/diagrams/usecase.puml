@@ -1,0 +1,32 @@
+@startuml usecase.png
+
+left to right direction
+
+skinparam usecase {
+    style uml2
+    BorderColor black
+    BackgroundColor white
+    FontName Courier
+    ArrowColor black
+}
+
+skinparam actor {
+    BorderColor black
+    BackgroundColor white
+    FontName Courier
+}
+
+rectangle "Content Clustering" {
+  (Find related content) ..> (Cluster related content) : <<include>>
+  (Submit new article) --|> (Ingest new content) : <<extend>>
+  (Publish new programme site) --|> (Ingest new content) : <<extend>>
+}
+
+:Journalist: --> (Submit new article)
+:Producer: --> (Publish new programme site)
+:Audience: --> (Find related content)
+:TV Viewer: <|-- :Audience:
+:Reader: <|-- :Audience:
+:Child: <|-- :Audience:
+@enduml
+

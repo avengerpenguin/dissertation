@@ -1,0 +1,604 @@
+\chapter{System Design}
+
+In this chapter, a system is inductively derived and concretely design to make
+use of multiple strategies for:
+
+\begin{enumerate}
+\item gathering (meta)data about all of an organisations content items;
+\item extracting metadata not explicitly modelled in source content management
+systems;
+\item further enriching that metadata with information not explicitly present
+in the content item itself; and
+\item applying machine learning to that content metadata to gain new insights
+about that content.
+\end{enumerate}
+
+Initially, a business context is described to produce a design for a system
+that could be a applied within a media or content-producing organisation. This
+context will guide all design decisions.
+
+\section{Context}
+
+TODO
+
+\section{Use Cases}
+\label{sec:usecases}
+
+\begin{sidewaysfigure}
+  \begin{center}
+    \includegraphics[width=\linewidth]{diagrams/usecase.png}
+  \end{center}
+  \caption{Use case diagram for content clustering system\label{use-case}}
+\end{sidewaysfigure}
+
+\section{Technical Architecture}
+
+The use cases depicted and described in Section~\ref{sec:usecases} naturally
+lead to an application with two distinct interfaces: notification of new
+content to consider for data mining and retrieval of information about content
+clusters created to date.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\linewidth]{diagrams/component.png}
+  \end{center}
+  \caption{High-level component diagram with interfaces for each use case\label{fig:component}}
+\end{figure}
+
+Figure~\ref{fig:component} shows a high-level view of a ``Content Miner''
+software application that provides both interfaces. A set of ``notifier''
+applications can be created to connect different content production and
+management systems to the data mining system such that it is notified when new
+content is created. The notification need only be an \emph{IRI} that uniquely
+identifies that content item.
+
+A \emph{Content Promotion Module} is also depicted as an example application
+of the use case where website visitors or audience members then use the
+data mining system to find content related to a page they are currently viewing.
+The focus of this research is to provide enough visualisation in order to
+evaluate the quality of content clusters generated, but it is an important
+design principle to consider use cases at all layers of the system.
+
+\section{Data Pipeline}
+
+A core subsystem in the overall system is a conceptual data pipeline whose
+input is a URI or IRI identifying a content item published on an organisation's
+website and the output is feature sets ready for applying machine learning.
+
+In this section, a theoretical pipeline is inductively defined in steps such
+that an application of this pipeline would choose to implement some subset of
+all potential pipeline stages as appropriate for the relevant problem domain.
+
+In Chapter~\ref{chp:implementation}, aa system is engineered that implements
+as many of these pipeline stages as possible such that a running instance of
+the application can configure which components to use and which not to use.
+Then in Chapter~\ref{chp:evaluation}, an evalution of the system is given
+while it is running each component in isolation to demonstrate which of the
+theoretically-defined processes in this chapter appears to be most effective
+in generating feature sets specifically for clustering web content.
+
+\subsection{Definitions}
+
+This system requires some initial definition of some data structures in use:
+
+\begin{description}
+
+\item[IRI] \hfill \\
+The input to the system is a character string conformant to the
+IRI syntax defined in RFC 3987\footnote{http://tools.ietf.org/html/rfc3987}.
+This allows more generality offered by
+URIs\footnote{http://tools.ietf.org/html/rfc3986} but is trivially made
+compatible with systems that use URIs through the conversion algorithm defined
+in section~3.2 of RFC 3987. Note that the public URL by which the public can
+read or otherwise consume the content is a valid identifier, but we are not
+restricted to that.
+
+\item[Feature Set] \hfill \\
+The final output of this data pipeline is a data structure
+analogous to a relation or tuple per IRI fed into the system. Every IRI should
+have a literal value against all possible columns or fields. For binary fields,
+(e.g. the presence of absence of a concept tag), a more pragmatic structure
+might be a list of tags positively associated with the IRI rather than
+explicitly assigning $false$ to all tags to which the content item does not
+pertain. This is analogous to a spare matrix when dealing with a large number
+of dimensions.
+
+\item[Named RDF Graph] \hfill \\
+The structure used throughout most of the data pipeline
+is that of an RDF graph. This is used for all the benefits outlined in
+Section~\ref{sec:linked-enterprise-data} such as ease of transformation and
+combining of data sets. Named graphs are used such that all data acquired
+are keyed back to the IRI of the content item being processed. This also allows
+all graphs to be combined in a \emph{triplestore} if needed to allow SPARQL
+queries across the combined data for all content items. This can be modelled as
+a data structure in many programming languages, but where a serialisation is
+used (e.g. examples shown here or to send the data between components), the
+JSON-LD\cite{sporny2014json} syntax will be used.
+\end{description}
+
+\subsection{Identity Graph}
+
+\begin{centering}
+\begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
+{
+  "@id": "http://example.com/entity/1",
+  "@graph": []
+}
+\end{lstlisting}
+\end{centering}
+
+With the knowledge only of a content item's IRI, we are arguably only able to
+produce an empty named RDF graph. Such a graph for an example IRI
+\texttt{http://example.com/entity/} is illustrated in
+JSON-LD syntax in Listings~\ref{lst:jsonld-identity}.
+
+The most na\"ive feature set we can generate from such an RDF graph is clearly
+a singleton relation \texttt{("http://example.com/entity/")} where a single
+$IRI$ field has the value \texttt{"http://example.com/entity/"}. It is also
+clear that a set of one-dimension feature vectors with unique values in each
+is not suitable for any form of machine learning activity. This does, however,
+illustrate a baseline for a working software application that is -- at least
+in the syntactic sense -- transforming IRI inputs to feature sets outputs.
+Such a $null$ feature generator is depicted in Figure~\ref{fig:gen-null}.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"];
+        edge [len=2];
+
+        IRI -> RDF [label="extract"];
+        RDF -> Features [label="(IRI)"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Null feature generator \label{fig:gen-null}}
+\end{figure}
+
+Note that Figure~\ref{fig:gen-null} shows all three data structures involved
+despite having no functional use. We can also see top-level definitions of the
+process where we first \emph{extract} semantic information in RDF from a
+content item indentified by IRI and then \emph{generate} features therefrom.
+More useful models can now be inductively defined by adding atomic
+subcomponents that may each add value to the overall transformation.
+
+There are three clear axes along which we can improve this pipeline:
+\emph{extract} more RDF data knowing only an item's IRI,
+expand or \emph{enrich} an existing RDF graph
+and then improve how we \emph{generate} features for data mining.
+In the first instance, we can consider the former and add
+a single pipeline stage for expanding the RDF graph.
+
+\subsection{RDF Extraction}
+\label{sec:rdf-extraction}
+
+Tim Berners-Lee outlined four rules\cite{berners2011linked} for Linked Data,
+rule number three of which states ``When someone looks up a URI, provide useful
+information, using the standards''. If we assume that many pages have embedded
+some semantic web or RDF data, then a simple extraction strategy would be
+to deference the content item's IRI via an HTTP GET and pass the content
+to a parser capable of extracting RDFa, microformats, etc.
+
+Many tools such as the RDFLib\footnote{https://github.com/RDFLib/rdflib}
+provide functionality for taking a URL and returning an RDF graph of all data
+found when fetching the resource it represents, so this is arguably an ideal
+first choice in attempting to learn something about a content item from its
+IRI.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+
+        IRI -> RDFa [label="derefernce"];
+        RDFa -> RDF [label="parse"];
+        RDF -> Features [label="(IRI)"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Semantic web data extraction\label{fig:gen-rdfa}}
+\end{figure}
+
+Figure~\ref{fig:gen-rdfa} depicts the pipeline with a simple dereference
+step added. Note that the feature set generated is still the singleton
+relation with only the IRI value. Thus the next step should be to add a step
+that improves the feature set generation.
+
+\subsection{Feature Set Generation}
+
+Paulheim and F\"urnkranz\cite{paulheim2012unsupervised} described a number of
+SPARQL queries for generating feature sets from RDF data, which could inspire
+a simple query such as that shown in Listings~\ref{lst:simple-sparql}. This
+query generates a boolean \texttt{true} value for any properties that match
+and implies \texttt{false} for those that do not.
+
+\begin{lstlisting}[label=lst:simple-sparql,caption={Generates field \texttt{content\_?p\_?v} with value \texttt{true}},language=sparql]
+SELECT ?p ?v
+WHERE { ?iri ?p ?v . }
+\end{lstlisting}
+
+As also noted by Paulheim
+and F\"urnkranz, this overlooks the
+\emph{open world assumption}\cite{russel2010artificial}. However, application
+of clustering algorithms on binary data can employ asymmetric distance metrics
+such as Jaccard similarity coeffcient\cite{witten2005data}, which notably
+avoids deriving similarity from negative values. That is, two content items
+lacking a particular property will contribute no information about their
+(dis)similarity. Thus we safely avoid inadvertently grouping together one item
+that genuinely lacks the property with another that indeed has the property,
+but we lack the positive assertion thereof in the data extracted.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+
+        IRI -> RDFa [label="derefernce"];
+        RDFa -> RDF [label="parse"];
+        RDF -> Features [label="content\_?p\_?v"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Semantic web content extraction with basic SPARQL feature generation\label{fig:gen-rdfa-basic}}
+\end{figure}
+
+The basic pipeline in Figure~\ref{fig:gen-rdfa} can thus be augmented with this
+basic feature extraction to produce the pipeline depicated in
+Figure~\ref{fig:gen-rdfa-basic}.
+
+\subsection{RDF Enrichment}
+
+The third and final direction in which this data pipeline can be improved is
+in terms of data enrichment. A simple strategy here is to repeat the
+deferencing used in Section~\ref{sec:rdf-extraction}, but for each IRI
+found as the object of a triple in which the initial IRI is the subject.
+Formally:
+
+$$
+g \in G \models \exists p, o . (IRI, p, o) \in g \rightarrow g' = deref(o)
+$$
+
+That RDF graphs can be modelled as mathematical sets as in
+Section~\ref{sec:rdf-and-features} means we can express a graph enriched this
+way as a \emph{union} of the initial graph with each graph returned from all
+dereferencing:
+
+$$
+g \in G \models g' = g \cup \bigcup \: \{deref(o) \: | \: (IRI, p, o) \in g\}
+$$
+
+Figure~\ref{fig:object-deref} shows the data pipeline with this additional
+enrichment stage. Note that now we have potential for some stages being
+executed in parallel.
+
+\begin{sidewaysfigure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"];
+
+        dummy [shape=none,label=""];
+
+        IRI [label="IRI"];
+        RDF1 [label="RDF_1"];
+        RDF2 [label="RDF_2"];
+        RDFp [label="RDF'"];
+
+        IRI -> RDFa [label="dereference"];
+        RDFa -> RDF [label="parse"];
+        RDF -> RDF1 [label="dereference/parse"];
+        RDF -> RDF2 [label="dereference/parse"];
+        RDF -> RDFp [label="\cup"];
+        RDF1 -> RDFp [label="\cup"];
+        RDF2 -> RDFp [label="\cup"];
+        RDFp -> Features [label="content\_?p\_?v"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{\label{fig:object.-deref}Semantic web content miner with addtional dereferencing of linked entities}
+\end{sidewaysfigure}
+
+So far in this section, we have inductively built up a data pipeline from
+a ``null'' base working with only identity graphs to a simple pipeline
+capable of \emph{extracting} an RDF graph, \emph{enriching} it and then
+\emph{generating} features from it.
+
+What needs to be proven through experimentation is \emph{which} of these
+provides the information required for effective data mining. As part of this
+experimentation, we can now look at further techniques and approaches to try.
+
+\subsection{Improving Extraction}
+
+In order to gain a larger set of RDF data at the start of the pipeline, we
+can derive further ways to get information about a content item given only
+its IRI as input.
+
+Rizzo and Troncy\cite{rizzo2012nerd} defined a framework called NERD capable
+of combining multiple entity extraction systems to provide a unified way of
+identifying -- and disambiguating -- named entities within a given body of text.
+With such a system, we can create a second, parallel RDF extraction strategy
+that creates a graph of triples in the form:
+
+$$
+(IRI, rdf\!\!:\!\!about, Entity)
+$$
+
+\noindent where $Entity$ is an IRI representing a concept or entity believed
+to be found in the content's textual content. A data pipeline complementing
+the RDFa-based extraction is depicted in Figure~\ref{fig:entity-extraction}.
+Note the ability to apply a simple set union to the result of each extraction
+as with the enrichment.
+
+\begin{sidewaysfigure}[h]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.8]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+        RDF1 [label="RDF_1"];
+        RDF2 [label="RDF_2"];
+
+        IRI -> RDFa [label="derefernce"];
+        IRI -> Text [label="GET"];
+        RDFa -> RDF1 [label="parse"];
+        Text -> RDF2 [label="entity extraction"];
+        RDF1 -> RDF [label="\cup"];
+        RDF2 -> RDF [label="\cup"];
+        RDF -> Features [label="content\_?p\_?v"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{Named entity extraction in addition to semantic web extraction\label{fig:entity-extraction}}
+\end{sidewaysfigure}
+
+Another strategy can be to infer a relationship between two content items where
+one contents an HTML link to another. It is not always possible to derive
+precise semantics of such a link (unless the publisher has kindly provided
+a \texttt{rel} attribute), but a weak relationship such as:
+
+$$
+(IRI_1, ex:related, IRI_2)
+$$
+
+\noindent might prove -- through experiementation -- to be useful enough
+for data mining insights.
+
+The fourth and final extraction strategy explored is acquiring metadata from
+bespoke Content Management Systems and other internal APIs. This is generally
+the only option used in enterprises settings, as discussed in
+Section~\ref{sec:linked-enterprise-data}. This is likely to be the richest
+source of information where an enterprise has typically preferred bespoke
+integrations against non-hypermedia interfaces, so experimentation should
+help quantity or qualify the value such a direct integration adds (perhaps to
+consider it in combination with the cost of bepsoke, repeated integration
+projects).
+
+The assertion explored here is that such bespoke integrations can
+\emph{complement} cheaper work such as extracting RDFa with pre-built tools
+(and thus be developed one-by-one after the initial release of an application
+such as this data pipeline). Note that repeated custom integration projects
+means that each data source requires a different application be developed (as
+opposed to the reuse of a single RDFa parser or HTML link scraper). This
+also means we are not necessarily comparing like-for-like if we introduce only
+one at a time. It also makes it
+difficult to evaluate data mining of a diverse content corpus if an integration
+against an API provides additional metadata for only, say, 10\% of that corpus.
+
+These challenges aside, it is clear that bespoke integrations have a clear place
+in this data pipeline being applied in a real enterprise setting. Now that
+we have a complete set of theoretical stages for \emph{extraction}, the
+remaining improves lie now in the \emph{enrichment} and
+\emph{feature generation} stages.
+
+\subsection{Improving Enrichment}
+
+In addition to enriching through dereferencing linked entities, it is proposed
+to explore the following options:
+
+\begin{itemize}
+\item inferring relationships to hypernyms as defined by Wordnet\cite{miller1995wordnet};
+\item inferring facts based using rules derirved from expert domain knowledge;
+\item using RDFS and OWL to generate new triples with well-established Ontology rules.
+\end{itemize}
+
+In the first approach, we can consider a relationship rule such as:
+
+$$
+(IRI, ex:related, ex:Dog)
+$$
+
+\noindent and \emph{infer} the fact:
+
+$$
+(IRI, ex:related, ex:Animal)
+$$
+
+\noindent and produce an enriched graph containing all additional facts
+inferred in this way.
+
+When dealing with proper nouns and named entities, inferring facts based on
+domain knowledge may be more appropriate. For instance, the rule in n3 syntax:
+
+\begin{lstlisting}
+  {
+    ?article ex:takesPlaceIn ?city .
+    ?city a ex:City .
+    ?city ex:capitalOf ?country .
+  } -> { ?iri ex:takesPlaceIn ?country }
+\end{lstlisting}
+
+\noindent might be useful ot help cluster articles that take place in the same
+country -- even if the countries are not always explicitly mentioned therein.
+Such an inference requires knowledge about cities and countries to
+write and domain experts for different types of content might be able to offer
+more nuanced rules.
+
+An example for BBC content might be to infer that all articles written under
+the \emph{Newsround} brand is suitable for children or that programmes that
+have broadcast times during the day are also suitable for children.
+
+The third and final proposed improvement makes use of standard tools to find
+\emph{closures} using, e.g. RDFS, ontology rules. With this approach, we
+can infer that entities that have a given type or class also have their
+superclasses and supertypes. This gives us similar inference to hypernyms,
+but with knowledge present in well-established ontologies.
+
+An obvious example might where two content items have been identified as
+related to the same concept -- so they would be candidates for clustering
+together -- but when RDF data are extracted, it is found that two
+different URIs have been used for each:
+
+\begin{displaymath}
+(IRI_{1}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)\\
+(IRI_{2}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex2:anotherEntity)
+\end{displaymath}
+
+In the RDF graph for $IRI_2$, say, we might find the source had provided an
+\texttt{owl:sameAs} assertion such as:
+
+\begin{displaymath}
+(ex2:anotherEntity, owl:sameAs, ex1:entity)
+\end{displaymath}
+
+This is possible in the case where the second item's data source uses its own
+set of identifiers for entities, but has chosen to provide equivalences to
+a more standard set of identifiers (e.g. DBpedia). With this information,
+our data pipeline can infer:
+
+\begin{displaymath}
+(IRI_{1}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)\\
+(IRI_{2}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex2:anotherEntity)\\
+(IRI_{2}, <\!\!http\!:\!\!//dbpedia.org/property/related\!\!>, ex1:entity)
+\end{displaymath}
+
+\noindent and the feature generation stage might provide the common features
+\texttt{dbprop\_related\_ex1\_entity=true} for both content items.
+
+\subsection{Improving Feature Generation}
+
+The feature generation outlined so far relies solely on boolean values
+indicating whether or not a given content item is related by some property to
+some entity. This recreates the concept of \emph{tagging} where a given
+object is either associated or not associated with a series of \emph{tags}.
+
+One of the advantages of the RDF graph model is that we are not constrained
+necessarily to properties and attributes directly applicable to the entity. We
+could imagine adding a level of indirection to the query in
+Listings~\ref{simple-sparql} to create the query in
+Listings~\ref{level2-sparql}.
+
+
+\begin{lstlisting}[label=lst:level2-sparql,caption={Generates field \texttt{content\_?p1\_?p2\_?v} with value \texttt{true}},language=sparql]
+SELECT ?p1 ?p2 ?v
+WHERE {
+  ?iri ?p1 ?o .
+  ?o ?p2 ?v .
+}
+\end{lstlisting}
+
+With the this query, features of the form \texttt{content\_?p1\_?p2\_?v} can
+be generated. An example of this might be where a television programme
+content item has information about the actors that appeared therein, e.g.
+\texttt{ex:hasActor}, and furthermore we have information about those actors
+such as where they were born, e.g. \texttt{ex:bornIn}. With the path created
+by following both of these predicates, it is possible to create features for
+a television programme such as
+\texttt{content\_ex:hasActor\_ex:bornIn\_Edinburgh} and we can potentially
+find similarity between programmes where the actors were born in the same
+city.
+
+Perhaps a third step in the predicate path followed can give us even more
+useful features. The example above could be expanded to
+\texttt{content\_ex:hasActor\_ex:bornIn\_ex:cityIn\_Scotland} to allow the
+more general ability to cluster programmes with Scottish actors, for instance.
+
+Appropriate experimentation should show whether more value is gained by
+adding these additional levels of indirection.
+
+\subsection{Maximal Data Pipeline}
+
+In this section, a data pipeline was inductively built up from a base,
+identify pipeline with suggestions for potential improvements in different
+stages. An application of all the ideas discussed so far might look like
+that depicated in Figure\ref{fig:maximal-pipeline}.
+
+\begin{sidewaysfigure}[p]
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.8]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+        RDF1 [label="RDF_1"];
+        RDF2 [label="RDF_2"];
+        RDF3 [label="RDF_3"];
+        RDFp [label="RDF'"];
+        RDFp1 [label="RDF'_1"];
+        RDFp2 [label="RDF'_2"];
+        RDFp3 [label="RDF'_3"];
+        RDFp4 [label="RDF'_4"];
+
+        IRI -> RDF1 [label="\text{parse}"];
+        IRI -> RDF2 [label="\text{extract}"];
+        IRI -> RDF3 [label="\text{scrape}"];
+
+        RDF1 -> RDF [label="\cup"];
+        RDF2 -> RDF [label="\cup"];
+        RDF3 -> RDF [label="\cup"];
+
+        RDF -> RDFp1 [label="\text{dereference/parse}"];
+        RDF -> RDFp2 [label="\text{hypernym inference}"];
+        RDF -> RDFp3 [label="\text{expert inference}"];
+        RDF -> RDFp4 [label="\text{OWL inference}"];
+
+        RDF -> RDFp [label="\cup"];
+        RDFp1 -> RDFp [label="\cup"];
+        RDFp2 -> RDFp [label="\cup"];
+        RDFp3 -> RDFp [label="\cup"];
+        RDFp4 -> RDFp [label="\cup"];
+
+        RDFp -> Features [label="\text{content\_?p\_?v}"];
+        RDFp -> Features [label="\text{content\_?p1\_?p2\_?v}"];
+      }
+    \end{dot2tex}
+  \end{center}
+  \caption{\label{fig:maximal-pipeline}Maximal Data Pipeline}
+\end{sidewaysfigure}
+
+The goal of this work is to evaluate how the quality of unsupervised clustering
+changes with respect to enabling different combinations of the maximal
+data pipeline. In the next section, some of the technical architecture of this
+pipeline is outlined and the next chapter will cover how the overall system is
+then implemented.
+
+\section{Pipeline Architecture}
+
+The pipeline visualisation in Figure\ref{fig:maximal-pipeline} shows strong
+potential for parallisation of parts of the data pipeline. In particular, the
+enrichment and extraction stages comprise potentially several distinct
+strategies that can run entirely independently, with a set union of the graphs
+bringing the respective outputs together.
+
+This pattern has the appearance of benefitting from the
+MapReduce\cite{dean2008mapreduce} model and we can consider frameworks such
+as Apache Spark\cite{zaharia2010spark} to handle distributing the data pipeline
+over a cluster of servers.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\linewidth]{diagrams/component2.png}
+  \end{center}
+  \caption{Component diagram expanded with technology choices\label{fig:component}}
+\end{figure}

@@ -1,0 +1,144 @@
+\chapter{Background}
+
+This chapter discusses some of the existing research and technologies around
+machine learning, RDF and combining them. It also covers some of the advantages
+of using linked data and RDF in an enterprise setting and what tools and
+approaches are well-defined enough that a corporation could build on top of
+them rapidly.
+
+Data mining activities such as machine learning rely on structuring data as
+\emph{feature sets}\cite{bishop2006pattern} -- a set or vector of properties or
+attributes that describe a single entity.
+The process of \emph{feature extraction}
+generates such feature sets from raw data and is a necessary early phase for
+many machine learning activities.
+
+The rest of this chapter will show:
+
+\begin{enumerate}
+\item that extracting feature sets from RDF\footnote{http://www.w3.org/TR/PR-rdf-syntax/} graphs can be done elegantly and follows naturally from some
+previous work in this area; and
+\item that the RDF graph is a suitable and even desirable data model for content
+metadata in terms of acquiring, enriching and even transforming that data ahead
+of feature extraction.
+\end{enumerate}
+
+\section{Data Mining}
+
+TODO
+
+\section{RDF and Feature Extraction}
+\label{sec:rdf-and-features}
+
+The RDF graph is a powerful model
+for metadata based on representing knowledge as a set of
+subject-predicate-object \emph{triples}. The query language, SPARQL, gives us a
+way to query the RDF graph structure using a declarative pattern and return a
+set of all variable bindings that satisfy that pattern.
+
+For example, the SPARQL query in Listings~\ref{lst:sparqlfoaf}
+queries an RDF graph that contains contact information and returns the
+names and email address of all ``Person'' entities therein.
+
+Notably, Kiefer, Bernstein and Locher\cite{kiefer2008adding} proposed a novel
+approach called SPARQL-ML -- an extension to the
+SPARQL\cite{segaran2009programming} query language with new keywords to
+facilitate both generating and applying models. This means that the system
+capable of parsing and running standard queries must also run machine learning
+algorithms.
+
+Their work involved developing an extension to the SPARQL query
+engine for \emph{Apache Jena}\footnote{https://jena.apache.org/} that integrates
+with systems such as \emph{Weka}\footnote{http://www.cs.waikato.ac.nz/ml/weka/}.
+A more suitable software application for enterprise use might focus solely on
+converting RDF graphs into a neutral data structure that can plug into arbitrary
+data mining algorithms.
+
+\begin{lstlisting}[label=lst:sparqlfoaf,caption={Example SPARQL query for people's names and email addresses},language=sparql]
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?name ?email
+WHERE {
+  ?person a foaf:Person.
+  ?person foaf:name ?name.
+  ?person foaf:mbox ?email.
+}
+\end{lstlisting}
+
+If we consider an RDF graph, $g$, to be expressed as a set of triples:
+
+\begin{displaymath}
+  (s, p, o) \in g
+\end{displaymath}
+
+\noindent this query could then be
+expressed as function $f: G \rightarrow (S \times S)$ where $G$ is the set of
+all possible RDF graphs and $S$ is a set of all possible strings.
+This allows the result of the
+SPARQL query to be expressed as a set of all SELECT variable bindings that
+satisfy the WHERE clause:
+
+$$
+q(g,n,e) = \exists p . (p, type, Person) \in g\ \land (p, name, n) \in g \land (p, mbox, e) \in g
+$$
+
+$$
+g \in G \models f(g) = \{(n, e) \subseteq (S \times S) \: | \: q(g,n,e)\}
+$$
+
+This could be generalised to express a given feature set as
+vector $(a_1, a_2, ..., a_n)$:
+
+$$
+g \in G \models (a_1, a_2, ..., a_n) \in f(g)
+$$
+
+\noindent and in the case where all $a_k \in f(g)$ are literal (e.g. string or
+numeric) values, we can thus consider a given SPARQL query to be specific
+function capable of feature extraction from any RDF graph into sets of
+categorical or numeric features.
+
+\begin{lstlisting}[label=lst:sparqlabout,caption={SPARQL query to determine what },language=sparql]
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?topic
+WHERE {
+  ?article rdf:about ?topic .
+}
+\end{lstlisting}
+
+This might allow a query that extracts a country's population, GDP, etc.
+provide feature extraction for learning patterns in economics, for example.
+However, this is limited to features derived from single-valued predicates
+with literal-valued ranges. It is not clear how to formulate a query that
+expresses whether or not a content item is about a given topic.
+
+In the RDF
+model, it would be more appropriate to use a query like that in
+Listings~\ref{lst:sparqlabout} where for a given $?article$ identified by
+URI, we can get a list of URIs identifying concepts which the article mentions.
+Such a query might be expressed as function $f': G \rightarrow \mathcal P(U)$ where $U$ is
+set of all URIs such that:
+
+$$
+g \in G \models f'(g, uri) = \{t \: | \: (uri, about, t) \in g\}
+$$
+
+An approach of generating attributes for a given resource was proposed by
+Paulheim and F\"urnkranz\cite{paulheim2012unsupervised}. They defined specific
+SPARQL queries and provided case study evidence for the effectiveness of
+each strategy.
+
+Their work focused on starting with relational-style data (e.g. from a
+relational database) and using \emph{Linked Open Data} to identify entities
+within literal values in those relations and generated attributes from
+SPARQL queries over those entities.
+
+For a large content-producer, there is a more general problem where many content
+items do not have a relational representation and the content source is a body
+of text or even a raw HTML page. However, the feature generation from Paulheim
+and F\:urnkranz proves to be a promising strategy given we can acquire an RDF
+graph model for content items in the first place.
+
+\section{RDF in the enterprise}
+\label{sec:linked-enterprise-data}
+
+TODO

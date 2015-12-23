@@ -2,7 +2,7 @@
 
 pdf: report.pdf
 
-report.pdf: report.tex diagrams/component.png
+report.pdf: $(shell find . -iname '*.tex') diagrams/component.png diagrams/usecase.png diagrams/component.png
 	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex
 	bibtex report.aux	
 	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex

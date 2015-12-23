@@ -16,16 +16,9 @@ directories %w(proposal report) \
 # and, you'll have to watch "config/Guardfile" instead of "Guardfile"
 
 guard :shell, :all_on_start => true do
-  watch /^report\/report\.tex/ do |m|
+  watch /^report\/.*\.(tex|puml)/ do |m|
     puts "File changed: #{m}"
     `make report`
     `pdftotext report/report.pdf - | wc -w`
-  end
-end
-
-guard :shell, :all_on_start => true do
-  watch /^report\/diagrams\/.*\.puml/ do |m|
-    puts "File changed: #{m}"
-    `make report`
   end
 end

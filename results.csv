@@ -70,9 +70,7 @@ qid,IRI,Extract,Enrich,Approval
 9,http://www.bbc.co.uk/education/subjects/z9dqxnb,6,1,0
 10,http://www.bbc.co.uk/arts/0/27399999,0,0,0
 10,http://www.bbc.co.uk/arts/0/27399999,1,1,0
-11,http://www.bbc.co.uk/sport/0/boxing/35084432,0,0,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,0,1,0
-11,http://www.bbc.co.uk/sport/0/boxing/35084432,1,0,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,1,1,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,2,0,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,2,1,0
@@ -145,7 +143,6 @@ qid,IRI,Extract,Enrich,Approval
 17,http://www.bbc.co.uk/guides/z247p39,0,0,0
 17,http://www.bbc.co.uk/guides/z247p39,0,1,0
 17,http://www.bbc.co.uk/guides/z247p39,1,0,0
-17,http://www.bbc.co.uk/guides/z247p39,1,1,0
 17,http://www.bbc.co.uk/guides/z247p39,2,0,0
 17,http://www.bbc.co.uk/guides/z247p39,2,1,0
 17,http://www.bbc.co.uk/guides/z247p39,3,0,0

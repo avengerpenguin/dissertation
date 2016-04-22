@@ -26,7 +26,6 @@ qid,IRI,Extract,Enrich,Approval
 5,http://www.bbc.co.uk/newsround/35540780,0,0,0
 5,http://www.bbc.co.uk/newsround/35540780,0,1,0
 5,http://www.bbc.co.uk/newsround/35540780,1,0,0
-5,http://www.bbc.co.uk/newsround/35540780,1,1,0
 5,http://www.bbc.co.uk/newsround/35540780,3,0,0
 5,http://www.bbc.co.uk/newsround/35540780,3,1,0
 5,http://www.bbc.co.uk/newsround/35540780,4,0,0
@@ -44,7 +43,6 @@ qid,IRI,Extract,Enrich,Approval
 6,http://www.bbc.co.uk/newsbeat/article/35385181/lord-sugar-says-he-only-wants-serious-people-for-the-apprentice,4,0,0
 6,http://www.bbc.co.uk/newsbeat/article/35385181/lord-sugar-says-he-only-wants-serious-people-for-the-apprentice,4,1,0
 6,http://www.bbc.co.uk/newsbeat/article/35385181/lord-sugar-says-he-only-wants-serious-people-for-the-apprentice,5,0,0
-6,http://www.bbc.co.uk/newsbeat/article/35385181/lord-sugar-says-he-only-wants-serious-people-for-the-apprentice,5,1,0
 6,http://www.bbc.co.uk/newsbeat/article/35385181/lord-sugar-says-he-only-wants-serious-people-for-the-apprentice,6,0,0
 6,http://www.bbc.co.uk/newsbeat/article/35385181/lord-sugar-says-he-only-wants-serious-people-for-the-apprentice,6,1,0
 7,http://www.bbc.co.uk/history/0/23931340,1,0,0
@@ -78,13 +76,11 @@ qid,IRI,Extract,Enrich,Approval
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,3,1,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,4,0,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,4,1,0
-11,http://www.bbc.co.uk/sport/0/boxing/35084432,5,0,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,5,1,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,6,0,0
 11,http://www.bbc.co.uk/sport/0/boxing/35084432,6,1,0
 12,http://www.bbc.co.uk/schoolreport/35116130,0,0,0
 12,http://www.bbc.co.uk/schoolreport/35116130,0,1,0
-12,http://www.bbc.co.uk/schoolreport/35116130,1,0,0
 12,http://www.bbc.co.uk/schoolreport/35116130,2,0,0
 12,http://www.bbc.co.uk/schoolreport/35116130,2,1,0
 12,http://www.bbc.co.uk/schoolreport/35116130,3,0,0
@@ -105,9 +101,7 @@ qid,IRI,Extract,Enrich,Approval
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,5,0,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,6,0,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,6,1,0
-14,http://www.bbc.co.uk/news/35852614,0,0,0
 14,http://www.bbc.co.uk/news/35852614,0,1,0
-14,http://www.bbc.co.uk/news/35852614,1,0,0
 14,http://www.bbc.co.uk/news/35852614,2,0,0
 14,http://www.bbc.co.uk/news/35852614,2,1,0
 14,http://www.bbc.co.uk/news/35852614,3,0,0
@@ -166,7 +160,6 @@ qid,IRI,Extract,Enrich,Approval
 18,http://www.bbc.co.uk/events/e2d5v2,5,1,0
 18,http://www.bbc.co.uk/events/e2d5v2,6,0,0
 18*,http://www.bbc.co.uk/events/e2d5v2,6,1,0
-19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,0,0,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,0,1,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,1,1,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,2,0,0

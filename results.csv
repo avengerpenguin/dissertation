@@ -91,7 +91,6 @@ qid,IRI,Extract,Enrich,Approval
 12,http://www.bbc.co.uk/schoolreport/35116130,5,1,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,0,1,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,1,0,0
-13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,1,1,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,2,0,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,2,1,0
 13,http://www.bbc.co.uk/programmes/articles/11HFqlKMMTvKNwX9cDlXb9w/peoples-history-of-pop,3,0,0
@@ -136,7 +135,6 @@ qid,IRI,Extract,Enrich,Approval
 16,http://www.bbc.co.uk/iplayer/episode/b06b941h,6,1,0
 17,http://www.bbc.co.uk/guides/z247p39,0,0,0
 17,http://www.bbc.co.uk/guides/z247p39,0,1,0
-17,http://www.bbc.co.uk/guides/z247p39,1,0,0
 17,http://www.bbc.co.uk/guides/z247p39,2,0,0
 17,http://www.bbc.co.uk/guides/z247p39,2,1,0
 17,http://www.bbc.co.uk/guides/z247p39,3,0,0
@@ -157,7 +155,6 @@ qid,IRI,Extract,Enrich,Approval
 18,http://www.bbc.co.uk/events/e2d5v2,4,0,0
 18,http://www.bbc.co.uk/events/e2d5v2,4,1,0
 18,http://www.bbc.co.uk/events/e2d5v2,5,0,0
-18,http://www.bbc.co.uk/events/e2d5v2,5,1,0
 18,http://www.bbc.co.uk/events/e2d5v2,6,0,0
 18*,http://www.bbc.co.uk/events/e2d5v2,6,1,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,0,1,0
@@ -165,7 +162,6 @@ qid,IRI,Extract,Enrich,Approval
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,2,0,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,2,1,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,3,0,0
-19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,3,1,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,4,0,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,4,1,0
 19,http://www.bbc.co.uk/bbcthree/item/138d9d50-2c3b-4c64-a74f-a148746e4de4,5,0,0

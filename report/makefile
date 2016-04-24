@@ -2,11 +2,13 @@
 
 pdf: report.pdf
 
-report.pdf: $(shell find . -iname '*.tex') diagrams/component.png diagrams/usecase.png diagrams/component.png
-	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex
+report.pdf: $(shell find . -iname '*.tex' | grep -v '#') diagrams/component.png diagrams/usecase.png diagrams/component.png diagrams/component2.png
+	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex || (which notify-send && notify-send "PDF build failed")
 	bibtex report.aux	
 	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex
 	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex
+	which notify-send && notify-send "PDF build successful"
+	which mupdfwrap && mupdfwrap report.pdf
 
 diagrams/%.png: diagrams/%.puml
 	plantuml -pipe <$< >$@

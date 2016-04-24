@@ -1,4 +1,5 @@
 \chapter{System Design}
+\label{chp:design}
 
 In this chapter, a system is inductively derived and concretely design to make
 use of multiple strategies for:
@@ -60,6 +61,7 @@ evaluate the quality of content clusters generated, but it is an important
 design principle to consider use cases at all layers of the system.
 
 \section{Data Pipeline}
+\label{sec:design-pipeline}
 
 A core subsystem in the overall system is a conceptual data pipeline whose
 input is a URI or IRI identifying a content item published on an organisation's
@@ -117,6 +119,7 @@ JSON-LD\cite{sporny2014json} syntax will be used.
 \end{description}
 
 \subsection{Identity Graph}
+\label{sec:identity-graph}
 
 \begin{centering}
 \begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
@@ -532,7 +535,7 @@ adding these additional levels of indirection.
 In this section, a data pipeline was inductively built up from a base,
 identify pipeline with suggestions for potential improvements in different
 stages. An application of all the ideas discussed so far might look like
-that depicated in Figure\ref{fig:maximal-pipeline}.
+that depicated in Figure~\ref{fig:maximal-pipeline}.
 
 \begin{sidewaysfigure}[p]
   \begin{center}
@@ -585,20 +588,8 @@ then implemented.
 
 \section{Pipeline Architecture}
 
-The pipeline visualisation in Figure\ref{fig:maximal-pipeline} shows strong
-potential for parallisation of parts of the data pipeline. In particular, the
-enrichment and extraction stages comprise potentially several distinct
-strategies that can run entirely independently, with a set union of the graphs
-bringing the respective outputs together.
+TODO
 
-This pattern has the appearance of benefitting from the
-MapReduce\cite{dean2008mapreduce} model and we can consider frameworks such
-as Apache Spark\cite{zaharia2010spark} to handle distributing the data pipeline
-over a cluster of servers.
+\section{Architecting for Experimentation}
 
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=\linewidth]{diagrams/component2.png}
-  \end{center}
-  \caption{Component diagram expanded with technology choices\label{fig:component}}
-\end{figure}
+TODO

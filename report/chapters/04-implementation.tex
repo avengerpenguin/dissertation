@@ -1,0 +1,197 @@
+\chapter{Implementation}
+\label{chp:implementation}
+
+In this chapter, some of the details of the system implementation
+are described. Initially, we discuss some of the implementation
+strategy employed due the experimental nature of the system and the
+desire to run multiple, competing approaches side-by-side in an
+efficient way.
+
+The remaining sections walk through the implementation of each part
+of the data pipeline from upstream to feature sets and the chapter
+concludes with implementation of the clustering and generation of
+clusters for evaluation.
+
+\section{Software Architecture}
+
+All functionality was implemented as part of a single Python module
+named \emph{distillery}
+that is run via the Unix command line, with different subcommands for
+each feature. Each command was designed around the
+Unix Philosophy\cite{raymond2003art} of doing one job per command and
+that they were composable via Unix pipes. This allows pipelines to
+be composed:
+
+\begin{centering}
+  \begin{lstlisting}[
+      basicstyle=\scriptsize,
+      label=lst:unix-pipe,
+      language=bash]
+distillery extract <iris.txt | distillery enrich | distillery generate
+  \end{lstlisting}
+\end{centering}
+
+\noindent that resemble the entire theoretical data pipeline described in
+section~\ref{sec:design-pipeline} without the need for middleware
+such as message queues. More typical enterprise architectures around
+message oriented middleware or event-driven architecture might need
+to be employed to scale this system to millions of documents, but
+the simple approach above is sufficient for tens of thousands of
+documents.
+
+Even this simple approach would scale very well with suitably low
+network latency. The largest bottleneck observed was the necessity
+to do at least one HTTP request per item ingested and then enrich
+via an HTTP request per object of a triple where the IRI is a subject.
+For some content items, this could easily be over 100 HTTP requests at
+which point parallel CPU cores or asynchronous I/O programming does
+not overcome the demands on network performance.
+
+Throughput is a particular challenge when data processing systems
+are first launched. The day-to-day volume of item creations and
+updates may be low enough for even a low-scale application, but the
+performance demands increase significantly.
+
+\section{Avoiding Redundancy Across Multiple Experiments}
+
+The design of the data pipeline in chapter~\ref{chp:design} would
+suggest an implementation with each stage implemented as a function
+converting a graph into a new, richer graph.
+
+That is, whilst the different strategies illustrated in the maximal
+data pipline in Figure~\ref{fig:maximal-pipeline} can be run in
+parallel, the extraction stage itself simply converts the identity
+graph described in section~\ref{sec:identity-graph} to a single graph
+(after having taken the union of all the strategies).
+
+In the experiment that is the subject of this paper, the intent was
+to compare each of the extraction strategies individually, but also
+all possible (union) combinations thereof. This presents at least
+two potential implementation strategies:
+
+\begin{enumerate}
+\item Build the whole data pipeline and machine learning system such
+  that it is configurable which strategies are invoked and run an
+  instance per configurable combination; or
+\item implement the software to produce all possible outcomes along
+  the pipeline.
+\end{enumerate}
+
+The former approach is stronger if the aim is to build the system
+closer to how it would be implemented in an enterprise: only one
+set of clusters is needed and even a production, enterprise system
+would be configurable if maintainers wished to enable or disable
+features as desired.
+
+The latter strategy is arguably better for experimentation as every
+IRI fed into the source end of the pipeline is processed at the same
+time for every extraction and enrichment approach. This gives better
+assurance that the same input is used to evaluate each competing
+system.
+
+Other operational reasons include being able to run the system on a
+single machine if necessary and that there is no repeated work:
+extraction by one means can be used in isolation, but also feed into
+a union with another technique without having to recalculate that
+graph. That is, if we have graphs $A$ and $B$ generated once each,
+then we can output $A$, $B$ and $A \cup B$ for comparison. A parallel copy
+of each system would be calculating $A$ and $B$ twice each.
+
+The limitation here is a production-ready implementation of the
+system would have be built again from the ground-up, perhaps reusing
+functions and library code from the experimental version, as the
+application itself will be structured around this idea of multiple
+outputs for each input. This is likely to be the case for any
+experimental system and is arguably in line with Brooks' classic
+assertion to ``Plan to Throw One Away''\cite{brooks1995mythical}.
+
+\begin{centering}
+  \begin{lstlisting}[
+      label=lst:extract-all,
+      language=python,
+      caption={Python function that generates all possible RDF Graphs}]
+def all_extracted_graphs(iri):
+    
+    extraction_strategies = [
+        dereference, extract_entities, find_links
+    ]
+
+    # This creates all 3 RDF Graphs only once
+    graphs = [s(iri) for s in extraction_strategies]
+
+    # Empty set removed from powerset
+    for idx, gs in enumerate(powerset(graphs) - {{},}):
+        # union defined elsewhere: list(graph) -> graph
+        graph = reduce(union, gs)
+        # Loop counter idx tells us from which technique
+        # combination each graph comes
+        yield idx, graph
+  \end{lstlisting}
+\end{centering}
+
+An illustrative Python function is shown in
+Listings~\ref{lst:extract-all} where each of the three extraction
+techniques is invoked only once and a powerset function is used to
+generate all possible unions of those graphs and thus yield all
+possible usages or non-usages of each strategy to generate RDF
+graphs. The details of the three extraction functions are covered in
+section~\ref{impl-extraction}.
+
+\section{Obtaining IRIs}
+
+It is a substantial undertaking to design, build and test a
+production-quality enterprise system that processing all content
+produced by a media organisation. An experimental system needs to
+focus on quick results and therefore is optimised to work only over
+a small sample of that content.
+
+As introduced in section~\ref{intro-problems}, all that content is
+also likely to be distributed across multiple databases, content
+management systems and other stores. Whilst it is hypothesised in
+this research that semantics and linked data provide a good way to
+extract data about the total breadth of all content without any
+bespoke integration against internal systems, there still remains
+the enterprise integration problem of \emph{discovery} of those
+content items.
+
+Essentially, the data pipeline outlined in
+section~\ref{sec:design-pipeline} notably requires that known IRIs of
+content items are fed into it, but makes no statement about how those
+IRIs are acquired. This is a deliberate design decision to decouple
+the concepts of discovery from this extraction/enrichment workflow.
+Thus item may easily be re-ingested several times if it is updated
+(or simply periodically) and
+a modular approach like this defends against upstream systems changing
+and having to rebuild the triggers that notify when content is created
+or updated.
+
+What follows it that the enterprise integration task has been reduced
+(we do not need to write bespoke code to extract basic data about
+every content item) but not wholly eliminated (some custom adaptors
+need to be created to notify the pipeline of creation or update events
+in each respective data store).
+
+However creation of any such notification adaptors is out of scope
+for this research altogether, so a heuristic approach was employed
+where ten different, themed content aggregation pages on the BBC
+website\footnote{
+  Including, among others, the BBC Homepage (http://www.bbc.co.uk),
+  BBC Arts (http://www.bbc.co.uk/arts) and BBC Science
+  (http://www.bbc.co.uk/science)
+} were polled for any new content promoted by editorial teams.
+This provided a way to find new items shortly after they are published
+and also ensured the data sample ultimately used focused on content
+that was deemed noteworthy or interesting in the last few months.
+
+\section{Extracting RDF Graphs}
+\label{sec:impl-extraction}
+
+\section{Enriching and not Enriching}
+
+\section{Feature Set Generation}
+
+\section{Feature Selection}
+
+\section{Clustering Implementation}
+
+\section{Results Generation Strategy}

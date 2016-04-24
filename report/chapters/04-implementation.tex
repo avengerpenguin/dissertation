@@ -31,8 +31,8 @@ distillery extract <iris.txt | distillery enrich | distillery generate
   \end{lstlisting}
 \end{centering}
 
-\noindent that resemble the entire theoretical data pipeline described in
-section~\ref{sec:design-pipeline} without the need for middleware
+\noindent that resemble the entire theoretical data pipeline described
+in section~\ref{sec:design-pipeline} without the need for middleware
 such as message queues. More typical enterprise architectures around
 message oriented middleware or event-driven architecture might need
 to be employed to scale this system to millions of documents, but
@@ -50,7 +50,23 @@ not overcome the demands on network performance.
 Throughput is a particular challenge when data processing systems
 are first launched. The day-to-day volume of item creations and
 updates may be low enough for even a low-scale application, but the
-performance demands increase significantly.
+performance demands increase significantly when we wish to bootstrap
+a backlog of all content items historically published -- of which
+could easily be tens of millions for organisations such as the BBC.
+
+For this, there is an
+appeal to designing such a system on a cloud computing platform such
+that it can be scaled up for the initial import of existing data and
+then back down for ongoing updates when that import completes. Such
+design is out of scope for this paper, but some discussion of
+limitations of the existing system in section~\ref{} highlights where
+this system may be architected differently to be more suitable for
+such a cloud-based deployment.
+
+The higher-level compositional architecture of the individual
+data processing stages can, of course, be altered independently of
+the design of those stages. The following sections will describe in
+greater detail those composable modules.
 
 \section{Avoiding Redundancy Across Multiple Experiments}
 
@@ -183,8 +199,108 @@ This provided a way to find new items shortly after they are published
 and also ensured the data sample ultimately used focused on content
 that was deemed noteworthy or interesting in the last few months.
 
+This is not an effective method for obtaining a large number of items
+quickly as it is entirely dependent on the rate these aggregate pages
+are updated. Running slowly over a long period yielded approximately
+ten thousand individual IRIs with little effort nor need for large
+amounts of integration work.
+
 \section{Extracting RDF Graphs}
 \label{sec:impl-extraction}
+
+Listings~\ref{lst:extract-all} hinted at three individual functions
+capable of obtaining an RDF graph for a given IRI, all based on the
+extraction strategies outlined in section~\ref{sec:rdf-extraction}.
+
+\subsection{Dereferencing}
+
+Listings~\ref{lst:deref-simple} shows how trivial a dereference
+function can be if we use the comprehensive RDFLib library for
+Python. The library can handle content type
+negotiation\cite{fielding2014hypertext} to ensure it can happily
+dereference and parse any response that contains semantics,
+particularly RDFa (including embedded Turtle) and microdata within an
+HTML page.
+
+\begin{centering}
+  \begin{lstlisting}[
+      label=lst:deref-simple,
+      language=python,
+      caption={Python function that generates all possible RDF Graphs}]
+from rdflib import Graph
+    
+def dereference(iri):
+    g = Graph(identifier=iri)
+    g.parse(iri)
+    return g
+  \end{lstlisting}
+\end{centering}
+
+\subsection{Entity Extraction}
+
+DBPedia Spotlight\cite{isem2013daiber} was chosen to perform the
+entity extraction. A hosted version is available as a free service and
+it has been shown to be effective in many cases. A true comparative
+study of the merits of alternative entity extractors is out of scope
+for this paper.
+
+\begin{centering}
+  \begin{lstlisting}[
+      label=lst:extract-entities,
+      language=python,
+      caption={Python function that uses DBPedia Spotlight to extract entities from web pages}]
+import requests
+from rdflib import Graph, URIRef, Namespace
+
+FOAF = Namespace('http://xmlns.com/foaf/0.1/')
+    
+def extract_entities(iri):
+    g = Graph(identifier=iri)
+
+    text = requests.get(iri).text
+    
+    spotlight_response = requests.post(
+            'http://spotlight.sztaki.hu:2222/rest/annotate',
+            data={'text': text, 'confidence': 0.8, 'support': 20},
+            headers={'Accept': 'application/json'},
+            timeout=600, proxies={'http': ''}
+        )
+
+    if spotlight_response.ok:
+        r_json = spotlight_response.json()
+        if 'Resources' in r_json:
+            annotations = {
+                resource['@URI']
+                for resource in r_json['Resources']
+                }
+            if annotations:
+                for entity in annotations:
+                    g.add((URIRef(iri), FOAF.topic, URIRef(entity)))
+    return g
+  \end{lstlisting}
+\end{centering}
+
+Listings~\ref{lst:extract-entities} shows a basic implementation of
+a function that fetches a page and then feeds the content into a
+request to DBPedia Spotlight. All entities thus found are then fed
+in as objects to a series of \texttt{foaf:topic} triples.
+
+There is much that can be tweaked in this implementation and the
+final version used in the experiment relied on a ad hoc whitelist
+of XPATH queries known to narrow down the content to the main article
+content on BBC pages. This is because the implementation shown in
+listings~\ref{lst:extract-entities} does nothing to prevent entities
+being extracted from page
+chrome such as navigation links and other cross-site concerns.
+
+In a given organisation, such an approach might well be sufficient to
+extract main article content from a controlled set of pages. In a
+production system, it may be more appropriate to consider
+readability systems such as that from Arc90.
+
+\subsection{Hyperlink Relationships}
+
+
 
 \section{Enriching and not Enriching}
 

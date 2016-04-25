@@ -237,6 +237,7 @@ def dereference(iri):
 \end{centering}
 
 \subsection{Entity Extraction}
+\label{sec:impl-entity-extraction}
 
 DBPedia Spotlight\cite{isem2013daiber} was chosen to perform the
 entity extraction. A hosted version is available as a free service and
@@ -260,11 +261,12 @@ def extract_entities(iri):
     text = requests.get(iri).text
     
     spotlight_response = requests.post(
-            'http://spotlight.sztaki.hu:2222/rest/annotate',
-            data={'text': text, 'confidence': 0.8, 'support': 20},
-            headers={'Accept': 'application/json'},
-            timeout=600, proxies={'http': ''}
-        )
+        'http://spotlight.sztaki.hu:2222/rest/annotate',
+        data={
+          'text': text, 'confidence': 0.8, 'support': 20
+        },
+        headers={'Accept': 'application/json'},
+        timeout=600)
 
     if spotlight_response.ok:
         r_json = spotlight_response.json()
@@ -275,7 +277,10 @@ def extract_entities(iri):
                 }
             if annotations:
                 for entity in annotations:
-                    g.add((URIRef(iri), FOAF.topic, URIRef(entity)))
+                    g.add((
+                        URIRef(iri),
+                        FOAF.topic,
+                        URIRef(entity)))
     return g
   \end{lstlisting}
 \end{centering}
@@ -300,14 +305,201 @@ readability systems such as that from Arc90.
 
 \subsection{Hyperlink Relationships}
 
+In listings~\ref{lst:extract-entities}, we see a simple Python
+function that uses the Beautiful Soup
+library\footnote{https://www.crummy.com/software/BeautifulSoup/} to
+search across all links in a document and infer a ``related''
+property on the assumption that pages like to other pages that are in
+some way related.
 
+\begin{centering}
+  \begin{lstlisting}[
+      label=lst:find-links,
+      language=python,
+      caption={Python function generates triples based on links to other pages}]
+import requests
+from rdflib import Graph, URIRef, Namespace
+
+DBPROP = Namespace('http://dbpedia.org/property/')
+    
+def find_links(iri):
+    g = Graph(identifier=iri)
+
+    text = requests.get(iri).text
+    doc = BeautifulSoup(text)
+
+    # For all <a> tags that have an href attribute...
+    for a_tag in doc.find_all('a', attrs={
+        'href': re.compile('.+')
+    }):
+        # ... handle href values being relative links ...
+        other_iri = urljoin(iri, a_tag.attrs['href']).strip()
+
+        # ... infer triple if IRI is to another BBC page
+        if bbc_url.match(url):
+            g.add((
+                URIRef(iri),
+                URIRef(DBPROP.related),
+                URIRef(other_iri),
+            ))
+
+    return g
+  \end{lstlisting}
+\end{centering}
+
+This falls foul of similar issues to entity extraction as described
+in section~\ref{sec:impl-entity-extraction} in that site-wide
+navigation links and other supporting page elements may link to
+very general pages (e.g. a persistent link to ``home'' on every page).
+
+With appropriate feature selection, this may have no impact, but for
+this experiment a simple heuristic was employed to narrow down to
+the ``interesting'' part of BBC pages.
+
+Another feature in listings~\ref{lst:find-links} is a restriction
+to consider only links to other BBC pages. There may be a positive
+or negative effect in addtionally noting external pages linked to from
+content pages, but that is left to future research to consider.
 
 \section{Enriching and not Enriching}
 
+The combinatorial consequence of the usages and non-usages of the
+three extraction techniques described so far is that the
+experimental system developed is already comparing seven ($2^n$ less
+the case where no extraction is employed).
+
+In order to maintain focus in the experiment, only one of the
+enrichment techniques described in chapter~\ref{design} was
+implemented and its usage and non-usage merely doubled the
+number of systems for comparison to fourteen.
+
+This proved sufficient to give indicative results as to whether there
+is value added through any enrichment, but future research could
+certainly compare the merits of different enrichment approaches.
+
+\begin{centering}
+  \begin{lstlisting}[
+      label=lst:enrich,
+      language=python,
+      caption={Python function that enriches a graph via deferencing objects}]
+import rfc3987
+    
+def get_objects(graph):
+    return {str(row.o) for row in graph.query('''
+            SELECT DISTINCT ?o
+            WHERE {
+              ?iri ?p ?o .
+            }
+            ''', initBindings={'iri': graph.identifier})}
+
+def enrich(graph):
+    new_graph = copy(graph)
+
+    for o in get_objects(graph):
+        if rfc3987.match(o, rule='IRI'):
+            new_graph.parse(iri2uri(o))
+
+    return new_graph
+  \end{lstlisting}
+\end{centering}
+
+Listings~\ref{lst:enrich} illustrates a simple function to
+deference all objects of triples where the current IRI is a subject.
+Note the convention to set the graph's own identifier to that of
+the content item of interest.
+
+Using SPARQL in this way opens up possibilities to perform multiple
+queries to choose IRIs to dereference. For example, we may wish to
+include semantics for objects reachable by following two predicates
+on the RDF graph and consider much more indirect data. Evaluating
+the utility of this is left for future work.
+
 \section{Feature Set Generation}
+
+The feature generation strategy employed was dervied from a distilled
+portion of the approach introduced by Paulheim
+and F\"urnkranz\cite{paulheim2012unsupervised}.
+
+Listings~\ref{lst:generation} shows an illustrative, recursive
+function that ``walks'' the RDF graph starting with the content
+item's IRI as the initial subject.
+
+\begin{centering}
+  \begin{lstlisting}[
+      label=lst:generation,
+      language=python,
+      caption={Python function that generates feature sets from RDF graphs}]
+from rdflib Literal, URIRef
+    
+def generate(g, subject=None, depth=3, features=None, prefix=''):
+    if depth <= 0:
+        return
+    if not features:
+        features = {}
+    if not subject:
+        subject = g.identifier
+    for p, o in g.predicate_objects(subject=subject):
+        if type(o) == URIRef:
+            new_prefix = prefix + clean(p) + '_'
+            features[new_prefix + clean(o)] = True
+            generate(g, depth=(depth - 1), features=features, prefix=new_prefix, subject=o)
+        elif type(o) == Literal:
+            features[clean(p)] = str(o)
+
+    return features
+  \end{lstlisting}
+\end{centering}
+
+The \texttt{clean} function simply provides some cosmetic cleaning
+up of predicate IRIs to prefer CURIEs as they are more compact. A
+typical example feature might then be
+\texttt{foaf:topic\_dbpedia:Albert\_Einstein: true} where the leaf
+object is an entity or
+\texttt{ogp:title: "Gandhi: Reckless teenager to father of India"} if
+the leaf object is a literal.
 
 \section{Feature Selection}
 
+A simple selection heuristic was employed, again inspired by the work
+of Paulheim and F\"urnkranz\cite{paulheim2012unsupervised}, to go
+some way to reduce potential noise in the subsequent machine learning
+phase.
+
+In this experiment, all features that have the same value or entirely
+unique values were removed and values that occurred twice or more
+for a given feature had to make up over 5\% of possible values for
+that feature. That is, if a feature had over 95\% of its values being
+unique or all the same, then it was rejected.
+
 \section{Clustering Implementation}
 
+Hierarchical, agglomerative clustering was implemented by implementation
+of a \texttt{cluster} function that was merge the two ``nearest''
+clusters on each invocation. This assumes that all content items not
+yet in a cluster are implicitly in a singleton cluster and the ability
+to merge one at a time allowed for control of when to cease merging.
+
+The closeness of two potential, candidate clusters was calculated via
+a max linkage on the basis that it ensures that any two content items
+within a cluster to be considered related. This avoids the so-called
+\emph{chaining phenomenum} where single linkage may create clusters
+where two unrelated items are members because they are each related
+to an item of chain of related items
+therebetween.\cite{everitt2011hierarchical}
+
+The distance between content items was defined by the Jaccard distance
+due to its suitability for binary and categorical data.
+
 \section{Results Generation Strategy}
+
+With all of the components described so far in place, an experiment
+was run processing nearly 10,000 content items from the BBC website
+with each going into one of fourteen combination of extraction
+and enrichment approaches.
+
+For each approach, hiearchical clustering was applied repeatedly
+until the next merge would produce a cluster with cohesion below 0.5.
+This is reasonably arbitrary as each technique will have different
+concepts of cohesion, but it provided a strong basis on which to
+evaluate each approach on whether its cohesion meaningfully predicts
+whether a human would agree that cluster contains related items.

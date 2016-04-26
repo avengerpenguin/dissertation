@@ -1,12 +1,240 @@
 \chapter{Results and Analysis}
 
-\section{Comparison of Clusters Produced}
+In chapter~\ref{chp:design}, a data pipeline is derived that -- at
+the logical maximum (see figure~\ref{fig:maximal-pipeline}) could
+generate feature sets using any of 112 combinations of extraction
+and enrichment techniques. This is based on the product of using or
+not using any of three described extraction approaches (less the case
+where no extraction is performed) and enabled or disabling any of
+four distinct enrichment approaches (retaining the case where no
+enrichment is performed).
+
+More practically, in chapter~\ref{chp:implementation}, the
+implementation of a real system for evaluating a subset of only
+fourteen combinations of approaches is described. Therefore there
+are fourteen resultant sets of clusters of the same BBC web content
+produced for comparative analysis.
+
+In the following sections of this chapter, an objective and technical
+analysis of the clusters is performed, leading to a critical review
+of each individual extraction and enrichment approach, based on how
+each respective technique appears to contribute to the results.
+
+In chapter~\ref{chp:evaluation}, there is an evaluation of the
+overall system based
+on qualitative data gathered by a survey of real human users. That
+evaluation is more focused on the suitability of the holistic use of
+semantics and machine learning in the real world application of
+suggesting related media content to web users.
+
+Conversely, in this chapter, we take a much narrower focus on the
+shape, size and quality of clusters themselves.
+
+\section{Brief Comparison of Clusters Produced}
+
+The most stark difference between the results produced is the large
+range in terms of number of clusters produced for each approach
+respectively.
+
+\begin{table}[h]
+  \centering
+  \caption{Number of clusters produced by each combination of approaches}
+  \label{tbl:cluster-counts}
+  \begin{tabular}{lll}
+    & Not enriched & Enriched \\
+    Deference                                     & 5            & 249      \\
+    Entity Extraction                             & 35           & 32       \\
+    Hyperlink Relationships                       & 2            & 56       \\
+    Dereference and Entity Extraction             & 329          & 340      \\
+    Entity Extraction and Hyperlink Relationships & 199          & 233      \\
+    Dereference and Hyperlink Relationships       & 53           & 117      \\
+    All three extractions                         & 184          & 223     
+  \end{tabular}
+\end{table}
+
+Table~\ref{tbl:cluster-counts} shows the number of clusters produced
+by each combination of techniques. The range here is explained by
+some variants of the system produced few, very large clusters and
+some a large number of smaller clusters.
+
+Which of the two outcomes is more suitable is arguably a matter for
+real evaluation, but it is perhaps reasonable to claim that clusters
+which are too large are less useful for choosing related content items
+to suggest to users. In the case of the unenriched graphs obtained
+via hyperlink relationships only, one of the two clusters produced
+contains 2,323 items -- a number that risks ``related content''
+suggestions being too erratic and random.
+
+A deeper inspection of that largest cluster reveals every item was
+deemed to be related to an FAQ page on how to share BBC pages on
+social media websites -- a page that appears to be linked to from
+every BBC programme information page or iPlayer catch-up video page.
+This is clearly not a good indication of the content of the page
+and raises two immediate issues:
+
+\begin{enumerate}
+\item the system would benefit from further heuristics that avoid
+  inferring too many relationships from ancillary pages such as FAQs
+  that are unrelated to the content itself; and
+\item the nature of agglomerative, hierarchical clustering means
+  that this system variant spent a large amount of time grouping all
+  pages that link to this FAQ page at the expense of other,
+  potentially useful clusters. This is a consequence of hierarchical
+  clustering being a greedy algorithm.
+\end{enumerate}
+
+Further discussion of the merits and problems with hyperlink
+relationships is covered in section~\ref{sec:anal-hyperlink}.
+
+If we look at the other end of the spectrum, the system variant
+that produced the most clusters was the enriched union of dereference
+and entity extraction. With so many clusters, the distribution of
+sizes is better shown by the histogram in figure~\ref{fig:sizes-3-1}.
+Here we can see the results are dominated by clusters with 25 or
+fewer items.
+
+\begin{sidewaysfigure}
+  \begin{tikzpicture}[xscale=3,yscale=2]
+    \begin{axis}[
+        ybar,
+        ymin=0
+      ]
+      \addplot +[
+        hist={
+          bins=12,
+          data min=0,
+          data max=300
+        }   
+      ] table [y index=0] {../data/sizes-3-1.csv};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Distribution of cluster sizes produced by the enriched union of dereference and entity extraction}
+  \label{fig:sizes-3-1}
+\end{sidewaysfigure}
+
+An exploratory insight into the makeup of these clusters is shown
+in table~\ref{tbl:top-features-3-1} in which the ten most common
+features are shown for the one of the smallest, one of the biggest
+and one of the mean-sized clusters.
+
+\begin{sidewaystable}[p]
+  \centering
+  \begin{tabular}{|l|l|l|}
+    $N=2$                                 & $N=9$                                                   & $N=265$                                     \\
+    \hline
+    ogp:image="[\ldots]"                  & rdf:type\_schema:RadioEpisode=true                      & md:item\_rdf:nil=true                       \\
+    foaf:topic\_dbpedia:BBC\_iPlayer=true & schema:url="[\ldots]"                                   & foaf:topic\_dbpedia:Digg                    \\
+    rdf:type\_schema:RadioEpisode=true    & foaf:topic\_dbpedia:JavaScript                          & twitter:card:"summary\_large\_image"        \\
+    rdfa:usesVocabulary\_schema=true      & meta:twitter:card="summary"                             & foaf:topic\_dbpedia:LinkedIn                \\
+    meta:twitter:card="summary"           & foaf:topic\_dbpedia:Listen\_(Beyonc\'e\_Knowles\_song)" & meta:apple-mobile-web-app-title="BBC Sport" \\
+  \end{tabular}
+  \caption{Ten most common features across the smallest, the largest and a mean-sized cluster produced by the enriched union of dereference and entity extraction}
+  \label{tbl:top-features-3-1}
+\end{sidewaystable}
+
+The smallest cluster with 2 items in table~\ref{tbl:top-features-3-1}
+seems to contain two pages that mention BBC iPlayer (the
+\texttt{foaf:topic} predicate suggests this was found via entity
+extraction) and whose primary content is an item with \texttt{rdf:type}
+``RadioEpisode'' in the Schema.org\footnote{http://schema.org/}
+vocabulary. This shows hints of a strong complement between semantic
+web data and entity extraction confirming that textual content on the
+page correlates with any semantics also embedded in the page.
+
+Interestingly, this cluster is also strengthened by the fact that
+both pages have a common thumbnail (the \texttt{ogp:image} predicate
+indicates a thumbnail when used to share on Facebook). An examination
+of the two content pages in question confirms that they are two
+episodes of the same ``5 Live Breakfast'' programme on the
+\emph{BBC Radio 5 live} radio channel.
+
+The other two predicates for the small cluster are less clear without
+some explanation as to their origin. The \texttt{meta:twitter:card}
+predicate is a
+documented\footnote{https://dev.twitter.com/cards/types/summary}
+HTML meta tag that to indicate a page has included further meta tags
+to control which metadata to include in the so-called
+\emph{Summary Cards} Twitter generates as a summary of page a user
+is sharing in a post to the website. This overlaps some of the
+features provides by the \emph{Open Graph protocol}\footenote{http://ogp.me/}
+vocabulary used by Facebook for similar means.
+
+This overlap between Facebook and Twitter highlights both:
+
+\begin{itemize}
+  \item a failure
+    for industry to adopt (or for academia to convince them to adopt)
+    semantic web initiatives such as RDFa,
+    Microdata, Microformats or Schema.org -- designed to provide
+    machine-readable semantics in ways richer than simple meta tags; but
+    also
+  \item a critical opportunity for research and development in semantics
+    to build on top of the real, commercial pressure created by Facebook,
+    Twitter, Google et al to enrich pages with semantic data so that
+    content providers can control how their content is summarised when
+    shared on their platforms and also how their content is analysed for
+    searching and extrapolation of real time trends in social media
+    conversation.
+\end{itemize}
+
+That predicates for Facebook and Twitter are appearing in this
+experiment so easily also shows evidence that the BBC is among the
+media organisations that now have content producers providing
+semantic enrichment alongside their content production or at least
+that automated generation of in-page semantics from metadata already
+present in content management systems is being prioritised alongside
+other work to develop features more visible to human users. It is not
+unreasonable to suppose this drive is at least partly driven by
+content producers' and content promoters' desire to control how
+content is displayed and discovered on third party social media
+platforms.
+
+Returning to the mean-sized cluster in table~\ref{tbl:top-features-3-1},
+we see a cluster where the most common items are identified as pages
+each for a single episode. There is no indication in the top five
+features that they are episodes of the \emph{same} programme, however.
+This could well be a strength of this system variant in that it is
+able to suggest other radio programmes on the basis it has understood
+they all share a common type, but it is open to suggesting episodes
+of other programmes for greater diversity. In fact, this may be a
+necessary feature in any ``related content'' feature as it could
+be safely assumed that any BBC page for a single episode of a radio
+programme already contains clear and sufficient navigation links to
+find more episodes of the same programme; machine learning adds no
+value to the user here.
+
+Again, there is potential to call out a real benefit in the
+combination of in-page semantics for this ``hard'' categorical
+data (i.e. the page's content is of type ``Radio Episode'') with
+entity extraction for a looser, schemaless vocabulary of words that
+more qualitatively describe the topics covered in the content.
+
+In this case, the topics extracted appear to be the JavaScript
+programming language and the song \emph{Listen} by music artist
+Beyonc\'e Knowles. A manual review of the pages involved finds them
+to be radio episode pages again, but with no clear indication that
+they mention either topic. Deeper analysis of the HTML source for
+these pages finds two ``mistakes'' the system has made:
+
+\begin{itemize}
+\item the word JavaScript appears in the page only as part of the
+  MIME type \texttt{text/javascript} in markup around JavaScript
+  \emph{code} supporting the page; and
+\item the word Listen appears on \emph{every} BBC page concerning
+  a radio programme due to the fact they all contain a ``Listen''
+  button allowing the user to listen to the live radio stream for
+  that particular radio station. DBpedia Spotlight has assumed this
+  word is a mention of a song titled \emph{Listen}.
+\end{itemize}
+
+\section{Deeper Analysis of Clusters}
 
 \section{Strengths and Weaknesses of Different Approaches}
 
 \subsection{Embedded Semantics Extraction}
 \subsection{Entity Extraction}
 \subsection{Hyperlink Relationships}
+\label{sec:anal-hyperlink}
 \subsection{Enrichment by Dereference}
 
 \section{Recommendations for Production Use}

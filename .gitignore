@@ -1,8 +1,16 @@
+*.bbl
+*.blg
 *.aux
 *.log
+*.out
 *.pdf
+*.toc
 *-dot2tex-*.dot
 *-dot2tex-*.tex
 *~
 /bundle
 /.bundle
+/.idea
+/report/diagrams/*.png
+/venv
+

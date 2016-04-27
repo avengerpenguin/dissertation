@@ -1,4 +1,4 @@
-.PHONY: report proposal watch default github
+.PHONY: report proposal watch default github paper
 
 default: github
 

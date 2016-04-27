@@ -115,6 +115,49 @@ with content management systems (i.e. Enterprise Integration).
 
 \section{Background}
 
+Data mining activities such as machine learning rely on structuring data as
+\emph{feature sets}\cite{bishop2006pattern} -- a set or vector of properties or
+attributes that describe a single entity.
+The process of \emph{feature extraction}
+generates such feature sets from raw data and is a necessary early phase for
+many machine learning activities.
+
+The RDF graph is a powerful model
+for metadata based on representing knowledge as a set of
+subject-predicate-object \emph{triples}. The query language, SPARQL, gives us a
+way to query the RDF graph structure using a declarative pattern and return a
+set of all variable bindings that satisfy that pattern.
+
+Notably, Kiefer, Bernstein and Locher\cite{kiefer2008adding} proposed a novel
+approach called SPARQL-ML -- an extension to the
+SPARQL\cite{segaran2009programming} query language with new keywords to
+facilitate both generating and applying models. This means that the system
+capable of parsing and running standard queries must also run machine learning
+algorithms.
+
+Their work involved developing an extension to the SPARQL query
+engine for \emph{Apache Jena}\footnote{https://jena.apache.org/} that integrates
+with systems such as \emph{Weka}\footnote{http://www.cs.waikato.ac.nz/ml/weka/}.
+A more suitable software application for enterprise use might focus solely on
+converting RDF graphs into a neutral data structure that can plug into arbitrary
+data mining algorithms.
+
+An approach of generating attributes for a given resource was proposed by
+Paulheim and F\"urnkranz\cite{paulheim2012unsupervised}. They defined specific
+SPARQL queries and provided case study evidence for the effectiveness of
+each strategy.
+
+Their work focused on starting with relational-style data (e.g. from a
+relational database) and using \emph{Linked Open Data} to identify entities
+within literal values in those relations and generated attributes from
+SPARQL queries over those entities.
+
+For a large content-producer, there is a more general problem where many content
+items do not have a relational representation and the content source is a body
+of text or even a raw HTML page. However, the feature generation from Paulheim
+and F\:urnkranz proves to be a promising strategy given we can acquire an RDF
+graph model for content items in the first place.
+
 \section{Design}
 
 \section{Implementation}

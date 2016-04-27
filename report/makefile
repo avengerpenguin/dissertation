@@ -7,8 +7,8 @@ report.pdf: $(shell find . -iname '*.tex' | grep -v '#') diagrams/component.png 
 	bibtex report.aux	
 	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex
 	pdflatex -halt-on-error -shell-escape -interaction=nonstopmode report.tex
-	which notify-send && notify-send "PDF build successful"
-	which mupdfwrap && mupdfwrap report.pdf
+	which notify-send && notify-send "PDF build successful" || true
+	(which mupdfwrap && mupdfwrap report.pdf) || (which open && open report.pdf) || true
 
 diagrams/%.png: diagrams/%.puml
 	plantuml -pipe <$< >$@

@@ -2,7 +2,10 @@
 
 default: github
 
-report:
+paper:
+	cd paper && $(MAKE)
+
+report: paper
 	cd report && $(MAKE)
 
 proposal:
@@ -32,5 +35,9 @@ out/report.pdf: report
 	mkdir -p out
 	cp report/report.pdf out/report.pdf
 
-github: out/report.pdf venv/pip.touch
+out/paper.pdf: paper
+	mkdir -p out
+	cp paper/paper.pdf out/paper.pdf
+
+github: out/report.pdf out/paper.pdf venv/pip.touch
 	venv/bin/ghp-import -n -p out

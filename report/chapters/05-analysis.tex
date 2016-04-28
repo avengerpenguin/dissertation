@@ -30,7 +30,22 @@ suggesting related media content to web users.
 Conversely, in this chapter, we take a much narrower focus on the
 shape, size and quality of clusters themselves.
 
-\section{Brief Comparison of Clusters Produced}
+\section{Comparison of Clusters Produced}
+\label{sec:anal-comparison}
+
+In this section, we take a walkthrough of some of the clusters
+produced based on what seems interesting. Even reviewing a handful
+of the results shows some insights into how the different semantic
+extraction approaches have behaved and we can see some clear
+evidence where the process is generally working and where it is
+making mistakes.
+
+It is not feasible to analysis every result here in this way, but
+chapter~\ref{chp:evaluation} describes how every approach was
+evaluating against every other approach The sections following
+this one in this chapter try to give a summary of advantages and
+disadvantages we can see in each technique ahead of the
+qualitative evaluation.
 
 The most stark difference between the results produced is the large
 range in terms of number of clusters produced for each approach
@@ -57,13 +72,15 @@ by each combination of techniques. The range here is explained by
 some variants of the system produced few, very large clusters and
 some a large number of smaller clusters.
 
-Which of the two outcomes is more suitable is arguably a matter for
-real evaluation, but it is perhaps reasonable to claim that clusters
-which are too large are less useful for choosing related content items
-to suggest to users. In the case of the unenriched graphs obtained
-via hyperlink relationships only, one of the two clusters produced
-contains 2,323 items -- a number that risks ``related content''
-suggestions being too erratic and random.
+\subsection{Few, Large Clusters}
+
+Which of the two extreme outcomes is more suitable is arguably a
+matter for real evaluation, but it is perhaps reasonable to claim that
+clusters which are too large are less useful for choosing related
+content items to suggest to users. In the case of the unenriched graphs
+obtained via hyperlink relationships only, one of the two clusters
+produced contains 2,323 items -- a number that risks
+``related content'' suggestions being too erratic and random.
 
 A deeper inspection of that largest cluster reveals every item was
 deemed to be related to an FAQ page on how to share BBC pages on
@@ -85,6 +102,8 @@ and raises two immediate issues:
 
 Further discussion of the merits and problems with hyperlink
 relationships is covered in section~\ref{sec:anal-hyperlink}.
+
+\subsection{More, Small Clusters}
 
 If we look at the other end of the spectrum, the system variant
 that produced the most clusters was the enriched union of dereference
@@ -131,6 +150,8 @@ and one of the mean-sized clusters.
   \caption{Ten most common features across the smallest, the largest and a mean-sized cluster produced by the enriched union of dereference and entity extraction}
   \label{tbl:top-features-3-1}
 \end{sidewaystable}
+
+\subsubsection{Smallest Cluster}
 
 The smallest cluster with 2 items in table~\ref{tbl:top-features-3-1}
 seems to contain two pages that mention BBC iPlayer (the
@@ -189,6 +210,8 @@ content producers' and content promoters' desire to control how
 content is displayed and discovered on third party social media
 platforms.
 
+\subsubsection{Mean-sized Cluster}
+
 Returning to the mean-sized cluster in table~\ref{tbl:top-features-3-1},
 we see a cluster where the most common items are identified as pages
 each for a single episode. There is no indication in the top five
@@ -227,14 +250,454 @@ these pages finds two ``mistakes'' the system has made:
   word is a mention of a song titled \emph{Listen}.
 \end{itemize}
 
-\section{Deeper Analysis of Clusters}
+\subsubsection{Largest Cluster}
+
+Finally, the largest cluster has unique quirks of its own. The most
+popular feature across all members was a rather strange
+\texttt{md:item\_rdf:nil=true} whose original is unclear with some
+explanation. This triple appears to have originated in the RDFLib
+Python library as an artefact of the Microdata parser (run on any
+HTML response) having found no Microdata items in the page. This is
+likely to be a bug in the library where it may have been more useful
+not to say anything.
+
+The result of this bug or unexpected behaviour is that variants
+of the data pipeline that use deferencing as an extraction method will
+have this propery for any page that does not use Microdata simply
+because of the choice of RDF parsing library. There appears to be
+enough mix of BBC content pages that do and do not use Microdata such
+that this feature passed the feature selection filter that should
+have removed any feature with the same value across the whole corpus.
+
+This is part of a bigger behavioural pattern where embedded semantics
+appear to tell us a lot about how pages are built as well as
+describing the content contained therein. This is not necessarily a
+drawback and is discussed further in section~\ref{sec:anal-deref}.
+
+Two other features in the five most common across the cluster suggest
+many of the content items mention the social network, LinkedIn, and
+news aggregator, Digg. These come from a similar issue with the
+\emph{JavaScript} and \emph{Listen} entities for the mean-sized
+cluster in that they are mentioned in the page as part of controls
+inviting users to ``share'' the content on social media sites. These
+are also clear false positives that reinforce the importance of
+ensuring entity extraction is performed in relevant textual
+information. This is discussed in section~\ref{sec:anal-entity}.
+
+The fifth most common feature for this cluster is genuinely something
+informative about the content in the page -- it appears to be a meta
+tag informing of a title to use for the page on iOS devices. This is
+again likely to be an artefact of how the BBC Sport section of the
+BBC website is developed with requirements relating to iOS devices,
+but it also -- perhaps inadvertantly -- tells us something semantic
+about the page in that it is part of BBC Sport.
+
+This may not be groundbreaking insight as there are clearly more
+definitive ways to distinguish BBC Sport content (e.g. all the URLs
+paths start with the word ``sport''), but it starts to showcase a
+potential advantage of unsupervised learning on semantics that it
+can use subtle clues based on how the pages are constructed to
+determine something about them -- if this is deemed useful, that is.
+
+It is also a showcase of how an unsupervised data mining process can
+be said to have ``learned'' that these are all BBC Sport articles
+without having to be instructed through bespoke business rules. This
+hints at some need for further research as to whether enterprises
+can truly adopt semantics and data mining to derice business rules
+that survive organisational and systems changes due to being less
+brittle than bespoke enterprise integration software based on static
+business rules (i.e. rules that are true today but need updating when
+the business context changes or risk breaking).
+
+The more qualitative evaluation in chapter~\ref{chp:evaluation} will
+provide some idea of which properties ultimately end up actually being
+useful.
+
+\subsection{Impact of Noise}
+
+The previous section highlighted many cases of ``false positives''
+and errors made by this experimental system. The intent of the
+designed system is to provide an
+initial baseline capable of processing any piece of media content,
+perhaps at the expense of the depth that would be achieved by explicit
+data adapters developed against an internal data API. Thus it is
+useful to analyse where the system performs less well because a goal
+for any initial, baseline application should be to evolve and grow it
+to adapt to errors as they find them.
+
+An open question still for further research is whether these errors
+are real barriers to gaining useful insight via data mining. The
+open world assumption and loose nature of the RDF model lends itself
+well to embracing the patchy and noisy nature of the open web of data
+and that can be a strength even across a single organisation's
+own content -- particularly in large and fragmented organisations.
+
+In a rigid, closed-world approach, we may see bespoke data adapters
+fail altogether the first time a team responsible for a data API
+changes, say, the XML structure of its query responses without
+notifying all clients. We may also see data mining processes lacking
+the ability to find trends in the entire corpus since the data
+ingest written specifically for custom APIs has only been built for
+a subset of all the data stores in the organisation.
+
+The nature of machine learning algorithms is they are intended to
+learn for themselves which data properties are useful and which are
+not. In a classification model, we would expect the learning to
+place more weight on features that produce the answers desirable
+by those that use the model and some of the noise naturally falls
+away.
+
+In the current experiment around unsupervised clustering, not only
+was feature selection implemented to throw away features that do not
+vary and features that vary too much, but clustering algorithms
+should favour where items where they share a number of properties, not
+group content together simply because it shares one erroneous
+attribute.
+
+Thus it can be concluded that the mere existence of noise is not
+enough to fault a particular configuration of our semantic data mining
+system, but there is a need to answer the question as to whether the
+noise is enough to overwhelm and confuse any machine learning
+attempts. The question we look to answer in this research is which
+of the variants of this experiemental system are more or less
+susceptible to noise and errors and recommend how we might research
+overcoming any false positives that do arise.
+
+At the very least, there are variants of the system that are clearly
+failing very quickly, e.g. the hyperlink relationships producing only
+two, unusably large clusters shows a clear need to overcome the causes
+of those problems before even considering using it in a real system.
 
 \section{Strengths and Weaknesses of Different Approaches}
 
+The analysis in the previous section walks through some exploratory
+reviews of a small number of clusters, whereas in this section an
+overview of how each approach appears to show strength and failures
+is given.
+
 \subsection{Embedded Semantics Extraction}
+\label{sec:anal-deref}
+
+Some of the analysis in section~\ref{sec:anal-comparison} touched on
+some of the side effects of semantics being tied to \emph{how} a page
+was built rather than \emph{what} the page is about. It was also
+shown semantics are being included due to  pressures from social media
+organisations for content
+providers to describe summaries of their content for better display
+and discovery. Based on this and other observations in the clusters
+produced, clustering based on deferencing URLs and reading their
+embedded semantics has the following advantages:
+
+\begin{itemize}
+\item Many media companies are providing semantic data for the
+  purposes of display and other features in a social media context.
+  This means there is a base level of metadata to be extracted
+  without asking those building the pages to add in more semantic
+  markup.
+\item Some parts of the BBC website have chosen to include
+  much richer semantics. This is observed in
+  section~\ref{sec:anal-comparison} where pages about radio
+  episodes where described as such. Some parts of the BBC Sport
+  website also mark up entities such as sport teams as well.
+\end{itemize}
+
+We can also observe the following challenges or drawbacks:
+
+\begin{itemize}
+\item There can be a lot of noise from meta information about the
+  semantics, e.g. the RDFLib library declaring that a page contains
+  \emph{no} Microdata as observed in section~\ref{sec:anal-comparison}
+  or RDFa declarations that inform that the page is using a particular
+  vocabulary by default
+  \footnote{The feature
+    \texttt{rdfa:usesVocabulary\_http://schema.org/=true} is very
+  common}
+\item Some parts of the BBC website provide only basic metadata
+  (e.g. for social media as above) and some have chosen to include
+  far richer semantics. This leads to items varying substantially in
+  terms of the size of the RDF graphs we can extract. The
+  unbalance show signs of causing a bias where clusters may not be
+  likely to a mixture of such items, instead preferring to group
+  the semantically-rich items together for example.
+\item There are very general-purpose assertions such as
+  \texttt{ogp:site\_name="BBC"} provided simply to tell Facebook that
+  a given page is part of the overall BBC website. This is not useful
+  if the whole corpus is from the BBC website, but does not get
+  filtered out due to pages being built differently not all
+  development teams behind individual parts of the website choosing
+  to include that property. Thus the varied usage and non-usage of
+  this feature implies to a machine learning algorithm there is
+  information in the feature's presence or non-presence.
+\end{itemize}
+
+The last drawback above suggests
+a bigger question here as to whether there is a more general
+challenge with machine learning and the open world assumption of
+linked data and semantics. A classification model surely has to
+choose between non-membership or membership of a category with
+some degree of certainty, so will mistake the lack of knowledge
+of an attribute that would place it in a category as if that item
+genuinely lacks that defining feature.
+
+Similarly, a clustering
+algorithm can only group items on what is known. Perhaps if features
+are lossy in a random sense, then other features will still link
+two related items, but if, say, a whole section of a website fails
+to provide semantics on genre classification of its content, then
+content items in that section will never be paired up with pages
+in another section of the site that does provide useful information
+above genres.
+
+It should be noted that this is still a problem in trying to integrate
+information between two bespoke databases that follow a closed-world
+assumption. If one content management system encourages authors to
+categories their work into genres and another does not, then we
+still cannot link up content. This situation is arguably worse in that
+two systems that \emph{do} provide genre information, but using wholly
+different names for the properties and a different taxonomy of values,
+still cannot easily unify the data models without explicit and
+possibly extensive rules translating between the two.
+
+It could be said that the Linked Data concept and by extension the
+idea of Linked Enterprise Data allows two different data sets to be
+developed independently for their own use cases so long as they
+(or a third party) is encourage to provide additional semantics that
+link the vocabularies. This is even easier still if the two systems
+use different, but well-known vocabularies, as the mappings may
+already exist.
+
 \subsection{Entity Extraction}
+\label{sec:anal-entity}
+
+Inferring semantics from entity extraction has some clear advantages:
+
+\begin{itemize}
+\item Extracting real things from textual content gives a far
+  stronger feel for the topics covered therein. Note this is
+  essentially the basis of any keyword-driven search engine such
+  as Google.
+\item Implementation in the enterprise is relatively simple given
+  the vast number of technologies already available and the long
+  history of research into entity extraction. Reuse of an existing
+  solution -- as implemented in this research -- is sufficient for
+  many use cases.
+\end{itemize}
+
+However, there are still many drawbacks and challenges to overcome:
+
+\begin{itemize}
+\item Entity extraction classically suffers from a disambiguation
+  challenge (e.g. is it Paris, France or Paris, Texas?), but there
+  is also much literature on solving and overcoming these problems.
+  The na\"ive, simple usage of DBPedia Spotlight used in this
+  experiment benefitted from no customisation of the parameters used
+  nor from any attempts to solve ambiguity problems.
+\item It is less clear as to whether we can narrow down which
+  are the primary topics or entities in a piece of content. Some
+  search engines use heuristics such as preferring entities in
+  titles and opening paragraphs, but this is still a fuzzy approach.
+  In this research, a simple ``topic'' predicate from the FOAF
+  vocabulary was used and thus gave equal status to all entities,
+  assuming they are each equally a topic of the content. Better
+  research in this area might provide more effective ways to discern
+  a ``topic'' relationship from, say, a looser ``mentions''
+  relationship.
+\item All entity extraction technologies mentioned so far have
+  focused around text content only. The ability to extract topics
+  from audio or video content is much more complex and is the subject
+  of whole other fields of research. Some very promising techniques
+  were prototyped by Raimond et al.\cite{raimond2014bbc} to extract
+  semantic data from the BBC World Service archive using a novel
+  combination of text-to-speech analysis, machine tagging and
+  crowdsourced user feedback at scale. There could be much
+  opportunity to applying such research more generally, for example
+  across BBC iPlayer catch-up content, which can then feed into
+  better data mining.
+\item Effective extraction of the content ``body'' text must be
+  performed to prevent entities being found in supporting page
+  furniture such as site-wide navigation links. A single failure to
+  remove an element common to multiple pages will result in all
+  those pages being ``tagged'' with that concept. 
+\end{itemize}
+
+The final drawback is worsened
+when elements are across just one class of pages (as observed with
+the \emph{Listen} problem in section~\ref{sec:anal-comparison}) as
+at least entirely global entities will not pass feature selection.
+When a navigation element only appears in part of the corpus, the
+system might erroneously decide this is an informative feature.
+
+As noted in section~\ref{sec:anal-deref} with semantics that expose
+the nature of the construction of the page, a supporting element on
+a particular class of pages might actually be useful information. To
+refer back to the \emph{Listen} example -- where a ``Listen'' button
+for radio stations on radio episode catch-up pages is mistaken for
+a song with that title -- it can be argued that the clustering model
+``learned'' something common between all these pages. It could be
+said that we need
+not worry about the technically incorrect semantics that it ``thinks''
+the pages are about that song if the end result is a useful feature
+that understands there is some commonality between radio episode
+catch-up pages and it is suitable to consider them as related content
+suggestions when a user starts on such a page.
+
+This is an overall advantage to applying semantics to data mining:
+we do not need our machines to gain a perfect ``understanding'' of
+the content so long as the so-called understanding is
+\emph{good enough} that applications of the models -- such as
+suggesting related content -- ultimately appear to be behaving
+intelligently in the average case.
+
+This conclusion is reminiscent of John Searle's famous
+\emph{Chinese Room} thought experiment\cite{searle1980minds}
+that illustrates a computer
+programme's potential to appear intelligent even when following
+deterministic rules and lacking the deep understanding and
+consciousness that we perceive as uniquely human.
+
 \subsection{Hyperlink Relationships}
 \label{sec:anal-hyperlink}
+
+Exploratory analysis does not highlight any major strengths from
+hyperlink exraction alone. Common properties centre almost entirely
+around links to common pages such as FAQs, help pages, etc. due to the
+lack of constraints in the system implemented to narrow the extraction
+to ``interesting'' links from within the content itself.
+
+This extraction technique might well perform better on a website
+such as Wikipedia where articles contain a large number of links to
+other articles, but BBC content employs links within article bodies
+very rarely. Other news websites such as The Guardian make more
+use of hyperlinks within articles to other articles and topic
+aggregate pages, so results for content from The Guardian website
+might look very different to those for BBC content.
+
 \subsection{Enrichment by Dereference}
 
+The most striking observation of all clusters from enriched RDF
+graphs is that they can have orders of magnitude more features than
+their unenriched counterparts. This was especially true in the case
+of enriched RDF graphs obtained via entity extraction. This is due
+to the fact that any lengthy article may yield ten to fifty entities,
+perhaps more. As DBPedia URLs were used for entity tags in this
+experiment and DBPedia can have very rich graphs for popular entities,
+it is not difficult to extrapolate an assumption that the final
+feature sets will be very large.
+
+The size of these feature sets makes it challenging to analyse in an
+exploratory sense, but the comparative evaluation in
+chapter~\ref{chp:evaluation} hopefully proves whether the size of the
+RDF graphs and resulting feature sets is ultimately harmful to the
+data mining process.
+
+Enrichment via dereference was less dramatic for in-page semantics
+themselves extracted via dereference. Whilst not called out
+specifically in section~\ref{sec:anal-comparison}, a general trend
+was for those semantics exclusively to contain literals as values.
+
+This is a consequence of relying on HTML meta tags and other such
+mechanisms for social media sites. Richer markup approaches such
+as RDFa and Microdata allow for entities identified by IRIs and URLs
+to be the objects of any triples, but since these were employed
+rarely in relation to metadata for social media, they appeared
+less often in the resulting clusters.
+
+Finally, inferred semantics from hyperlinks would solely contain
+other BBC page URLs as objects (because the implementation explicitly
+filtered for BBC URLs only) and thus gained all the advantages and
+difficulties with extraction via dereference. A casual inspection
+of the clusters suggests that enrichment here did not therefore add
+as much additional value as was the case with entity extraction.
+
 \section{Recommendations for Production Use}
+
+It can be argued that building an experimental system full of flaws
+and drawbacks is not just more desirable, but essential for research
+and learning.
+However, if a similar system were to be built as a production-ready
+application delivering real benefits to customers in industry, there
+is clear need to do more work to overcome practical limitations.
+
+Thus this section concludes this chapter with some recommendations
+based on all learnings so far on how a media organisation might
+want to start applying data mining of their content using semantics.
+
+\subsection{Embedded Semantics}
+
+The Semantic Web movement provoked some pragmatic
+scepticism\cite{marshall2003semantic} over the years, mainly focused
+around the expectation that content authors are unlikely to create
+alternative data for machines on top of their primary objective of
+creating content to be consumed by people.
+
+The findings and analysis presented so far in this chapter suggest
+there are modern incentives around summarisation of content
+(e.g. Twitter ``cards'' when content is embedded in a post) and
+discovery (both Facebook and Twitter show trends in topics discussed
+in news items posted to their networks). Recognition of this shift
+in incentive and consequently the presence of more metadata than
+before does not appear to be noted so much in the academic literature.
+
+Haas et al.\cite{haas2011enhanced} provided evidence in 2011 that
+fewer than four percent of pages retrieved via Yahoo US search
+contained RDFa markup. In a media organisastion that has no culture
+of technical employees with an interest in the semantic web or
+linked data, there may be no pages with semantic metadata purposely
+added. However, if we embrace meta tags intended for social media
+websites, exploratory analysis of BBC metadata in this research
+suggests a ubiquity of such semantics driven entirely without the
+academic push behind the Semantic Web and Linked Data.
+
+We can therefore see social media annotations as compromise between
+benefits of semantic markup and the pragmatic concerns that authors
+will not add hidden metadata without clear, immediate benefits. It is
+hoped that the reults of this research show that there are some
+baseline benefits to an initial round of data mining on those
+semantics alone and gaps and failures can create the incentives for
+web page authors and engineers to improve their semantics and see
+immediate benefits (e.e. their pages get promoted more readily in
+pan-site signposting such as sets of ``related content'' suggestions).
+
+In summary, the recommendation for the media industry here is to lead
+with building insights based on what data are already in place and
+look to improve over time once the incentives to do so are in place.
+Gaps to consider are where semantics are missing altogether and a
+large gap observed in BBC content alone is a lack of linked data
+between distinct areas of the website.
+
+For example, programme
+information and catch-up pages are excellent at describing themselves
+as being TV or radio programmes and BBC News has the early stages of
+pages that aggregate News over a given topic, but there is no
+cross-linked data where concepts are covered both in a news article
+and in a programme. This will emerge in organisations where distinct
+teams and divisions work on very distinct parts of their output, so
+any data mining concerned with the whole corpus needs to highlight
+issues from lack of cross-linking as much as possible, particuarly
+if that data mining is driving a real website feature that will see
+immediate improvement if such cross-linking is implemented.
+
+\subsection{Entity Extraction}
+
+The clearest requirement here is to ensure that entity extraction
+is run on only the main textual content of any page. With sufficient
+experimentation, an organisation might be able to tolerate the false
+positives on a more na\"ive implementation that processes the whole
+page. Over time, the system could evolve with bespoke content
+adaptors common in enterprise integration so as to extract the pure
+textual content directly from the source system and thus bypass
+the need to remove noise from around the article.
+
+Also, there will be a need to spend time tuning and configuring
+the entity extraction to produce the right quantity and quality of
+entities for each content item. There is no clear single approach
+from this initial research alone and organisations will need to
+experiment on their own content.
+
+\subsection{Hyperlink Relationships}
+
+The only conclusion from this particular experiment is that
+hyperlink relationships are a poor indicator of the nature of the
+content in the BBC content corpus. An organisation might only want to
+make use of these relationships if its content authors habitually
+include links within articles to other articles or pages.

@@ -1,5 +1,55 @@
 \documentclass{sig-alternate-05-2015}
 
+\usepackage[dvipsnames]{xcolor}
+\usepackage{textcomp}
+\usepackage{caption}
+\usepackage{listings}
+\DeclareCaptionFont{white}{ \color{white} }
+\DeclareCaptionFormat{listing}{
+  \colorbox[cmyk]{0.43, 0.35, 0.35,0.01 }{
+    \parbox{\textwidth}{#1#2#3}
+  }
+}
+\captionsetup[lstlisting]{ format=listing, labelfont=white, textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize} }
+
+% Language Definitions for SPARQL
+\lstdefinelanguage{sparql}{
+morestring=[b][\color{blue}]\",
+morekeywords={SELECT,CONSTRUCT,DESCRIBE,ASK,WHERE,FROM,NAMED,PREFIX,BASE,OPTIONAL,FILTER,GRAPH,LIMIT,OFFSET,SERVICE,UNION,EXISTS,NOT,BINDINGS,MINUS,a},
+sensitive=true
+}
+
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily\footnotesize,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+\lstset{frame=single,captionpos=b}
+
 \begin{document}
 
 \title{Combining Linked data and Data Mining Techniques to improve Clustering of Large Scale Media Repositories: A case study with BBC}
@@ -160,9 +210,105 @@ graph model for content items in the first place.
 
 \section{Design}
 
+An experiemental system was designed and built around the following
+high-level requirements:
+
+\begin{enumerate}
+\item gathering (meta)data about all of an organisations content items;
+\item further enriching that metadata with information not explicitly present
+in the content item itself; and
+\item applying machine learning to that content metadata to gain new insights
+about that content.
+\end{enumerate}
+
+The system was also designed with the end goal of being able to present
+users with alternative content items deemed similar to any given item they
+are currently ready or watching. This provided a focus to ensure some
+industrial application of the experiment and also a means by which to evaluate
+the results in that results can be scored on how they perform at driving
+such a website feature.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\linewidth]{../report/diagrams/component.png}
+  \end{center}
+  \caption{High-level component diagram with interfaces for each use case\label{fig:component}}
+\end{figure}
+
+Figure~\ref{fig:component} shows a high-level view of a ``Content Miner''
+software application. A set of ``notifier''
+applications can be created to connect different content production and
+management systems to the data mining system such that it is notified when new
+content is created. The notification need only be an \emph{IRI} that uniquely
+identifies that content item. Once the application has meaningful clusters of
+content, we can imagine another system that can query this miner application
+to provide some view of related content given some initial content item.
+
+\subsection{Data Pipeline}
+
+The overall content miner system conflates the two jobs of generating
+feature sets suitable for data mining and also the data mining process itself.
+Thus a core subsystem in the overall system is a conceptual data pipeline whose
+input is a URI or IRI identifying a content item published on an organisation's
+website and the output is feature sets ready for applying machine learning.
+
+This subsystem was conceptually modelled as a data ``pipeline'' that takes
+an IRI identifying a piece of web content at the source end and produces
+feature sets at the other end. In this pipeline, the three primary data
+structures employed are the \emph{IRI}\footnote{http://tools.ietf.org/html/rfc3987}
+(in many cases the public URL for the content's primary page is sufficient),
+the \emph{feature set} (modelled as a schema-less set of key-value pairs)
+and the \emph{RDF graph} as an intermediate structure for manipulating along
+the pipeline.
+
+The data pipeline was then designed inductively, introducing potential
+methods for creating RDF graphs from web content and also enriching those
+graphs.
+
+\begin{centering}
+\begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
+{
+  "@id": "http://example.com/entity/1",
+  "@graph": []
+}
+\end{lstlisting}
+\end{centering}
+
+With the knowledge only of a content item's IRI, we are arguably only able to
+produce an empty named RDF graph. Such a graph for an example IRI
+\texttt{http://example.com/entity/} is illustrated in
+JSON-LD syntax in Listings~\ref{lst:jsonld-identity}. This provides our
+base case in the inductive design.
+
+Paulheim and F\"urnkranz\cite{paulheim2012unsupervised} described a number of
+SPARQL queries for generating feature sets from RDF data, inspired
+a simple query such as that shown in Listings~\ref{lst:simple-sparql}. This
+query generates a boolean \texttt{true} value for any properties that match
+and implies \texttt{false} for those that do not and we then flatten this into
+a simple feature format: \texttt{?p\_?o=true},
+e.g. \texttt{rdf:type\_schema:Article=true}
+
+\begin{lstlisting}[label=lst:simple-sparql,caption={Generates field \texttt{content\_?p\_?v} with value \texttt{true}},language=sparql]
+SELECT ?p ?o
+WHERE { ?iri ?p ?o . }
+FILTER isIRI(?o)
+\end{lstlisting}
+
+Note that this ignores triples whose objects are literals, for which case the
+a analogous strategy as shown in listings~\ref{literal-sparql} was employed to
+produce features of the form: \texttt{?p=?v}.
+
+\begin{lstlisting}[label=lst:literal-sparql,caption={Generates field \texttt{content\_?p\_?v} with value \texttt{true}},language=sparql]
+SELECT ?p ?v
+WHERE { ?iri ?p ?v . }
+FILTER isLiteral(?o)
+\end{lstlisting}
+
+Finally, an additional layer of indirection was created
+
 \section{Implementation}
 
-\section{Analysis}
+\section{Analysis and Evalaution}
 
 \section{Evaluation}
 

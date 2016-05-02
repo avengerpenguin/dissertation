@@ -734,8 +734,7 @@
  \setcounter{footnote}{0}
  \let\maketitle\relax
  \let\@maketitle\relax
- \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\gdef\@subtitle{}\let\thanks\relax
- \@copyrightspace}
+ \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\gdef\@subtitle{}\let\thanks\relax}
 
 %% CHANGES ON NEXT LINES
 \newif\if@ll % to record which version of LaTeX is in use
@@ -1026,24 +1025,24 @@
 %%% displacement to offset the space allocated for a non-existent
 %%% caption).
 %%%
-\newtoks\copyrightnotice
-\def\ftype@copyrightbox{8}
-\def\@copyrightspace{
-\@float{copyrightbox}[b]
-\begin{center}
-\setlength{\unitlength}{1pc}
-\ifnum\ACM@basesize=9
-\begin{picture}(20,6) %Space for copyright notice
-\put(0,-0.95){\crnotice{\@toappear}}
-\end{picture}
-\fi
-\ifnum\ACM@basesize=10
-\begin{picture}(20,7) %Space for copyright notice
-\put(0,-0.95){\crnotice{\@toappear}}
-\end{picture}
-\fi
-\end{center}
-\end@float}
+%\newtoks\copyrightnotice
+%\def\ftype@copyrightbox{8}
+%\def\@copyrightspace{
+%\@float{copyrightbox}[b]
+%\begin{center}
+%\setlength{\unitlength}{1pc}
+%\ifnum\ACM@basesize=9
+%\begin{picture}(20,6) %Space for copyright notice
+%\put(0,-0.95){\crnotice{\@toappear}}
+%\end{picture}
+%\fi
+%\ifnum\ACM@basesize=10
+%\begin{picture}(20,7) %Space for copyright notice
+%\put(0,-0.95){\crnotice{\@toappear}}
+%\end{picture}
+%\fi
+%\end{center}
+%\end@float}
 
 \def\@toappear{} % Default setting blank - commands below change this.
 \long\def\toappear#1{\def\@toappear{\parbox[b]{20pc}{\baselineskip 9pt#1}}}

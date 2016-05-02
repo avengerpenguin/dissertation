@@ -1,13 +1,369 @@
 \chapter{Evaluation}
 \label{chp:evaluation}
 
+This chapter builds on the more immediate analysis in
+chapter~\ref{chp:analysis} of the clusters produced by evaluating the
+results across a group of people. The system designed and built is
+also a subject of evaluation, particularly any flaws or potential
+improvements that emerge from having run the software and reviewed its
+results.
+
+A higher-level
+goal of this research was to perform some more qualitative evaluation
+of those clusters by obtaining human feedback on a potential
+application thereof. The application evaluted was a feature that would
+take a page a user is currently reading and suggest related content
+based on their being members of the same cluster. Mock-ups of such
+a feature were generated and evaluated via a survery as described
+in section~\ref{sec:survery}.
+
+The remaining sections of this chapter then discuss some issues with
+the design and difficulties arising during implementation
+respectively.
+
 \section{Qualitative Survey}
+\label{sec:survey}
+
+An online survey was produced where a user is shown a sample page
+from the BBC website and for each cluster of which that page is
+a member, a row of up to four ``suggestions'' was presented to users.
+
+In this section, some details around the design and sampling criteria
+for the survey are discussed initially, followed by analysis of the
+results. The section concludes with further qualitative feedback and
+observations that arose in survey responses.
 
 \subsection{Survey Design}
+
+An initial challenge for generating the survey was that it was
+necessary to present to users a view starting from a particular
+content item. This as effectively an inversion of the analysis
+from chapter~\ref{chp:analysis} where a top-down overview of the
+clusters was performed, with some drill-down into more depth in some
+cases.
+
+A reasonably arbitrary sample size of 20 content items was chosen
+for which it was therefore necessary to choose 20 \emph{pages} that
+were known to be members of one or more clusters. It was also
+desirable to ensure that multiple clusters are evaluated in one
+survey question, so items that were placed into clusters by multiple
+instances of the data pipeline were preferable.
+
+It was also important to ensure that the overall set of items
+chosen provided coverage across all permutations of the data pipeline
+and that some diversity of content was present (e.g. all items are
+not simply news articles without any representation of TV and video
+content).
+
+A further additional property chosen for the sample set was that
+a diverse range of cluster \emph{cohesion} values were present in the
+set. This arguably allows the survey to present for evaluation
+clusters that the machine learning applied itself believes to be poor
+as well as ones it believes to be cohesive. This controls
+for coincidences where only good clusters were chosen for one approach
+and another had its least cohesive results chosen. It also has
+potential not just to compare which approaches receive the most
+relevance votes, but also to look for where those approaches' results
+produce clusters whose cohesion measure correlate with anything
+meaningful to humans.
+
+The above sampling heuristics were applied programmatically by first
+inverting the cluster data structures such that there is a known
+list of all content IRIs across the whole results set and the list
+of clusters of which they are members are keyed against those IRIs.
+
+A composite uniqueness key was then created for each membership those
+content IRIs have in the form:
+
+$$
+u(iri, cluster) = (approach, cohesion(cluster), category(iri))
+$$
+
+\noindent where $approach$ is a unique key referring to a particular
+permutation of the data pipeline being evaluated and $category$ is
+a rough, heuristic function that tries to assess which part of the BBC
+website ``owns'' that content item, e.g. BBC News, iPlayer, Weather,
+Sport. Each item would have a uniqueness key attached to it for each
+cluster of which it is a member.
+
+Content items were initially scored based on how many clusters of
+which they were a member:
+
+$$
+score(iri) = 10 - |5 - \left\vert{\{c \in C \: | \: iri \in c\}}\right\vert|
+$$
+
+\noindent where $C$ is the set of all clusters produced. This gives
+us a score of 10 when the number of clusters in which the item appears
+is the ideal value of five. The justification for this optimum is
+based on the lower end of the memory capacity limits suggested by
+Miller\cite{miller1956magical} (Miller's Law).
+
+The item is thus ``punished'' when it appears in only one cluster
+(thus the question would only be testing one approach and has less
+value as a question) or if the item appears in too many clusters
+(asking people to compare between too many items might be
+overwhelming and reduce the potential for people to answer
+accurately). As this is only a heuristic, the sampling code still
+chose some items nearer this extremes, thus an absolute cap was
+implemented in the survey itself to ensure a random sample of seven
+clusters was chosen for evaluation when items appeared in a number
+greater than seven.
+
+Starting with the highest scoring so far, the sampling algorithm
+then updated each score based on the number of unseen unique keys
+it would introduce to the final sample if it were chosen:
+
+$$
+score'(iri) = score(iri) \times \frac{15 - |keys(iri) \cap K|}{2}
+$$
+
+\noindent where $keys(iri)$ is all uniqueness keys for an IRI:
+
+$$
+keys(iri) = \bigcup_{c \in C} u(iri, c)
+$$
+
+\noindent and $K$ is the cumulative union of all keys so far
+generated by invocations of of the $keys$ function so far, with its
+initial value being the empty set.
+
+Some of the constants used were tweaked based on what appeared to
+generated a desirable, mixed set of sample results such that they are
+a little better than arbitrary values. Once all IRIs were updated with
+the new scores, the final sample of
+results for evaluation was simply the content items with the twenty
+highest scores.
+
 \subsection{Survey Results}
+
+TODO
+
 \subsection{Further Observations and Discussion}
+
+TODO
 
 \section{Design Limitations}
 
-\section{Implementation Difficulties}
+Throughout chapter~\ref{chp:design}, the design of the data pipeline
+and overall software architecture was outlined and known trade-offs
+and limitations were highlighted. Further design trade-offs due to
+the systems intended use to be experimental rather than
+production-quality in an enterprise were also covered.
+
+This section highlighted some design issues that were noted only after
+the system was built and how research and industry alike might learn
+from these problems. Such problems might be addressed if the results
+of this experiment are to be researched further or indeed if such
+a system were to be built in a real media organisation. Such
+learnings for production use should follow on from the
+recommendations in section~\ref{sec:production-recommendations} around
+applying the data extraction techniques used and provide more general
+software design recommendations.
+
+\subsection{Performance}
+
+The experimental system ran far slower than would be acceptable in
+an enterprise system and even to the extent that it would limit
+developing this research to the scale where it is processing millions
+of items -- a target that would be ideal for further proving the
+suitability of semantics and machine learning on real media
+content corpora.
+
+A better-performing system might have allowed even this experiment
+to consider larger numbers of items, although even a relatively
+small sample size should sufficiently indicate which techniques look
+more promising for developing a more efficient system that focuses
+thereon (and save time by dismissing techniques that show no promise).
+
+The performance difficulties that arose from the design and concept
+broadly break down into two problems:
+
+\begin{enumerate}
+\item lack of consideration for data structures for the feature sets
+  and clusters; and
+\item network latency bottlenecks.
+\end{enumerate}
+
+The first problem stems from the fact that the design was precise
+around the in-flight data in the pipeline, less consideration was
+given for how to store the resulting feature sets and also the
+clusters. The feature sets were stored as simple JSON objects on
+files on disk, which is perfectly fast for writing and reading, but
+there was no pre-calculated distance matrix between those objects. The
+clusters were also stored in a na\"ive fashion of larger JSON objects
+that embedded their members' data for quick display of those clusters
+and calculation of things like cohesion.
+
+A distance matrix is a $O(n^2)$ operation in terms of computational
+complexity, which scales poorly, particularly for a continuous ingest
+of data where each new item invalidates the matrix. The design of
+the system implemented in this research was built around an assumption
+that we wish to have a continuously-running data pipeline that can
+update as new content is published. Recalculating the distance matrix
+on each new item would effectively push the complexity up to $O(n^3)$
+which is clearly undesirable.
+
+With this in mind, a cut-off for content ingest had to be determined
+so that the distance calculations and then the clustering could be
+invoked. The system implemented does not save any intermediate data
+such as distances, so adding in a single new item or cleaning out
+any duplicates found required all the results to be regenerated from
+the start.
+
+A production version of this system would have to look at a distance
+matrix and cluster set structure that allows for real time updates
+of new and updated content, efficiently changing only parts of the
+matrix affected (e.g. a new item only needs to calculate its distances
+with each existing item and does not affect existing pairs). This
+could be a promising direction for further research.
+
+The other issue of network latency became very apparent in particular
+when enrichment via object dereferencing was enabled. Whereas an
+enterprise integration effort between two different data stores
+operates on bespoke software engineered in a controlled network,
+extracting RDF data via a URL dereference is susceptible to network
+latency over the public Internet. Also, HTML pages with embedded
+semantics have a very poor ratio of semantic metadata to irrelevant
+information -- a document DOM focuses a lot on marking up the content
+for web browsers.
+
+There is still a compelling case for the \emph{decoupling} achieved
+by using standards like RDFa and the \emph{abstraction} HTML and HTTP
+provide over the underlying data stores, reducing the need for
+bespoke clients. However, any extraction of that data needs to
+tolerate or factor in the increased latency for this approach.
+
+For extraction, the latency of a single HTTP request (or two or three
+if HTTP redirects are issued) will only cause a bottleneck if new
+content is published or updated at a rate faster than the pipeline
+can process. This seems unlikely even in an organisation like the BBC,
+particularly if the system implements structures such as queues to
+handle bursts of input, processing them in quieter intervals.
+
+However, for enrichment via deference, an RDF graph produced might
+have hundreds of objects needing dereferenced via HTTP request. A
+simple cache layer might prevent the system repeatedly requesting for
+the same URL in a short period, but this kind of latency still means
+it could take of the order of minutes for a single item to get
+through the pipeline.
+
+It is not clear that there is a single answer to handle this as it is
+likely a combination of factors need optimised to make this form
+of enrichment acceptable:
+
+\begin{itemize}
+\item It might be that hundreds of objects linked via predicates
+  creates too much noise in general. If those objects have come mainly
+  from entity extraction, should entity extraction be tuned to bring
+  back only the ``main'' topics of a page?
+\item Chapter~\ref{chp:analysis} discussed how many of the extraction
+  techniques (particularly deference) produced a lot of irrelevant
+  facts (e.g. about the page itself, not the content) all of which
+  would be candidiates for deference of the objects are IRIs.
+  Effectively filtering out such noise would reduce the work spent
+  enriching irrelevant things further.
+\item A simple architectural solution is to parallelise the HTTP
+  calls as much as possible such that an item's latency is only as
+  long as the slowest response time. There are obvious limits to this
+  (we should avoid overloading the server even if it is scaled for
+  millions of visitors per day), but any parallelism is clearly
+  better than a hundred sequential HTTP requests. Parallelism includes
+  distributed architecture over multiple servers as much as
+  concurrent programming paradigms.
+\item An organisation should probably ensure a system is physically
+  near any servers serving HTTP requests to reduce the overall TCP
+  packet latency. This optimisation will add up over time, but is
+  a challenge for a large organisation such as the BBC with systems
+  of varying ages distributed over multiple locations
+  \footnote{Industry has
+  long outgrown the notion
+  that enterprises like the BBC have a single ``www'' server as
+  in the early days of the World Wide Web. However, the www hostname
+  still needs to resolve to a single set of IP addresses for something
+  that fronts the rest of the network like a load balancer. Effective
+  caching in this front layer and ensuring our data pipline lives close
+  to that cache might be sufficient in this case. An example of a
+  front cache might be something like the Varnish HTTP cache:
+  https://www.varnish-cache.org/}
+\end{itemize}
+
+Even with all the optimisations possible, it is unescapable that
+multiple HTTP requests to assemble an RDF graph is slower than a
+single query to a data store's query engine (e.g. SQL) that returns
+all the information needed in a single response. The benefits of using
+semantics, HTTP and other standards -- such as decoupling, simple
+enrichment, reuse of standard technologies -- need to be effectively
+researched and promoted, otherwise enterprise organisations will
+continue to reach for the seemingly obvious solution of building
+software that queries one database to push to another.
+
+\subsection{Noise}
+
+The semantic web and more recently Linked Data are arguably built
+around the idea that they embrace the loose architecture of the
+World Wide Web. With that looseness -- open world assumption,
+no schema constraints, etc. -- we cannot assure strict quality and
+integrity of the data as would be possible in a closed-world
+database.
+
+The data pipeline design in chapter~\ref{chp:design} has no
+requirements nor consideration for how to handle facts that are
+erroneous, missing nor meaningless (e.g. see the discussion
+in section~\ref{sec:anal-deref} of the system finding facts about the
+pages' structure rather than content metadata).
+
+In section~\ref{sec:impact-of-noise}, it is argued that noise might
+not have as much impact as one would assume given the fuzzy nature
+of machine learning in general. This argument is important to consider,
+but here we explore the issue of noise on the assumption that it
+\emph{is} a problem as it is important to evaluate how noise fed into
+the system in the first place and how we might tackle it.
+
+Erroneous facts may be non-trivial to distinguish from real facts, but
+there is scope for research on effective methods for reducing that
+noise. In an enterprise, we need not exclude the benefits of
+enterprise integration development to \emph{support} this approach
+based on semantics and web standards.
+
+Whilst there is much gained
+from being able to reason about the entire breadth of an organisation's
+content using semantics, it does not preclude writing bespoke business
+rules that strip out known, erroneous data or provides a framework
+against which to evaluate the likelihood of a fact being useful or
+true. At the very least, there could be some work to develop ontologies
+and schemas that detect inconsistencies in the data, but in a way
+that adds value to a working system rather than such modelling being a
+barrier to building the first iteration of the system.
+
+Facts that are missing are arguably not a ``noise'' issue, but still
+a data integrity concern. If an item lacks key information, it may
+be categorised incorrectly. It should be noted that the data pipeline
+designed here did nothing to address this deliberately and the desire
+was to evaluate the open world characteristics of semantics without
+trying to fill in the gaps.
+
+As with the erroneous facts discussion above, there is much case to
+be made for designing such a system so that it is extensible enough
+with customisations and bespoke software to aid where it appears to be
+struggling -- once its initial behaviour is evaluated. In the case
+of the data pipeline designed in chapter~\ref{chp:design}, any
+in-house databases and APIs can be integrated as additional extraction
+techniques to be joined via union to more general approaches such
+as dereferencing.
+
+Data being irrelevant might be the larger of the three concerns here
+as that greedy machine learning algorithms can get stuck on such
+noise. In section~\ref{sec:few-large}, we see how one approach
+caused the clustering to get stuck on the fact that all items linked
+to a common FAQ page.
+
+Other data attributes such as the Twitter
+Cards metadata (see section~\ref{sec:smallest-cluster}) can contain
+very broad things that are declared on all pages that use this
+vocabulary (e.g. \texttt{card=summary} is always used to indicate that
+a given page is using these meta tags) might cause a greey algorithm
+to focus too long on grouping together all pages that happen to choose
+to implement this Twitter feature with less concern about the more
+interesting properties.
 

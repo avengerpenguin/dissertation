@@ -1,8 +1,61 @@
 \chapter{Conclusions and Future Work}
 
+This chapter lays out some conclusions from this research around the potential
+for semantics being used more in the enterprise, whether semantics combined
+with machine learning or data mining has potential in industry and how
+organisations should consider implementing this. Finally, some options and
+potential for future research are suggested.
+
 \section{Challenges and Opportunitues for Semantics in the Enterprise}
 
+As discussed in section~\ref{sec:production-recommendations} and also more
+generally throughout chapter~\ref{chp:analysis}, there is much scope for
+enterprises to benefit from using semantics in public-facing pages that display
+their own content. This is particulary necessary in larger organisations where
+attemping to gain an overview of all the content metadata in a short timeframe
+would be a large enterprise integration effort.
+
+The challenges amount to the issues raised around noise (semantic information
+not immediately relevant to the content), incomplete information (due to
+the open world assumption) and perhaps even erroneous information (embedded
+Semantic Web data is not always visible enough for publishers to spot errors.)
+
+Even with these issues, the experiment performed in this research was still
+able to take place across a wide range of BBC content without any bespoke
+integration against internal data APIs nor a any significant code created
+to deal with a particular data source.
+
+The power to use semantics and other web standards to gain a broad overview
+of a large set of content should be very appealing to a media organisation,
+even if there are issues with that data, assuming their application is in
+a use case where less precision of that information is tolerable.
+
+Even where data needed corrected, the software developed even in this
+experiment was able to adapt to broad patterns in the data that were
+problematic. there is also much indication that engineers in the enterprise
+would be to complement the breadth from extracting semantics with the depth
+of data obtained directly from data sources. This is achievable with the
+set-theoretic nature of RDF graphs and our ability to perform simple set
+union operations to join data sources.
+
+As is evidenced by the pressure from social media and networks such as
+Facebook and Twitter, publishers will include better semantics if the right
+incentives are there. Perhaps the incentives promised by the earlier semantic
+web advocates (search engine optimisation, the development of clients that
+join up data between websites, etc.) were not strong enough for publishers,
+but the need to control how that content is summarised and discovered in
+places outside of the primary website is indeed a strong incentive.
+
+There is much to be said for the argument that any enterprise that therefore
+creates applied features to make use of content metadata (promoting related
+content being just one example), that the organisation might create appropriate
+pressure internally for those publishers to "correct" or at least improve
+their semantic annotations when faced with clear evidence where improvements
+could be made and errors corrected.
+
 \section{Suitability for Semantics and Data Mining in Media Organisations}
+
+
 
 \section{Suggestions for Initial Implementations in the Enterprise}
 

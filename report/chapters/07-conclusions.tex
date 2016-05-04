@@ -55,9 +55,46 @@ could be made and errors corrected.
 
 \section{Suitability for Semantics and Data Mining in Media Organisations}
 
+As noted in section~\ref{sec:impact-of-noise}, the fuzzy and noisy nature
+of linked data and the semantic web might find an ideal match in the world
+of machine learning -- something that an operate on noisy and fuzzy data sets
+and still find patterns and insight. That machine learning and data mining
+builds upon the idea that data collected might be noisy or incomplete leads
+to a strong argument for its application being ideal for the RDF model of
+the semantic web.
 
+Statistical methods like machine learning are clearly more tolerant of errors
+than more ``hard'' uses such as presenting concrete facts to users based on
+embedded semantics or inferring some hierarchical structure for a navigation
+feature. Even where the machine learning methods struggle in this particular
+research, it does not prevent further research that better tunes the learning
+methods used to produce even more useful results.
+
+The question remaining from all of this for the media enterprise, is whether
+this combination of semantics and data mining has real application that is
+useful.
+
+TODO: Build on survey results
 
 \section{Suggestions for Initial Implementations in the Enterprise}
+
+Section~\ref{sec:production-recommendations} covers some recoomedations
+for real implementations of semantics for data mining an organisation's
+content.
+
+In summary, an organisation can deliver initial value quickly with embedded
+semantics (e.g. RDFa) extraction as a general-purpose solution is simple
+to implement. The perhaps na\"ive mapping presented in this research for
+converting RDF to feature sets performs well enough if the gaps and noise
+in the data have a tolerable effect on the outcomes.
+
+Media organisations can iterate very quickly on this simple idea and find
+approaches that work for them and at each iteration consider the following:
+
+\begin{itemize}
+\item Can we implement entity extraction to supplement the embedded semantics?
+\item How do we best tune any entity extaction over time?
+\end{itemize}
 
 \section{Future Research}
 \subsection{Better Enrichment}

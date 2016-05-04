@@ -1,31 +1,145 @@
 \chapter{Background}
 
-This chapter discusses some of the existing research and technologies around
-machine learning, RDF and combining them. It also covers some of the advantages
-of using linked data and RDF in an enterprise setting and what tools and
-approaches are well-defined enough that a corporation could build on top of
-them rapidly.
+This chapter discusses some of the existing research and technologies
+around machine learning, RDF and combining them. It also covers some
+of the advantages of using linked data and RDF in an enterprise
+setting and what tools and approaches are well-defined enough that a
+corporation could build on top of them rapidly.
 
-Data mining activities such as machine learning rely on structuring data as
-\emph{feature sets}\cite{bishop2006pattern} -- a set or vector of properties or
-attributes that describe a single entity.
-The process of \emph{feature extraction}
-generates such feature sets from raw data and is a necessary early phase for
-many machine learning activities.
+Data mining activities such as machine learning rely on structuring
+data as \emph{feature sets}\cite{bishop2006pattern} -- a set or vector
+of properties or attributes that describe a single entity.
+The process of \emph{feature extraction} generates such feature sets
+from raw data and is a necessary early phase for many machine learning
+activities.
 
 The rest of this chapter will show:
 
 \begin{enumerate}
-\item that extracting feature sets from RDF\footnote{http://www.w3.org/TR/PR-rdf-syntax/} graphs can be done elegantly and follows naturally from some
-previous work in this area; and
+\item that extracting feature sets from
+  RDF\footnote{http://www.w3.org/TR/PR-rdf-syntax/} graphs can be done
+  elegantly and follows naturally from some previous work in this area; and
 \item that the RDF graph is a suitable and even desirable data model for content
-metadata in terms of acquiring, enriching and even transforming that data ahead
-of feature extraction.
+  metadata in terms of acquiring, enriching and even transforming that data ahead
+  of feature extraction.
 \end{enumerate}
 
 \section{Data Mining}
 
-TODO
+\emph{Data Mining} is a process for finding knowledge and information
+in data sets by drawing on research from artificial intelligence,
+machine learning and statistics.\cite{han2011data} In this research,
+the focus is on the machine learning aspect with
+the data extraction phase implemented using semantics and RDF.
+
+\emph{Machine Learning} broadly breaks down into \emph{supervised}
+and \emph{unsupervised} learning. In supervised learning, we have
+a task with a clear goal for which we attempt to create a computer
+model that can perform that task. In this context, a task might be
+to categorise an entity based on its attributed (e.g. diagnose
+a particular illness based on symptoms and assessment data from a
+patient exam) or perhaps a more numerical goal such as predicting
+the chance of rain on a given day based on multiple numerical
+readings.
+
+Well-known examples include neural networks, decision trees and or
+linear regression. In all supervised learning techniques, we can
+normally assess the model's performance against traning data for
+which we already know the answers. We can see supervised learning
+thus as a computational attempt to extrapolate human knowledge into
+a reusable model that can predict or determine things at a speed
+and scale humans would not normally be able to work through manually
+(e.g. predicting weather with manual calculations or diagnosing
+patients more quickly and with greater accuracy).
+
+In unsupervised learning, there is not necessarily a specific goal
+against which we can judge the models, but instead we are applying
+more exploratory methods to tell us patterns in the data that maybe
+we could not see for ourselves (e.g. if we would have to graph trends
+over more than two or three dimensions, it is usually difficult to
+visualise).
+
+A well-known example is association rule mining that can find
+interesting relations in data sets that were perhaps previously
+unknwown. A classic implementation of this technique is in
+supermarkets and other commercial enterprises where those
+organisations seek to find rules and patterns in consumer purchasing
+habits so that they can try to promote items that customers might
+want to buy based on other items they are currently trying to
+purchase.
+
+Another major unsupervised learning technique -- and the focus of
+this research -- is \emph{clustering}. In clustering algoriths, we
+seek to group similar items or entities together in groups or
+\emph{clusters}. Clustering has many applications, but in this
+work the focus will be around \emph{hierarchical} clustering which
+is effective for grouping together items that appear to be
+connected in some way -- in our case that the media content is
+connected by virtue of a common theme, topic or genre.
+
+This is based on the premise that users that like a particular
+content item might well be interested in other items that mention
+the same topics, fall into the same genres or are in some other
+way linked.
+
+Note that association rule mining is arguably useful in a similar way.
+In the case where we know from user behaviour that users like e.g.
+content item $A$ also like content item $B$, then a new user that
+likes $A$ but has not read or watched $B$ is likely to be interested
+in $B$, so we can suggest it to them.
+
+This is very powerful -- perhaps more powerful as it models how
+people behave, not arbitrary tagging or classification of content --
+but the focus of this research experiment is to explore the insights
+we can get \emph{from the content data alone}. This is appealing
+where content producers are struggling to understand their users'
+behaviour as collecting meaningful analytics and records of user
+behaviour is by no means a trivial endeavour in its own right.
+
+Hierchical clustering differs from, say,
+\emph{k-means clustering}\cite{witten2005data} in that
+we start with no assumption about the number of clusters or groups
+the data will be divided into. This method is generally applied
+\emph{agglomeratively} or \emph{divisively}.
+
+In divisive, hierarchical clustering, we start with all elements in
+a single cluster and proceed to find divisons that best split that
+cluster. This is applied recursively until we generate a
+dendrogam\cite{witten2005data} showing a full hierarchy of similarity
+between the items or we can halt the division based on some condition,
+e.g. only split clusters with a low cohesion below some threshold
+and stop on the first attempt to split a cohesive cluster above
+that threshold.
+
+Agglomerative, hierarchical clustering goes in the opposite direction
+by starting with all items in their own, individual clusters.
+The two ``nearest'' clusters are then recursively merged until, again,
+we have a full dendrogam or stop before we are about to create a
+cluster whose cohesion falls below some threshold.
+
+For media content, agglomerative clustering is a good match for two
+practical reasons:
+
+\begin{enumerate}
+\item Content is continuously published, so there is potential
+  to consider a ``real-time'' clustering system where new items
+  arrive in their own cluster initially and are merged into an
+  appropriate, established cluster when the next merge is performed.
+  This is out of scope for this work, but is an interesting
+  consideration if an organisation is to apply this to its real
+  content in a way that keeps up to date with new content as it is
+  published.
+\item The BBC has of the order of tens of millions of pages and thus
+  the content is likely to be very diverse with little to no overlap
+  between the vast majority of it. The agglomerative model appears to
+  fit better with the idea of merging together items where small
+  islands of similar content are found and simply ignoring the large
+  ``dark matter'' of pages that don't easily merge or for which we
+  cannot easily extract good metadata (e.g. if the pages are very
+  old).
+\end{enumerate}
+
+TODO: linkage and distance
 
 \section{RDF and Feature Extraction}
 \label{sec:rdf-and-features}

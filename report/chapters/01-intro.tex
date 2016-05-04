@@ -1,70 +1,106 @@
 \chapter{Introduction}
 
-Media companies produce ever larger numbers of articles, videos, podcasts,
-games, etc. -- commonly collectively known as ``content''. A successful
-content-producing website not only has to develop systems to aid producing and
-publishing that content, but there are also demands to engineer effective
-mechanisms to aid consumers in finding that content.
+Media companies produce ever larger numbers of articles, videos,
+podcasts, games, etc. -- commonly collectively known as ``content'' --
+on the World Wide Web. A successful content-producing website not only
+has to develop systems to aid producing and publishing that content,
+but there are also demands to engineer effective mechanisms to aid
+consumers in finding that content.
 
-Approaches used in industry include providing a text-based search, hierarchical
-categorisation (and thus navigation thereof) and even more tailored recommended
-content based on past behaviour or content enjoyed by friends (or sometimes
-simply other consumers who share your preferences).
+Approaches used in industry include providing a text-based search,
+hierarchical categorisation (and thus navigation thereof) and even
+more tailored recommended content based on past behaviour or content
+enjoyed by friends (or sometimes simply other consumers who share your
+preferences).
 
 \section{Problems}
 \label{sec:intro-problems}
 
-There are several technical and conceptual problems with building effective
-content discovery mechanisms, including:
+There are several technical and conceptual problems with building
+effective content discovery mechanisms, including:
 
 \begin{itemize}
 
-\item Large organisations can have content across multiple content management
-systems, in differing formats and data models. Organisations face a large-scale
-enterprise integration problem simply trying to gain a holistic view of all
-their content.
+\item Large organisations can have content across multiple content
+  management systems, in differing formats and data models.
+  Organisations face large-scale enterprise integration problems
+  simply trying to gain a holistic view of all their content.
 
-\item Many content items are in fairly opaque formats, e.g. video content may be
-stored as audio-visual binary data with minimal metadata to display on a
-containing web page. Video content producers may not be motivated to provide
-data attributes that might ultimately be most useful in determining if a user
-will enjoy the video.
+\item Many content items are in fairly opaque formats, e.g. video
+  content may be stored as audio-visual binary data with minimal
+  metadata to display on a containing web page. Video content
+  producers may not be motivated to provide data attributes that might
+  ultimately be most useful in determining if a user will enjoy the
+  video.
 
-\item Content is being published continuously, which means any search or
-discovery system needs to keep up with content as it is published and process it
-into the appropriate data structures. Any machine learning previously performed
-on the data set may need to be re-run.
+\item Content is being published continuously, which means any search
+  or discovery system needs to keep up with content as it is published
+  and process it into the appropriate data structures. Any machine
+  learning previously performed on the data set may need to be re-run.
 
 \end{itemize}
+
+Many of these problems are felt within the BBC and are potentially
+issues in many similar organisations. The BBC website officially
+launched in 1997 and many articles from that year are still available
+in archived form. Over the last 20 years, multiple content management
+systems were created and retired such that today even the active
+website is served by a mix of emerging, cutting-edge platforms and
+systems that have been running for a number of years.
+
+Technologies such as the World Wide Web and the maturity of the
+media industry in its adoption in the last decade creates both an
+opportunity to give consumers access to a substantial amount of
+media content and a challenge in trying to make cohesive sense of
+a diverse range of content, perhaps produced in an organistion that
+was traditionally very fragmented as the BBC was.
 
 \section{Hypothesis}
 
-The following hypotheses are proposed for gaining new insights about an
-organisation's diverse corpus of content:
+The following hypotheses are proposed for gaining new insights about
+an organisation's diverse corpus of content:
 
 \begin{itemize}
 
-\item Research and software tools around the concept of \emph{Linked Data} can
-aid us in rapidly acquiring a broad view (perhaps at the expense of depth) of an
-organisation's content whilst also providing a platform for simple enrichment of
-that content's metadata.
+\item Research and software tools around the concept of
+  \emph{Linked Data} can aid us in rapidly acquiring a broad view
+  (perhaps initially at the expense of depth) of a organisation's
+  content whilst also providing a platform for simple enrichment of
+  that content's metadata.
 
-\item We can establish at least a na\"ive mapping of an RDF graph representing a
-content item to an attribute set suitable for data mining. With such a mapping,
-we can explore applying machine learning -- particularly unsupervised learning
--- across an organisation's whole content corpus.
+\item We can establish at least a na\"ive mapping of an RDF graph
+  representing a content item to an attribute set suitable for data
+  mining. With such a mapping, we can explore applying machine
+  learning -- particularly unsupervised learning -- across an
+  organisation's whole content corpus.
 
-\item Linked Data and Semantic Web \emph{ontologies} and models available can
-provide data enrichment beyond attributes and keywords explicitly avaiable
-within content data or metadata.
+\item Linked Data and Semantic Web \emph{ontologies} and models
+  available can provide data enrichment beyond attributes and keywords
+  explicitly avaiable within content data or metadata.
 
-\item We can adapt established machine learning approaches such as clustering
-for data published continuously in real time.
-
-\item Many content-producers currently enrich their web pages with small
-amounts of semantic metadata to provide better presentation of that content
-as it is shared on social media. This enables simple collection of a full
-breadth of content with significantly less effort than direct integration
-with content management systems.
+\item Many content-producers currently enrich their web pages with
+  small amounts of semantic metadata to provide better presentation of
+  that content as it is shared on social media. This enables simple
+  collection of a full breadth of content with significantly less
+  effort than direct integration with individual content management
+  systems.
 
 \end{itemize}
+
+It is proposed also that all the data acquisition, enrichment and
+mappings can be implemented in a general way when semantics and
+linked data are used. The standardisations offered by the Semantic
+Web and Linked Data research fields provides uniform interfaces and
+patterns of data manipulation such that any software produced can be
+applied to all of an organisation's content without consideration to
+any particular class or type of item. This also does not preclude
+including custom business rules later either, where domain experts
+can give more guidance to treat data more intelligently.
+
+The core principle in this research is that a generally-applicable
+software system provides the best trade-off in terms of processing
+the full breadth of content with the least amount of engineering
+effort. This can allow media organisations to benefit from things
+such as insights from machine learning across their whole corpus with
+near-immediate results rather than embarking on large scale enterprise
+integration projects over several months or years.

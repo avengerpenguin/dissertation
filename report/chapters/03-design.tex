@@ -14,23 +14,63 @@ in the content item itself; and
 about that content.
 \end{enumerate}
 
-Initially, a business context is described to produce a design for a system
-that could be a applied within a media or content-producing organisation. This
-context will guide all design decisions.
+Initially, uses cases and a brief technical architecture for the
+proposed system are given and then a theoretical data pipeline is
+inductively defined that is the core proposition that extracts
+semantics and prepares them for machine learning.
 
-\section{Context}
-
-TODO
+It is assumed that an organisation is already publishing its content
+on HTML pages available on the public Internet and that engineers
+can make use of existing machine learning algorithms and libraries. It
+is out of the scope for the paper to deviate from well-established
+machine learning techniques such as hierarchical clustering.
 
 \section{Use Cases}
 \label{sec:usecases}
+
+Figure~\ref{fig:use-case} describes how a proposed ``Content Clustering''
+software application would be used by established roles in a media
+organisation.
 
 \begin{sidewaysfigure}
   \begin{center}
     \includegraphics[width=\linewidth]{diagrams/usecase.png}
   \end{center}
-  \caption{Use case diagram for content clustering system\label{use-case}}
+  \caption{Use case diagram for content clustering system\label{fig:use-case}}
 \end{sidewaysfigure}
+
+The two main classes of user are those who \emph{produce} content,
+e.g. journalists and TV programme makers, and those who will then
+benefit from a potential application of these clusters -- in this case,
+a feature is proposed that allows website users to find content related
+to content they have just finished. These are the people that
+\emph{consume} the output of the system.
+
+Note that content production breaks down into several, differing
+categories. In figure~\ref{fig:use-case}, we can see two examples of
+a journalist writing news articles and a TV production team
+publishing information about a particular episode or series. This is
+by no means exhaustive as we may well have games developers creating
+education games for children, editorial staff publishing recipes that
+have appeared on cooking programmes aired by the BBC or pages
+delivering the weather forecast for a particular city.
+
+The audience members also break down into multiple categories who
+could be reading news articles, watching programmes on on-demand
+catch-up TV (e.g. BBC iPlayer) or a child reading educational materials.
+These categories are depicted to remind there are multiple ways to
+consume content as well as produce it, but it is also important to
+note these roles can be transient if we are to promote content truly
+on its relevance irrespective of the data store that happens to hold
+it.
+
+For example, a child or adult reading informative or educational
+material may be interested in a relevant documentary available on
+TV catch-up or somebody reading a news article about a topic might
+wish to be informed that there are more in-depth educational guides
+describing that topic in greater details (e.g. a press release about
+a science discovery leading to a full, informative guide on that
+field of science).
 
 \section{Technical Architecture}
 
@@ -53,23 +93,31 @@ management systems to the data mining system such that it is notified when new
 content is created. The notification need only be an \emph{IRI} that uniquely
 identifies that content item.
 
-A \emph{Content Promotion Module} is also depicted as an example application
+A \emph{Content Promotion Module} is also depicted as the example application
 of the use case where website visitors or audience members then use the
 data mining system to find content related to a page they are currently viewing.
-The focus of this research is to provide enough visualisation in order to
-evaluate the quality of content clusters generated, but it is an important
-design principle to consider use cases at all layers of the system.
+
+The content miner breaks down into two general components: a pipeline
+that prepares the data for machine learning and the clustering at the
+end on that prepared data. The primary focus of this work is to
+evaluate approaches for the former in the form of a
+\emph{data pipeline} that uses semantics to take in a content item's
+identifer at the source end and produces feature sets for data mining
+at the output end. This data pipeline is inductively defined and
+designed in the following section.
 
 \section{Data Pipeline}
 \label{sec:design-pipeline}
 
-A core subsystem in the overall system is a conceptual data pipeline whose
-input is a URI or IRI identifying a content item published on an organisation's
-website and the output is feature sets ready for applying machine learning.
+As stated in the previous sectionh, a core subsystem in the overall
+system is a conceptual data pipeline whose input is a URI or IRI
+identifying a content item published on an organisation's website and
+the output is feature sets ready for applying machine learning.
 
-In this section, a theoretical pipeline is inductively defined in steps such
-that an application of this pipeline would choose to implement some subset of
-all potential pipeline stages as appropriate for the relevant problem domain.
+In this section, a theoretical pipeline is inductively defined in
+steps such that an application of this pipeline would choose to
+implement some subset of all potential pipeline stages as appropriate
+for the relevant problem domain.
 
 In Chapter~\ref{chp:implementation}, aa system is engineered that implements
 as many of these pipeline stages as possible such that a running instance of
@@ -586,10 +634,3 @@ data pipeline. In the next section, some of the technical architecture of this
 pipeline is outlined and the next chapter will cover how the overall system is
 then implemented.
 
-\section{Pipeline Architecture}
-
-TODO
-
-\section{Architecting for Experimentation}
-
-TODO

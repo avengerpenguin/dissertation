@@ -137,11 +137,382 @@ highest scores.
 
 \subsection{Survey Results}
 
-TODO
+The survey was taken by 30 respondants with three having taken it
+following the think-aloud protocol\cite{lewis1982using} so that more
+information can be gathered around the motivation for the responses.
+Two of the think-aloud participants were experts in usability testing
+and user experience design and the remaining participant a normal
+website user.
+
+Details of observations captured during the think-aloud responses
+are discussed in section~\ref{sec:eval-obs}.
+
+A key metric generated from the responses was the proportion of times
+respondants selected a ``related'' set of items based on clusters
+generated from a particular data pipeline variant. A table of the
+responses is given in table~\ref{tbl:results}.
+
+\begin{table}[h]
+  \centering
+  \caption{Success rate for each pipeline variant in generating related content suggestions}
+  \label{tbl:results}
+  \begin{tabular}{lll}
+    & Not enriched & Enriched \\
+    Deference                                     & 5\%          & 44\%     \\
+    Entity Extraction                             & 17\%         & 37\%     \\
+    Hyperlink Relationships                       & 8\%          & 14\%     \\
+    Dereference and Entity Extraction             & 34\%         & 37\%     \\
+    Entity Extraction and Hyperlink Relationships & 16\%         & 11\%     \\
+    Dereference and Hyperlink Relationships       & 26\%         & 30\%     \\
+    All three extractions                         & 23\%         & 24\%     
+  \end{tabular}
+\end{table}
+
+A tabular form of the results is helpful for showing which techniques
+performed the best and whether enrichment improved or worsened the
+performance. However, it is difficult to derive absolute meaning
+from numbers taken from qualitative feedback over such a small
+sample.
+
+\begin{sidewaysfigure}
+  \begin{center}
+    \includegraphics[width=\linewidth]{diagrams/results.png}
+  \end{center}
+  \caption{Visualisation of performance of each data pipeline variant\label{fig:results}}
+\end{sidewaysfigure}
+
+
+In figure~\ref{fig:results}, each pipeline variant is visualised
+as a node in a directed graph. Note the nickname RDFa to represent
+dereferencing and extracting embedded semantics despite RDFa being
+only one of a few semantic markups extracted in this case. Also note
+the convention to suffix the variant name with $+$ to indicate it
+has been enriched. The nodes
+on the far left represent each of the three extraction techniques
+used in isolation.
+
+The edges of the graph represent introducing one new technique and
+re-running the experiment. For example, the edge from \emph{RDFa} to
+\emph{RDFa+} shows what happens to the performance if we introduce
+enrichment via derefence to data extracted also by dereference.
+The edges from e.g. \emph{Entities} and \emph{Links} point to
+the result of having used both of those techniques in data extraction
+(joining the graphs via set union).
+
+Where a percentage increases (significantly), we can infer with some
+level of confidence that adding in a particular technique
+\emph{improves} the performance of the overall system for choosing
+clusters of related content. Conversely, where the percentage drops
+a large amount, we can infer that introducing that technique has
+worsened the performance.
+
+In the particular results depicited, there are a mix of insignificant
+and significant changes in performance when we alter one aspect of
+the system. Insignificant results include:
+
+\begin{itemize}
+\item In all but one case, the enrichment via dereference had
+  very little effect. Changes between 1\% and 5\% do not stand out
+  as large jumps in behaviour, particular with the small sample size
+  of people being likely to make the error margins quite large.
+\item Extraction via entity extraction does not seem to improve nor
+  degrade when adding in hyperlink relationships.
+\item The combination of dereference and hyperlink relationships
+  does not perform very differently when entity extraction is added.
+\end{itemize}
+
+Some of the most significant results appear to be:
+
+\begin{itemize}
+\item Extraction via dereference only improves substantially when
+  improved in \emph{any} way. It benefits most significantly out of
+  all variants from enrichment.
+\item Entity extraction benefits somewhat being combined with
+  embedded semantics obtained via dereference, certainly more than
+  it benefits from being combined with hyperlink relationships.
+\item Hyperlink relationships perhaps benefit a little from
+  enrichment (but it might be bold to claim that), but more significantly
+  we can see that extraction technique in performence when combined
+  with either of the two other extraction approaches (or both).
+\end{itemize}
+
+The step change between embedded semantics in isolation and the
+enriched version thereof is so large it prompts a brief return to
+reviewing the clusters each variant produced.
+
+If we refer back to table~\ref{tbl:cluster-counts}, we can see
+another significant step change in that the unenriched variant
+produced 5 (fairly large) clusters and that number drops to 249 when
+enrichment is introduced.
+
+Considering also that this extraction approach performs the most
+poorly across all results, we begin to see support for the analysis
+in section~\ref{sec:anal-deref} where it was observed that only very
+basic metadata is found embedded in many BBC pages. This appears to
+have created a sample of feature sets that have a very small number
+of features each. Further observations in
+section~\ref{sec:anal-deref} stated that
+many of the semantics found had
+common values (e.g. \texttt{ogp:site\_name="BBC"}). That many features
+thus did not pass feature selection (since they did not appear
+with enough value variation across the corpus) means that the few
+semantic properties found are stripped down even further.
+
+Much of the performance gain by altering extraction via derefence
+might be explainable purely due to having added more data properties
+with which the machine learning algorithms can work. This starts to
+suggest a potential for a minimum feature set size below which
+clustering processes will struggle.
+
+This is especially supported by
+the large performance increase from having simply enriched the data.
+Given the enrichment in a lot of cases just added more higher order
+properties describing the semantic properties themselves (e.g.
+\textttmd:item\_rdf:type\_rdf:List{} appeared in some cases, which
+tells us only that the \texttt{md:item} property found takes
+list objects as values), we can safely conclude much of the
+``enrichment'' has not added information about the content, but
+just increased the triple count enough to make the clustering more
+effective.
+
+Given the noise from page structure and meta-semantics like RDFS and
+OWL, it might be surprising that embedded semantics performed well
+at all. The strength that appears to have had the most impact is that
+the few times semantic properties are used in BBC pages, content
+producers are including basic categorical information such as what
+part of the BBC site we are on (e.g. \texttt{ogp:site\_name="BBC Sport"})
+and in some cases which section within that site
+(e.g. \texttt{article:section="Golf"}).
+
+The basic categories seemed to be powerful enough to please many
+respondants who frequently approved of related content suggestions on
+the basis that the suggestions were from the same part as the BBC
+website. This may be an artefact of framing the survey in an
+artificial way as people validating the system by whether the pages
+are grouped by well-understand caterogies (e.g. football news, comedy
+TV, science articles) does not necessarily correlate with how those
+same users would have been tempted to follow links to suggested items
+as part of their own casual browsing of the website. This point
+was also raised in some of the think-aloud discussions with user
+experience experts, as discussed in section~\ref{sec:eval-obs}.
+
+It seems reasonable to conclude that embedded semantics perform
+well enough to produce clustering that appears intelligent on casual
+inspect. Given that it is one of the simplest to implement (run
+a standard RDFa and Microdata parser such as RDFLib in Python), there
+is much to say for its cost-benefit ratio. It could be concluded this
+is a strong starting point for a first iteration of a real implementation
+of this experimental system.
+
+Entity Extraction performed most strongly out of all extraction
+techniques in isolation. This result is even more promising when we
+consider that the parameters of the DBPedia Spotlight extraction used
+were arbitrarily chosen, so there is certainly scope for further
+work to find better performance with better tuning of the entity
+extraction alone.
+
+The favourable discussion of both embedded semantics and entity
+extraction above is supported somewhat by two observations in the
+results visualisation: their combination appears to perform best out
+of all pairings of extraction techniques and adding hyperlink
+relationships to that pair reduces the performance. The joint
+occurrence of these two facts may not be coincidental and thus
+support the short analysis in section~\ref{sec:anal-hyperlink} where
+even brief review of the clusters provides little confidence in their
+utility. Some potential ways to improve this extraction were given
+at the end of section~\ref{sec:production-recommendations}, but from
+this research alone we cannot conclude any benefit in extracting
+relationships in this way until those improvements are trialled.
+
+It is also important to note conclusions from the lack of significant
+step changes and the most interesting one in these results is the lack
+of support for enrichment via dereference improving performance at
+all. This follows on from analysis in section~\ref{sec:anal-enrichment}
+that suggests the use of derefence simply falls down on the same
+drawbacks as dereference as an extraction technique. The only case
+where enrichment makes a large difference is improving extraction via
+dereference, but this could be explained more by the latter performing
+so poorly in the first place, as discussed above.
+
+In summary, there is much promise to consider starting with
+embedded semantics where the system will do little more than learn
+categorisation of content (in the case of BBC pages, that is) and
+look to bring in entity extraction in a controlled way so that
+the tuning of the extraction can be experimented with.
+
+A production version of this system should aim to achieve an evolution
+from finding the ``obvious'' distinctions from the content (i.e.
+do we really need machine learning to tell us that BBC Sport articles
+are related to each other, but distinct from BBC Food recipes?) to
+finding more nuanced relationships based on entities and topics found
+within the content if it is monitored and tuned well. This difference
+between clear-cut differences and more topic-based relationships
+turned out to be a key theme from the think-aloud evaluation and
+consequent discussions with user experience experts. This is
+discussed in section~\ref{sec:eval-obs}.
 
 \subsection{Further Observations and Discussion}
+\label{sec:eval-obs}
 
-TODO
+Further qualitative feedback was obtained in two ways: firstly by
+adding to the end of the survery some open-ended questions to invite
+some discussion:
+
+\begin{itemize}
+  \item Do you feel that suggested links to promoted content is something you would use in general? Feel free to expand on your answer.
+  \item Do you have any general observations on where the suggestions performed poorly or where they performed well?
+  \item Please write any other comments or observations below.
+\end{itemize}
+
+Approximately half of respondants answered the first two and only
+three out of the 30 went on to give some additional comments. Many
+of those were user experience experts who felt they had much to
+contribute additional feedback.
+
+The second phase of additional, qualitative feedback was notes taken
+during the ``think-aloud'' survey responses as described in
+the previous section.
+
+In the think-aloud observations, non-expert responses were terser
+than those from experts and it seemed as though conclusions were
+reached more quickly about
+whether suggested content was relevant or related. The impression was
+that non-experts may act on some instinct that is hard to
+describe, whereas experts in user design are more experienced in
+some of the rationales and patterns they have observed across many
+user testing sessions. This more instinct-driven approach for
+non-experts is supported further from observations that thumbnail
+images were cited on more than one occassion as a motivator for
+determining content as being similar or not.
+
+The expert think-aloud observations highlighted the key difference
+between content being similar due to being in the same categorisation
+groups versus being related by themes or topics, as discussed at the
+end of the previous section. The opinions from these user experience
+experts was that a topic-based similarity would be strongest for users
+to consider clicking through to the suggested content and this was
+vindicated on a number of occassions in non-expert responses two
+(in one example a respondant was disappointed that many suggestions
+offered next to a BBC News article were just ``more articles'' and
+not ``articles on the same topic'').
+
+The topic-based feedback gives more support for getting good quality
+metadata \emph{about} the content in far more fined-grained and
+nuanced ways than broad categories typically found in the embedded
+semantics in BBC pages. Entity extraction looks to be a strong
+candidate to support this if we cannot get more nuanced topic tags
+into the embedded semantics. This case is supported well by the
+analysis of the main responses in the last section.
+
+The expert discussions raised some cases where ``hard'' categories
+for the content were necessary, however. In some cases the clustering
+processes had grouped content suitable for children with content not
+explicitly marked as such. For a media organisation like the BBC, where
+there is wide provision of content targed at children, any
+promotional feature on the website needs to be very cautious about
+what it suggests. In the BBC, it is typical to create a strict
+separation between child and non-child content and a general-purpose
+data extraction pipeline has no automatic knowledge of this. In a
+real setting, it is likely a production version of this system would
+want to have some basic business rules to constrain its operation
+where these strict requirements exist.
+
+Another case for hard categorisation came from BBC Bitesize pages
+with GCSE revision material for 14 to 16 year old British children.
+There was some approval where it suggested revision material
+for other subjects (relating GCSE French to GCSE English, for
+example) and even when it appeared to suggest other content aimed
+at a younger audience (e.g. BBC Newsround news articles aimed at children),
+but it was raised whether it was appropriate to ``distract'' children
+revising for GCSE exams with entertainment content. This highlights
+more consideration for business rules.
+
+It was also noted
+that GCSE revision material was sometimes grouped with material for
+even younger age groups (e.g. Key Stage 2 for 11 year olds) which
+is unlikely to be helpful. This is another drawback of trying to
+``learn'' relationships without prior knowledge of strict categorisation
+of the UK National Curriculum structure. The BBC has however modelled
+this as a semantic ontology\footnote{http://www.bbc.co.uk/ontologies/curriculum}
+which may be promising for future iterations of this research where
+we can incorporate more inference and enrichment based on
+ontologies.
+
+The final case where strict separation of content is needed is where
+the system chose to cluster many British football teams together.
+Semantically, the system was behaving very well in identifty that
+all pages are published by BBC Sport and talk about a football team,
+its fixtures and its results. However, with proper domain expertise,
+a system should know not to suggest arbitrary, alternative football
+teams to a user who is on the page for their favourite team. It is
+unlikely they wish to read about teams they do not follow.
+
+One last point raised in discussions with user experience exports was
+how they believe that users on a given part of the BBC site may be
+in different moods or have different goals depending on where they
+are. For example, users reading information and educational guides
+are believed to be more likely to be in a position to be suggested
+other informational content even if it's only tangentially related
+because their focus will just be on reading interesting things.
+Conversely, people reading articles on BBC News might only wish to
+be suggested articles on the same topic or developing story.
+
+These different moods or goals seem similar to some of the search
+and discovery modes proposed by Russell-Rose, Lamantia
+and Burrell\cite{russell2011taxonomy}, where they try to give names
+to different modes of behaviour exhibited by users when using search
+or navigation systems to find information. It is not immediately clear
+how we can infer these different modes or use cases based on
+the semantics of different content items, but there could be some
+consideration to how knowledge of user behaviour can feed in to
+any machine learning processes.
+
+There is much useful feedback and discussion raised just from
+discussion with some user experience experts and also non-experts as
+they evaluated the system's output in the survey. The open questions
+at the end of the survey prompted a large number of comments, which
+can be summarised as:
+
+\begin{itemize}
+\item Some liked where clear categorical grouping had occurred, e.g.
+  news articles grouped with news articles, perhaps from the same
+  category. Areas of the site where clear categories are lacking
+  from the embedded semantics were mentioned as performing less well.
+\item Others were less happy with suggestions being driven by
+  broad categories only and felt they needed to relate by topic
+  before they would follow the links.
+\item There were a range of opinions as to whether the results
+  were overall good or bad.
+\item Two or three comments supported the idea that more weakly
+  related content was better on the information sites, also supporting
+  the idea that users are in a more exploratory ``mode''.
+\item At least one comment noted that content was old. The clustering
+  has no knowledge of what is current and what is older (which is
+  very important for things like news).
+\item Comments generally supported the idea of having a related
+  content feature at all, but many were quick to add that it had
+  to be truly relevant otherwise they may ignore it in time or treat
+  it as if it were spam or advertising.
+\item There were many comments, even from BBC employees about
+  having discovered parts of the BBC site they were not previously
+  aware of. Some of this was helped by the sampling heuristic
+  deliberately choosing a diverse range of content for evaluation, but
+  it does support the idea that users might need features driven by
+  data in this way to suggest parts of the website they did not
+  know about before.
+\end{itemize}
+
+A common theme from both this section and the previous section is
+this balance between structured, categorical data and topic and theme
+information both feeding into how content is grouped. This provides
+strong evidence again for the benefits of combining structured information
+from embedded semantics with fuzzier approaches like entity extraction.
+
+The simple survey designed and given to only 30 people has raised
+a substantial amount of feedback on the variants of the system. In
+the next section, there is some evaluation of the software itself
+from a design perspective and some discussion of some of its
+shortcomings that a production version might wish to avoid.
 
 \section{Design Limitations}
 
@@ -162,6 +533,7 @@ applying the data extraction techniques used and provide more general
 software design recommendations.
 
 \subsection{Performance}
+\label{sec:eval-perf}
 
 The experimental system ran far slower than would be acceptable in
 an enterprise system and even to the extent that it would limit

@@ -255,7 +255,94 @@ graph model for content items in the first place.
 \section{RDF in the enterprise}
 \label{sec:linked-enterprise-data}
 
+At the end of chapter~\ref{chp:intro}, there is some discussion of the
+benefits of using semantics and linked data for any process that we wish
+to apply across the entire corpus.
+
+In this section, the goal is to strengthen that case and review other
+previous work around using linked data in the enterprise. This is a more
+general argument for any enterprise with data (e.g. internal information
+about staff or business processes) and not just media orgainisations.
+
 \subsection{Data Fragmentation in Organisations}
+
+The first thing to highlight is why enterprises struggle to work with all
+the data spread across the organisation. Where all interesting data is
+contained in a single database, it is relatively simple to develop software
+that extracts all that data in a single query and processes it in some way.
+
+It is rare, however, for any large business to keep all data stored in
+one location and in one format. Even fairly simple businesses will have
+separate data stores for their employee data, for example, and all
+usernames and passwords for the corporate email system. Without much effort,
+a business that implements or purchases two distinct systems for personnel
+and email has already fragmented its data.
+
+There may be no difficulty from this initially, but then a problem arises
+where it is noted that employees, in this example, do not automatically have
+their email accounts disabled when they leave the organisation. Smaller
+businesses might simple employ adminstrative staff to keep databases in
+sync and implement a standard process to handle the case of an employee
+leaving the company.
+
+In a large organisation, it may be more desirable to automate this. This then
+steps into the field of \emph{Enterprise Integration}, discussed in the next
+section.
+
+In a media organisation, it might be argued that whilst all employee and
+internal systems data is in bespoke systems, we can ensure all ``content''
+is stored in a single system such as a \emph{content management system}. This
+can be strained by at least three different pressures:
+
+\begin{enumerate}
+\item diversity of content;
+\item technology refresh cycles; and
+\item fragmentation of teams.
+\end{enumerate}
+
+Where an organisation produces multiple \emph{types} of content, it
+may be the case that one system is optimised for writing and editing textual
+articles (e.g. news) and another system is purchased or created to handle
+video content. If these systems are built by different teams or, worse,
+are procured independently as commercial offerings, there is little incentive
+for the content to be compatible for generalising techniques such as search
+or data mining.
+
+This is the compounded where development teams decide to rebuild software
+systems to keep up to date with changes in the industry, implement new features
+in ways not made possible by the old system or because the old system is
+becoming more expensive to maintain than it is to replace. This also applies
+for buying in new systems because a contract was up for renewal and the fresh
+procurement process chose a competitor's commercial offering which is
+incompatible than that of the previous provider.
+
+When this happens, the teams might choose to migrate all the old content to
+the system, but they also might choose not to if the older system is still
+running without issues. If it can continue to serve old content in a
+"read-only" state without issues, then there may not be a strong business
+case to migrate that old content as long as it continues to work.
+
+The teams may also choose to archive the old content in a flat state not
+intended for editing. This allows the old system to be decommissioned, but it
+does leave older content in a format not easily queries and certainly not
+compatible with how newer content is actively managed.
+
+The final problem highlighted above -- that of fragmentation of teams in the
+organisation -- particularly affects very large enterprises such as the BBC.
+Any media company might find that content production teams work best when
+given sufficient autonomy. A consequence of this is that multiple teams
+might implement very similar solutions to the same problems, but without the
+incentive to share nor unify their approaches. From this, we can ultimately
+end up with multiple content management systems even for the same type of
+content, all actively maintained.
+
+A lot of this falls out of what was observed by
+Conway\cite{conway1968committees} (sometimes as known as \emph{Conway's Law})
+in that an organisation's architecture ends up reflecting its communication
+structures. From this, we can assume that if two teams in an organisation
+are not encouraged to communicate well and often, then they are less likely to
+share software code and data systems.
+
 \subsection{Enterprise Integration}
 \subsection{Organisational Difficulties with Enterprise Integration}
 \label{sec:ei-difficulties}

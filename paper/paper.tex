@@ -5,6 +5,8 @@
 \usepackage{textcomp}
 \usepackage{caption}
 \usepackage{listings}
+\usepackage{tikz}
+\usepackage{rotating}
 
 % Language Definitions for SPARQL
 \lstdefinelanguage{sparql}{
@@ -92,13 +94,10 @@ Media companies produce ever larger numbers of articles, videos, podcasts,
 games, etc. -- commonly collectively known as ``content''. A successful
 content-producing website not only has to develop systems to aid producing and
 publishing that content, but there are also demands to engineer effective
-mechanisms to aid consumers in finding that content.
-
-Approaches to aid discovery of content used in industry include providing a
+mechanisms to aid consumers in finding that content. Examples include providing a
 text-based search, hierarchical
-categorisation (and thus navigation thereof) and even more tailored recommended
-content based on past behaviour or content enjoyed by friends (or sometimes
-simply other consumers who share your preferences).
+categorisation and tailored recommended
+content based on past behaviour.
 
 \subsection{Problems}
 
@@ -193,14 +192,9 @@ content, we can imagine another system that can query this miner application
 to provide some view of related content given some initial content item.
 
 \subsection{Data Pipeline}
+\label{sec:design-pipeline}
 
-The overall content miner system conflates the two jobs of generating
-feature sets suitable for data mining and also the data mining process itself.
-Thus a core subsystem in the overall system is a conceptual data pipeline whose
-input is a URI or IRI identifying a content item published on an organisation's
-website and the output is feature sets ready for applying machine learning.
-
-This subsystem was conceptually modelled as a data ``pipeline'' that takes
+This input side of the miner was conceptually modelled as a data ``pipeline'' that takes
 an IRI identifying a piece of web content at the source end and produces
 feature sets at the other end. In this pipeline, the three primary data
 structures employed are the \emph{IRI}\footnote{http://tools.ietf.org/html/rfc3987}
@@ -227,7 +221,7 @@ FILTER isIRI(?o)
 \end{lstlisting}
 
 Note that this ignores triples whose objects are literals, for which case the
-a analogous strategy as shown in listings~\ref{literal-sparql} was employed to
+similar strategy as shown in listings~\ref{lst:literal-sparql} was employed to
 produce features of the form: \texttt{?p=?v}.
 
 \begin{lstlisting}[label=lst:literal-sparql,caption={Generates field \texttt{content\_?p\_?v} with value \texttt{true}},language=sparql]
@@ -253,7 +247,8 @@ produce an empty named RDF graph. Such a graph for an example IRI
 \texttt{http://example.com/entity/} is illustrated in
 JSON-LD syntax in Listings~\ref{lst:jsonld-identity}. This provides our
 base case in the inductive design. This enables a \emph{null} pipeline
-as shown in Figure~\ref{fig:gen-null}.
+as shown in Figure~\ref{fig:gen-null} that only produce feature sets with
+a single property containing the item's IRI.
 
             \begin{figure}[h]
               \begin{center}
@@ -283,6 +278,48 @@ $(IRI, rdf\!\!:\!\!about, Entity)$
 other: $(IRI_1, ex:related, IRI_2)$
 \end{itemize}
 
+\begin{figure*}
+  \begin{center}
+    \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.6]
+      digraph g {
+        rankdir=LR;
+
+        node [shape=circle,margin="0,0"]
+        RDF1 [label="RDF_1"];
+        RDF2 [label="RDF_2"];
+        RDF3 [label="RDF_3"];
+        RDFp [label="RDF'"];
+        RDFp1 [label="RDF'_1"];
+        RDFp2 [label="RDF'_2"];
+        RDFp3 [label="RDF'_3"];
+        RDFp4 [label="RDF'_4"];
+
+        IRI -> RDF1 [label="\text{parse}"];
+        IRI -> RDF2 [label="\text{extract}"];
+        IRI -> RDF3 [label="\text{scrape}"];
+
+        RDF1 -> RDF [label="\cup"];
+        RDF2 -> RDF [label="\cup"];
+        RDF3 -> RDF [label="\cup"];
+
+        RDF -> RDFp1 [label="\text{dereference/parse}"];
+        RDF -> RDFp2 [label="\text{hypernym inference}"];
+        RDF -> RDFp3 [label="\text{expert inference}"];
+        RDF -> RDFp4 [label="\text{OWL inference}"];
+
+        RDF -> RDFp [label="\cup"];
+        RDFp1 -> RDFp [label="\cup"];
+        RDFp2 -> RDFp [label="\cup"];
+        RDFp3 -> RDFp [label="\cup"];
+        RDFp4 -> RDFp [label="\cup"];
+
+        RDFp -> Features [label="\text{content\_?p\_?v}"];
+        RDFp -> Features [label="\text{content\_?p1\_?p2\_?v}"];
+      }
+    \end{dot2tex}
+  \end{center}  \caption{\label{fig:maximal-pipeline}Maximal Data Pipeline}
+\end{figure*}
+
 We also propose enrichment techniques such as the following:
 
 \begin{itemize}
@@ -293,13 +330,86 @@ item is about animals if the entity \emph{Dog} is found and we have an
 ontology that states that \emph{Animal} is a superclass.
 \end{itemize}
 
+This could lead to a theoretical maximum pipeline as depicted in Figure~\ref{fig:maximal-pipeline}.
+
 \section{Implementation}
+
+All functionality was implemented as part of a single Python module
+named \emph{distillery}
+that is run via the Unix command line, with different subcommands for
+each feature. Each command was designed around the
+Unix Philosophy\cite{raymond2003art} of doing one job per command and
+that they were composable via Unix pipes. This allows pipelines to
+be composed, e.g.:
+
+\begin{centering}
+  \begin{lstlisting}[
+      basicstyle=\scriptsize,
+      label=lst:unix-pipe,
+      language=bash]
+distillery extract <iris.txt | distillery enrich
+  \end{lstlisting}
+\end{centering}
+
+\noindent that resemble the entire theoretical data pipeline described
+in section~\ref{sec:design-pipeline} without the need for middleware
+such as message queues. More typical enterprise architectures around
+message oriented middleware or event-driven architecture might need
+to be employed to scale this system to millions of documents, but
+the simple approach above is sufficient for tens of thousands of
+documents.
 
 \section{Analysis and Evalaution}
 
-\section{Evaluation}
+Clusters produced were analysed both by an exploratory analysis of the results
+and also a survey given to 30 respondents to evaluate mock-ups of
+suggested, "related" content based on a hypothetical starting page and
+promoted links to other pages in the same cluster.
+
+Exploratory analysis showed a large variety in the sizes of clusters produced.
+Hyperlink relationships fell down on finding links to common pages like FAQs
+which then allowed the greedy clustering algorithms to spend too much time
+grouping all pages that linked to those very common links.
+
+Embedded semantics did well where annotations were put in place for social
+media sharing. There was some difficulties with noise from semantic vocabularies
+concerned with describing structure of the page or even schema properties
+about the properties themselves.
+
+Entity extraction was strong at finding larger numbers of triples, but required
+some monitoring to avoid false positives from words common to many pages
+(a large number of BBC pages mention Twitter, for example, where there
+are controls prompting users to share content on that platform). Other examples
+included a ``Listen'' button present on all BBC pages about radio programmes.
+
+Enrichment by dereference had the same shortcomings of embedded semantics
+extraction and whilst it did add value in some cases, it generated an explosive
+increase in the number of triples that had a large impact on system performance.
+
+Results from the survey supported the idea that embedded entities pleased
+users where it was able to group things on very structural, categorical aspects
+of the data (e.g. BBC News vs. BBC iPlayer or even ``Football'' category
+within BBC Sport.)
+
+However, many users preferred items to be linked more strongly by theme or
+topic. Some useful discussion with user experience experts supported this idea
+and in some cases this was achieved due to entity extraction.
 
 \section{Conclusions}
+
+Extracting embedded semantics provided enough initial benefits for machine
+learning in that a model can be produced that understands the broad categorisation
+of media content. That it is far simpler to implement than bespoke enterprise
+integration projects, proves its worth as an initial iteration of a more
+intelligent system.
+
+Organisations would benefit from implementing this baseline for gaining
+insights into its content and then spend later iterations looking at
+introducing entity extraction, monitored carefully for appropriate tuning.
+
+Later iterations can look at some enterprise integration work to improve
+the quality of the most poorly-performing content items. there is certainly
+need for future work to evaluate some of the more complex enrichment approaches.
 
 \bibliographystyle{abbrv}
 \bibliography{../report/references}

@@ -333,7 +333,9 @@ def find_links(iri):
         'href': re.compile('.+')
     }):
         # ... handle href values being relative links ...
-        other_iri = urljoin(iri, a_tag.attrs['href']).strip()
+        other_iri = urljoin(
+            iri, a_tag.attrs['href']
+        ).strip()
 
         # ... infer triple if IRI is to another BBC page
         if bbc_url.match(url):

@@ -1,16 +1,10 @@
 \documentclass{sig-alternate-05-2015}
 
+\usepackage[autosize]{dot2texi}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{textcomp}
 \usepackage{caption}
 \usepackage{listings}
-\DeclareCaptionFont{white}{ \color{white} }
-\DeclareCaptionFormat{listing}{
-  \colorbox[cmyk]{0.43, 0.35, 0.35,0.01 }{
-    \parbox{\textwidth}{#1#2#3}
-  }
-}
-\captionsetup[lstlisting]{ format=listing, labelfont=white, textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize} }
 
 % Language Definitions for SPARQL
 \lstdefinelanguage{sparql}{
@@ -52,7 +46,7 @@ sensitive=true
 
 \begin{document}
 
-\title{Combining Linked data and Data Mining Techniques to improve Clustering of Large Scale Media Repositories: A case study with BBC}
+\title{Improving content discovery through combining linked data and data mining techniques}
 %\subtitle{[Extended Abstract]
 
 \numberofauthors{1}
@@ -67,22 +61,29 @@ Ross Fenning\\
 
 \maketitle
 \begin{abstract}
-Media companies produce ever larger numbers of articles, videos, podcasts,
-games, commonly collectively known as ``content''. A successful
-content-producing organisation not only has to develop systems to aid producing
-and publishing content, but there are also demands to engineer effective
-mechanisms to aid consumers in finding that content. Linked Data technologies
-provide data enrichment beyond attributes and keywords explicitly available
-within content data or metadata. In our work we experiment with a
-plausible mapping of an RDF graph representing a content item to an attribute
-set suitable for data mining. With such a mapping, we have explored the
-application of machine learning, particularly unsupervised learning, across
-an organisation's whole content corpus. We have created an innovative pipeline
-of linked data and data mining that allows clustering of media content items on
-the fly. We have evaluated such system in the context of website content
-produced by the British Broadcasting Corporation (BBC) and present the optimum
-combination of RDF graphs and data mining with qualitative and quantitative
-results.
+A comparative study of multiple approaches for extracting linked data
+from web content published by the BBC for the purposes of applying
+machine learning to cluster related content.
+
+This project designs and implements a process by which semantic data
+about any piece of online media content can be extracted into RDF
+models in
+multiple ways and feature
+sets for machine learning can be generated from
+that data. The clusters produced by fourteen different permutations
+of techniques are evaluated and a potential application of suggesting
+related content is mocked up for qualitative evaluation.
+
+It is concluded organisations can very easily make use of
+embedded semantics within web pages due to better semantic properties
+being made available in recent years because of pressure from
+social media sites such as Facebook and Twitter.
+These embedded semantics provide a good baseline for simple
+learning that can group content based on broad categorisation.
+
+A simple application of entity extraction also shows promising results in
+evaluation and is highlighted as an area for organisations to explore
+tuning to provide a powerful complement to embedded semantics.
 \end{abstract}
 
 \section{Introduction}
@@ -99,24 +100,16 @@ categorisation (and thus navigation thereof) and even more tailored recommended
 content based on past behaviour or content enjoyed by friends (or sometimes
 simply other consumers who share your preferences).
 
-\subsection{Problem}
-
-In order to build systems
-that operate across the full corpus of their content, organisations face
-several problems:
+\subsection{Problems}
 
 \begin{itemize}
 
-\item Large organisations can have content across multiple content management
+\item Content across multiple content management
 systems, in differing formats and data models.
 
-\item Many content items are in fairly opaque formats, e.g. video content may be
-stored as audio-visual binary data with minimal, textual metadata to display on
-a containing web page.
+\item Content items are in fairly opaque formats, e.g. video and audio content.
 
-\item Content is being published continuously, which means any search or
-discovery system needs to keep up with content as it is published and process it
-into the appropriate data structures. Any analytical process that operates
+\item Content is being published continuously, so any analytical process that operates
 over all content (e.g. machine learning) may need to be run periodically or in
 an incremental fashion.
 
@@ -124,30 +117,21 @@ an incremental fashion.
 
 \subsection{Hypothesis}
 
-The following hypotheses are proposed for gaining new insights about an
-organisation's diverse corpus of content:
-
 \begin{itemize}
 
 \item Research and software tools around the concept of \emph{Linked Data} can
-aid us in rapidly acquiring a broad view (perhaps at the expense of depth) of an
-organisation's content whilst also providing a platform for simple enrichment of
-that content's metadata.
+aid us in rapidly acquiring a broad view of an
+organisation's content.
 
 \item We can establish at least a na\"ive mapping of an RDF graph representing a
-content item to an attribute set suitable for data mining. With such a mapping,
-we can explore applying machine learning across an organisation's whole content
-corpus.
+content item to an attribute set suitable for data mining.
 
 \item Linked Data and Semantic Web \emph{ontologies} and models available can
 provide data enrichment beyond attributes and keywords explicitly avaiable
 within content data or metadata.
 
-\item Many content-producers currently enrich their web pages with small
-amounts of semantic metadata to provide better presentation of that content
-as it is shared on social media. This enables simple collection of a full
-breadth of content with significantly less effort than direct integration
-with content management systems (i.e. Enterprise Integration).
+\item We can make use of semantic metadata added to pages
+to provide better presentation of that content as it is shared on social media.
 
 \end{itemize}
 
@@ -166,34 +150,10 @@ subject-predicate-object \emph{triples}. The query language, SPARQL, gives us a
 way to query the RDF graph structure using a declarative pattern and return a
 set of all variable bindings that satisfy that pattern.
 
-Notably, Kiefer, Bernstein and Locher\cite{kiefer2008adding} proposed a novel
-approach called SPARQL-ML -- an extension to the
-SPARQL\cite{segaran2009programming} query language with new keywords to
-facilitate both generating and applying models. This means that the system
-capable of parsing and running standard queries must also run machine learning
-algorithms.
-
-Their work involved developing an extension to the SPARQL query
-engine for \emph{Apache Jena}\footnote{https://jena.apache.org/} that integrates
-with systems such as \emph{Weka}\footnote{http://www.cs.waikato.ac.nz/ml/weka/}.
-A more suitable software application for enterprise use might focus solely on
-converting RDF graphs into a neutral data structure that can plug into arbitrary
-data mining algorithms.
-
-An approach of generating attributes for a given resource was proposed by
-Paulheim and F\"urnkranz\cite{paulheim2012unsupervised}. They defined specific
-SPARQL queries and provided case study evidence for the effectiveness of
-each strategy.
-
-Their work focused on starting with relational-style data (e.g. from a
-relational database) and using \emph{Linked Open Data} to identify entities
-within literal values in those relations and generated attributes from
-SPARQL queries over those entities.
-
 For a large content-producer, there is a more general problem where many content
 items do not have a relational representation and the content source is a body
 of text or even a raw HTML page. However, the feature generation from Paulheim
-and F\:urnkranz proves to be a promising strategy given we can acquire an RDF
+and F\"urnkranz proves to be a promising strategy given we can acquire an RDF
 graph model for content items in the first place.
 
 \section{Design}
@@ -253,24 +213,8 @@ The data pipeline was then designed inductively, introducing potential
 methods for creating RDF graphs from web content and also enriching those
 graphs.
 
-\begin{centering}
-\begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
-{
-  "@id": "http://example.com/entity/1",
-  "@graph": []
-}
-\end{lstlisting}
-\end{centering}
-
-With the knowledge only of a content item's IRI, we are arguably only able to
-produce an empty named RDF graph. Such a graph for an example IRI
-\texttt{http://example.com/entity/} is illustrated in
-JSON-LD syntax in Listings~\ref{lst:jsonld-identity}. This provides our
-base case in the inductive design.
-
-Paulheim and F\"urnkranz\cite{paulheim2012unsupervised} described a number of
-SPARQL queries for generating feature sets from RDF data, inspired
-a simple query such as that shown in Listings~\ref{lst:simple-sparql}. This
+Listings~\ref{lst:simple-sparql} shows a SPARQL query inspired by Paulheim and F\"urnkranz\cite{paulheim2012unsupervised}.
+This
 query generates a boolean \texttt{true} value for any properties that match
 and implies \texttt{false} for those that do not and we then flatten this into
 a simple feature format: \texttt{?p\_?o=true},
@@ -292,7 +236,62 @@ WHERE { ?iri ?p ?v . }
 FILTER isLiteral(?o)
 \end{lstlisting}
 
-Finally, an additional layer of indirection was created
+With a feature generation strategy in place, we can inductively build up the
+pipeline of how we create RDF graphs for that generation.
+
+\begin{centering}
+\begin{lstlisting}[label=lst:jsonld-identity,caption={Identity graph for a content item in JSON-LD syntax},language=json]
+{
+  "@id": "http://example.com/entity/1",
+  "@graph": []
+}
+\end{lstlisting}
+\end{centering}
+
+With the knowledge only of a content item's IRI, we are arguably only able to
+produce an empty named RDF graph. Such a graph for an example IRI
+\texttt{http://example.com/entity/} is illustrated in
+JSON-LD syntax in Listings~\ref{lst:jsonld-identity}. This provides our
+base case in the inductive design. This enables a \emph{null} pipeline
+as shown in Figure~\ref{fig:gen-null}.
+
+            \begin{figure}[h]
+              \begin{center}
+                \begin{dot2tex}[dot,options=-t math,autosize,pgf,scale=0.7]
+                  digraph g {
+                    rankdir=LR;
+
+                    node [shape=circle,margin="0,0"];
+                    edge [len=2];
+
+                    IRI -> RDF [label="extract"];
+                    RDF -> Features [label="(IRI)"];
+                  }
+                \end{dot2tex}
+              \end{center}
+              \caption{Null feature generator \label{fig:gen-null}}
+            \end{figure}
+
+We can then add in, one-by-one, the following potential extraction techniques:
+
+\begin{itemize}
+\item Extraction by dereference of the IRI, parsing any RDFa or microdata
+semantics found embedded in the response.
+\item Use entity extraction such as DBpedia and infer triples of the form
+$(IRI, rdf\!\!:\!\!about, Entity)$
+\item Infer a relationship between pages if they have hyperlinks to each
+other: $(IRI_1, ex:related, IRI_2)$
+\end{itemize}
+
+We also propose enrichment techniques such as the following:
+
+\begin{itemize}
+\item Dereference every object IRI for triples of which the given content item
+is the subject.
+\item Infer facts based on OWL/RDFS ontologies and schemas, e.g. infer an
+item is about animals if the entity \emph{Dog} is found and we have an
+ontology that states that \emph{Animal} is a superclass.
+\end{itemize}
 
 \section{Implementation}
 
@@ -302,7 +301,7 @@ Finally, an additional layer of indirection was created
 
 \section{Conclusions}
 
-%\bibliographystyle{abbrv}
-%\bibliography{../report/references}
+\bibliographystyle{abbrv}
+\bibliography{../report/references}
 
 \end{document}

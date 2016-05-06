@@ -391,6 +391,59 @@ are not encouraged to communicate well and often, then they are less likely to
 share software code and data systems.
 
 \subsection{Enterprise Integration}
+
+The field of \emph{Enterprise Integration} is the study and application
+of overcoming the fragmentation issues described in the previous
+section. It is concerned with creating interconnectivity between
+distinct systems, exchanging data between them and dealing with
+distributed systems within the enterprise.\cite{vernadat2003enterprise}
+
 \subsection{Organisational Difficulties with Enterprise Integration}
 \label{sec:ei-difficulties}
+
+Hohpe and Woolf\cite{hohpe2002enterprise} described a comprehensive
+set of software design and architecture patterns that apply to this
+field, but almost every pattern implies creating bespoke data flow
+sofware for any given integration.
+
+This means for every new system that is purchased or created, a
+whole set of integration efforts are potentially initiated to move any
+data into or out of that system.
+
+A significant barrier to creating holistic views of all data
+produced by an organisation is that each integration brings in a
+vertical slice of all data required, but only for once source at a
+time. If a hypothetical organisation has six content management
+systems with actively-published content within them and each
+integration effort takes one month, then it is a minimum of six
+months before it can create something like a search feature over all
+of that content.
+
 \subsection{Linked Enterprise Data}
+
+Allemang\cite{allemang2010semantic} proposed that a
+\emph{linked data enterprise} can be truly agile by removing bottlenecks
+created by enterprise integration efforts. There is an appealing
+argument in using controlled vocabularies and efforts in linking
+those vocabularies between systems to join up existing data silos
+rather than trying to write integration layers to move data between
+those silos.
+
+A more detailed approach was outlined by Servant\cite{servant2008linking}
+in how linking enterprise data might work with the view that it
+could be adopted within Renault.
+
+Real research in this area still seems sparse in the academic
+literature, but there is arguably a case to be made for these
+approaches for an organisations public-facing content given that is
+already available on the public web.
+
+The concept of linked enterprise data could encourage media
+organisations to consider using linked data within all internal APIs
+and data stores where possible such that reasoning across all that
+information is more readily enabled. In this research, it is demonstrated
+that we can get some value at least from the semantics available via
+the content as it surfaces on the public World Wide Web, but this
+value can be only increased if content producers improve the quality
+of those semantics or linked data principles are used within internal
+systems to reduce the need for bespoke enterprise integration effort.

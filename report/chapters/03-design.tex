@@ -102,14 +102,14 @@ that prepares the data for machine learning and the clustering at the
 end on that prepared data. The primary focus of this work is to
 evaluate approaches for the former in the form of a
 \emph{data pipeline} that uses semantics to take in a content item's
-identifer at the source end and produces feature sets for data mining
+identifier at the source end and produces feature sets for data mining
 at the output end. This data pipeline is inductively defined and
 designed in the following section.
 
 \section{Data Pipeline}
 \label{sec:design-pipeline}
 
-As stated in the previous sectionh, a core subsystem in the overall
+As stated in the previous section, a core subsystem in the overall
 system is a conceptual data pipeline whose input is a URI or IRI
 identifying a content item published on an organisation's website and
 the output is feature sets ready for applying machine learning.
@@ -119,10 +119,10 @@ steps such that an application of this pipeline would choose to
 implement some subset of all potential pipeline stages as appropriate
 for the relevant problem domain.
 
-In Chapter~\ref{chp:implementation}, aa system is engineered that implements
+In Chapter~\ref{chp:implementation}, a system is engineered that implements
 as many of these pipeline stages as possible such that a running instance of
 the application can configure which components to use and which not to use.
-Then in Chapter~\ref{chp:evaluation}, an evalution of the system is given
+Then in Chapter~\ref{chp:evaluation}, an evaluation of the system is given
 while it is running each component in isolation to demonstrate which of the
 theoretically-defined processes in this chapter appears to be most effective
 in generating feature sets specifically for clustering web content.
@@ -212,7 +212,7 @@ Such a $null$ feature generator is depicted in Figure~\ref{fig:gen-null}.
 Note that Figure~\ref{fig:gen-null} shows all three data structures involved
 despite having no functional use. We can also see top-level definitions of the
 process where we first \emph{extract} semantic information in RDF from a
-content item indentified by IRI and then \emph{generate} features therefrom.
+content item identified by IRI and then \emph{generate} features therefrom.
 More useful models can now be inductively defined by adding atomic
 subcomponents that may each add value to the overall transformation.
 
@@ -247,7 +247,7 @@ IRI.
 
         node [shape=circle,margin="0,0"]
 
-        IRI -> RDFa [label="derefernce"];
+        IRI -> RDFa [label="dereference"];
         RDFa -> RDF [label="parse"];
         RDF -> Features [label="(IRI)"];
       }
@@ -278,7 +278,7 @@ As also noted by Paulheim
 and F\"urnkranz, this overlooks the
 \emph{open world assumption}\cite{russel2010artificial}. However, application
 of clustering algorithms on binary data can employ asymmetric distance metrics
-such as Jaccard similarity coeffcient\cite{witten2005data}, which notably
+such as Jaccard similarity coefficient\cite{witten2005data}, which notably
 avoids deriving similarity from negative values. That is, two content items
 lacking a particular property will contribute no information about their
 (dis)similarity. Thus we safely avoid inadvertently grouping together one item
@@ -303,14 +303,14 @@ but we lack the positive assertion thereof in the data extracted.
 \end{figure}
 
 The basic pipeline in Figure~\ref{fig:gen-rdfa} can thus be augmented with this
-basic feature extraction to produce the pipeline depicated in
+basic feature extraction to produce the pipeline depicted in
 Figure~\ref{fig:gen-rdfa-basic}.
 
 \subsection{RDF Enrichment}
 
 The third and final direction in which this data pipeline can be improved is
 in terms of data enrichment. A simple strategy here is to repeat the
-deferencing used in Section~\ref{sec:rdf-extraction}, but for each IRI
+dereferencing used in Section~\ref{sec:rdf-extraction}, but for each IRI
 found as the object of a triple in which the initial IRI is the subject.
 Formally:
 
@@ -357,7 +357,7 @@ executed in parallel.
       }
     \end{dot2tex}
   \end{center}
-  \caption{\label{fig:object.-deref}Semantic web content miner with addtional dereferencing of linked entities}
+  \caption{\label{fig:object.-deref}Semantic web content miner with additional dereferencing of linked entities}
 \end{sidewaysfigure}
 
 So far in this section, we have inductively built up a data pipeline from
@@ -401,7 +401,7 @@ as with the enrichment.
         RDF1 [label="RDF_1"];
         RDF2 [label="RDF_2"];
 
-        IRI -> RDFa [label="derefernce"];
+        IRI -> RDFa [label="dereference"];
         IRI -> Text [label="GET"];
         RDFa -> RDF1 [label="parse"];
         Text -> RDF2 [label="entity extraction"];
@@ -423,7 +423,7 @@ $$
 (IRI_1, ex:related, IRI_2)
 $$
 
-\noindent might prove -- through experiementation -- to be useful enough
+\noindent might prove -- through experimentation -- to be useful enough
 for data mining insights.
 
 The fourth and final extraction strategy explored is acquiring metadata from
@@ -433,7 +433,7 @@ Section~\ref{sec:linked-enterprise-data}. This is likely to be the richest
 source of information where an enterprise has typically preferred bespoke
 integrations against non-hypermedia interfaces, so experimentation should
 help quantity or qualify the value such a direct integration adds (perhaps to
-consider it in combination with the cost of bepsoke, repeated integration
+consider it in combination with the cost of bespoke, repeated integration
 projects).
 
 The assertion explored here is that such bespoke integrations can
@@ -460,7 +460,7 @@ to explore the following options:
 
 \begin{itemize}
 \item inferring relationships to hypernyms as defined by Wordnet\cite{miller1995wordnet};
-\item inferring facts based using rules derirved from expert domain knowledge;
+\item inferring facts based using rules derived from expert domain knowledge;
 \item using RDFS and OWL to generate new triples with well-established Ontology rules.
 \end{itemize}
 
@@ -490,7 +490,7 @@ domain knowledge may be more appropriate. For instance, the rule in n3 syntax:
   } -> { ?iri ex:takesPlaceIn ?country }
 \end{lstlisting}
 
-\noindent might be useful ot help cluster articles that take place in the same
+\noindent might be useful to help cluster articles that take place in the same
 country -- even if the countries are not always explicitly mentioned therein.
 Such an inference requires knowledge about cities and countries to
 write and domain experts for different types of content might be able to offer
@@ -583,7 +583,7 @@ adding these additional levels of indirection.
 In this section, a data pipeline was inductively built up from a base,
 identify pipeline with suggestions for potential improvements in different
 stages. An application of all the ideas discussed so far might look like
-that depicated in Figure~\ref{fig:maximal-pipeline}.
+that depicted in Figure~\ref{fig:maximal-pipeline}.
 
 \begin{sidewaysfigure}[p]
   \begin{center}

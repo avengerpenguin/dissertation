@@ -47,7 +47,7 @@ readings.
 
 Well-known examples include neural networks, decision trees and or
 linear regression. In all supervised learning techniques, we can
-normally assess the model's performance against traning data for
+normally assess the model's performance against training data for
 which we already know the answers. We can see supervised learning
 thus as a computational attempt to extrapolate human knowledge into
 a reusable model that can predict or determine things at a speed
@@ -66,7 +66,7 @@ visualise).
 
 A well-known example is association rule mining that can find
 interesting relations in data sets that were perhaps previously
-unknwown. A classic implementation of this technique is in
+unknown. A classic implementation of this technique is in
 supermarkets and other commercial enterprises where those
 organisations seek to find rules and patterns in consumer purchasing
 habits so that they can try to promote items that customers might
@@ -76,7 +76,7 @@ purchase.
 \subsection{Clustering}
 
 Another major unsupervised learning technique -- and the focus of
-this research -- is \emph{clustering}. In clustering algoriths, we
+this research -- is \emph{clustering}. In clustering algorithm, we
 seek to group similar items or entities together in groups or
 \emph{clusters}. Clustering has many applications, but in this
 work the focus will be around \emph{hierarchical} clustering which
@@ -103,16 +103,16 @@ where content producers are struggling to understand their users'
 behaviour as collecting meaningful analytics and records of user
 behaviour is by no means a trivial endeavour in its own right.
 
-Hierchical clustering differs from, say,
+Hierarchical clustering differs from, say,
 \emph{k-means clustering}\cite{witten2005data} in that
 we start with no assumption about the number of clusters or groups
 the data will be divided into. This method is generally applied
 \emph{agglomeratively} or \emph{divisively}.
 
 In divisive, hierarchical clustering, we start with all elements in
-a single cluster and proceed to find divisons that best split that
+a single cluster and proceed to find divisions that best split that
 cluster. This is applied recursively until we generate a
-dendrogam\cite{witten2005data} showing a full hierarchy of similarity
+dendrogram\cite{witten2005data} showing a full hierarchy of similarity
 between the items or we can halt the division based on some condition,
 e.g. only split clusters with a low cohesion below some threshold
 and stop on the first attempt to split a cohesive cluster above
@@ -121,7 +121,7 @@ that threshold.
 Agglomerative, hierarchical clustering goes in the opposite direction
 by starting with all items in their own, individual clusters.
 The two ``nearest'' clusters are then recursively merged until, again,
-we have a full dendrogam or stop before we are about to create a
+we have a full dendrogram or stop before we are about to create a
 cluster whose cohesion falls below some threshold.
 
 \subsection{Distance and Linkage}
@@ -176,14 +176,14 @@ practical reasons:
 
 In this experiment, Jaccard distance\cite{witten2005data}
 based on its suitability for binary, asymmetric data. It is argued
-that the vast vocabularly offered by all potential semantic web
+that the vast vocabulary offered by all potential semantic web
 RDF triples will lead to very asymmetric binary values based on the
 presence or non-presence of that triple.
 
 The chosen linkage function was the complete linkage
 on the basis that it ensures that any two content items
 within a cluster to be considered related. This avoids the so-called
-\emph{chaining phenomenum} where single linkage may create clusters
+\emph{chaining phenomenon} where single linkage may create clusters
 where two unrelated items are members because they are each related
 to an item of chain of related items
 therebetween.\cite{everitt2011hierarchical}
@@ -309,7 +309,7 @@ to apply across the entire corpus.
 In this section, the goal is to strengthen that case and review other
 previous work around using linked data in the enterprise. This is a more
 general argument for any enterprise with data (e.g. internal information
-about staff or business processes) and not just media orgainisations.
+about staff or business processes) and not just media organisations.
 
 \subsection{Data Fragmentation in Organisations}
 
@@ -321,14 +321,14 @@ that extracts all that data in a single query and processes it in some way.
 It is rare, however, for any large business to keep all data stored in
 one location and in one format. Even fairly simple businesses will have
 separate data stores for their employee data, for example, and all
-usernames and passwords for the corporate email system. Without much effort,
+user names and passwords for the corporate email system. Without much effort,
 a business that implements or purchases two distinct systems for personnel
 and email has already fragmented its data.
 
 There may be no difficulty from this initially, but then a problem arises
 where it is noted that employees, in this example, do not automatically have
 their email accounts disabled when they leave the organisation. Smaller
-businesses might simple employ adminstrative staff to keep databases in
+businesses might simple employ administrative staff to keep databases in
 sync and implement a standard process to handle the case of an employee
 leaving the company.
 
@@ -336,7 +336,7 @@ In a large organisation, it may be more desirable to automate this. This then
 steps into the field of \emph{Enterprise Integration}, discussed in the next
 section.
 
-In a media organisation, it might be argued that whilst all employee and
+In a media organisation, it might be argued that while all employee and
 internal systems data is in bespoke systems, we can ensure all ``content''
 is stored in a single system such as a \emph{content management system}. This
 can be strained by at least three different pressures:
@@ -404,7 +404,7 @@ distributed systems within the enterprise.\cite{vernadat2003enterprise}
 Hohpe and Woolf\cite{hohpe2002enterprise} described a comprehensive
 set of software design and architecture patterns that apply to this
 field, but almost every pattern implies creating bespoke data flow
-sofware for any given integration.
+software for any given integration.
 
 This means for every new system that is purchased or created, a
 whole set of integration efforts are potentially initiated to move any

@@ -74,8 +74,8 @@ The design of the data pipeline in chapter~\ref{chp:design} would
 suggest an implementation with each stage implemented as a function
 converting a graph into a new, richer graph.
 
-That is, whilst the different strategies illustrated in the maximal
-data pipline in Figure~\ref{fig:maximal-pipeline} can be run in
+That is, while the different strategies illustrated in the maximal
+data pipeline in Figure~\ref{fig:maximal-pipeline} can be run in
 parallel, the extraction stage itself simply converts the identity
 graph described in section~\ref{sec:identity-graph} to a single graph
 (after having taken the union of all the strategies).
@@ -135,7 +135,7 @@ def all_extracted_graphs(iri):
     # This creates all 3 RDF Graphs only once
     graphs = [s(iri) for s in extraction_strategies]
 
-    # Empty set removed from powerset
+    # Empty set removed from power set
     for idx, gs in enumerate(powerset(graphs) - {{},}):
         # union defined elsewhere: list(graph) -> graph
         graph = reduce(union, gs)
@@ -147,7 +147,7 @@ def all_extracted_graphs(iri):
 
 An illustrative Python function is shown in
 Listings~\ref{lst:extract-all} where each of the three extraction
-techniques is invoked only once and a powerset function is used to
+techniques is invoked only once and a power set function is used to
 generate all possible unions of those graphs and thus yield all
 possible usages or non-usages of each strategy to generate RDF
 graphs. The details of the three extraction functions are covered in
@@ -163,7 +163,7 @@ a small sample of that content.
 
 As introduced in section~\ref{intro-problems}, all that content is
 also likely to be distributed across multiple databases, content
-management systems and other stores. Whilst it is hypothesised in
+management systems and other stores. While it is hypothesised in
 this research that semantics and linked data provide a good way to
 extract data about the total breadth of all content without any
 bespoke integration against internal systems, there still remains
@@ -358,7 +358,7 @@ the ``interesting'' part of BBC pages.
 
 Another feature in listings~\ref{lst:find-links} is a restriction
 to consider only links to other BBC pages. There may be a positive
-or negative effect in addtionally noting external pages linked to from
+or negative effect in additionally noting external pages linked to from
 content pages, but that is left to future research to consider.
 
 \section{Enriching and not Enriching}
@@ -381,7 +381,7 @@ certainly compare the merits of different enrichment approaches.
   \begin{lstlisting}[
       label=lst:enrich,
       language=python,
-      caption={Python function that enriches a graph via deferencing objects}]
+      caption={Python function that enriches a graph via dereferencing objects}]
 import rfc3987
     
 def get_objects(graph):
@@ -416,7 +416,7 @@ the utility of this is left for future work.
 
 \section{Feature Set Generation}
 
-The feature generation strategy employed was dervied from a distilled
+The feature generation strategy employed was derived from a distilled
 portion of the approach introduced by Paulheim
 and F\"urnkranz\cite{paulheim2012unsupervised}.
 
@@ -491,7 +491,7 @@ was run processing nearly 10,000 content items from the BBC website
 with each going into one of fourteen combination of extraction
 and enrichment approaches.
 
-For each approach, hiearchical clustering was applied repeatedly
+For each approach, hierarchical clustering was applied repeatedly
 until the next merge would produce a cluster with cohesion below 0.5.
 This is reasonably arbitrary as each technique will have different
 concepts of cohesion, but it provided a strong basis on which to

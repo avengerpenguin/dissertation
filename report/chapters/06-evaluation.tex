@@ -11,10 +11,10 @@ results.
 A higher-level
 goal of this research was to perform some more qualitative evaluation
 of those clusters by obtaining human feedback on a potential
-application thereof. The application evaluted was a feature that would
+application thereof. The application evaluated was a feature that would
 take a page a user is currently reading and suggest related content
 based on their being members of the same cluster. Mock-ups of such
-a feature were generated and evaluated via a survery as described
+a feature were generated and evaluated via a survey as described
 in section~\ref{sec:survery}.
 
 The remaining sections of this chapter then discuss some issues with
@@ -137,7 +137,7 @@ highest scores.
 
 \subsection{Survey Results}
 
-The survey was taken by 30 respondants with three having taken it
+The survey was taken by 30 respondents with three having taken it
 following the think-aloud protocol\cite{lewis1982using} so that more
 information can be gathered around the motivation for the responses.
 Two of the think-aloud participants were experts in usability testing
@@ -148,7 +148,7 @@ Details of observations captured during the think-aloud responses
 are discussed in section~\ref{sec:eval-obs}.
 
 A key metric generated from the responses was the proportion of times
-respondants selected a ``related'' set of items based on clusters
+respondents selected a ``related'' set of items based on clusters
 generated from a particular data pipeline variant. A table of the
 responses is given in table~\ref{tbl:results}.
 
@@ -194,7 +194,7 @@ used in isolation.
 The edges of the graph represent introducing one new technique and
 re-running the experiment. For example, the edge from \emph{RDFa} to
 \emph{RDFa+} shows what happens to the performance if we introduce
-enrichment via derefence to data extracted also by dereference.
+enrichment via dereference to data extracted also by dereference.
 The edges from e.g. \emph{Entities} and \emph{Links} point to
 the result of having used both of those techniques in data extraction
 (joining the graphs via set union).
@@ -206,7 +206,7 @@ clusters of related content. Conversely, where the percentage drops
 a large amount, we can infer that introducing that technique has
 worsened the performance.
 
-In the particular results depicited, there are a mix of insignificant
+In the particular results depicted, there are a mix of insignificant
 and significant changes in performance when we alter one aspect of
 the system. Insignificant results include:
 
@@ -232,7 +232,7 @@ Some of the most significant results appear to be:
   it benefits from being combined with hyperlink relationships.
 \item Hyperlink relationships perhaps benefit a little from
   enrichment (but it might be bold to claim that), but more significantly
-  we can see that extraction technique in performence when combined
+  we can see that extraction technique in performance when combined
   with either of the two other extraction approaches (or both).
 \end{itemize}
 
@@ -258,7 +258,7 @@ thus did not pass feature selection (since they did not appear
 with enough value variation across the corpus) means that the few
 semantic properties found are stripped down even further.
 
-Much of the performance gain by altering extraction via derefence
+Much of the performance gain by altering extraction via dereference
 might be explainable purely due to having added more data properties
 with which the machine learning algorithms can work. This starts to
 suggest a potential for a minimum feature set size below which
@@ -285,11 +285,11 @@ and in some cases which section within that site
 (e.g. \texttt{article:section="Golf"}).
 
 The basic categories seemed to be powerful enough to please many
-respondants who frequently approved of related content suggestions on
+respondents who frequently approved of related content suggestions on
 the basis that the suggestions were from the same part as the BBC
 website. This may be an artefact of framing the survey in an
 artificial way as people validating the system by whether the pages
-are grouped by well-understand caterogies (e.g. football news, comedy
+are grouped by well-understand categories (e.g. football news, comedy
 TV, science articles) does not necessarily correlate with how those
 same users would have been tempted to follow links to suggested items
 as part of their own casual browsing of the website. This point
@@ -328,7 +328,7 @@ It is also important to note conclusions from the lack of significant
 step changes and the most interesting one in these results is the lack
 of support for enrichment via dereference improving performance at
 all. This follows on from analysis in section~\ref{sec:anal-enrichment}
-that suggests the use of derefence simply falls down on the same
+that suggests the use of dereference simply falls down on the same
 drawbacks as dereference as an extraction technique. The only case
 where enrichment makes a large difference is improving extraction via
 dereference, but this could be explained more by the latter performing
@@ -355,7 +355,7 @@ discussed in section~\ref{sec:eval-obs}.
 \label{sec:eval-obs}
 
 Further qualitative feedback was obtained in two ways: firstly by
-adding to the end of the survery some open-ended questions to invite
+adding to the end of the survey some open-ended questions to invite
 some discussion:
 
 \begin{itemize}
@@ -364,7 +364,7 @@ some discussion:
   \item Please write any other comments or observations below.
 \end{itemize}
 
-Approximately half of respondants answered the first two and only
+Approximately half of respondents answered the first two and only
 three out of the 30 went on to give some additional comments. Many
 of those were user experience experts who felt they had much to
 contribute additional feedback.
@@ -382,7 +382,7 @@ describe, whereas experts in user design are more experienced in
 some of the rationales and patterns they have observed across many
 user testing sessions. This more instinct-driven approach for
 non-experts is supported further from observations that thumbnail
-images were cited on more than one occassion as a motivator for
+images were cited on more than one occasion as a motivator for
 determining content as being similar or not.
 
 The expert think-aloud observations highlighted the key difference
@@ -391,8 +391,8 @@ groups versus being related by themes or topics, as discussed at the
 end of the previous section. The opinions from these user experience
 experts was that a topic-based similarity would be strongest for users
 to consider clicking through to the suggested content and this was
-vindicated on a number of occassions in non-expert responses two
-(in one example a respondant was disappointed that many suggestions
+vindicated on a number of occasions in non-expert responses two
+(in one example a respondent was disappointed that many suggestions
 offered next to a BBC News article were just ``more articles'' and
 not ``articles on the same topic'').
 
@@ -408,7 +408,7 @@ The expert discussions raised some cases where ``hard'' categories
 for the content were necessary, however. In some cases the clustering
 processes had grouped content suitable for children with content not
 explicitly marked as such. For a media organisation like the BBC, where
-there is wide provision of content targed at children, any
+there is wide provision of content targeted at children, any
 promotional feature on the website needs to be very cautious about
 what it suggests. In the BBC, it is typical to create a strict
 separation between child and non-child content and a general-purpose
@@ -440,7 +440,7 @@ ontologies.
 
 The final case where strict separation of content is needed is where
 the system chose to cluster many British football teams together.
-Semantically, the system was behaving very well in identifty that
+Semantically, the system was behaving very well in identifying that
 all pages are published by BBC Sport and talk about a football team,
 its fixtures and its results. However, with proper domain expertise,
 a system should know not to suggest arbitrary, alternative football
@@ -632,7 +632,7 @@ of enrichment acceptable:
 \item Chapter~\ref{chp:analysis} discussed how many of the extraction
   techniques (particularly deference) produced a lot of irrelevant
   facts (e.g. about the page itself, not the content) all of which
-  would be candidiates for deference of the objects are IRIs.
+  would be candidates for deference of the objects are IRIs.
   Effectively filtering out such noise would reduce the work spent
   enriching irrelevant things further.
 \item A simple architectural solution is to parallelise the HTTP
@@ -654,13 +654,13 @@ of enrichment acceptable:
   in the early days of the World Wide Web. However, the www hostname
   still needs to resolve to a single set of IP addresses for something
   that fronts the rest of the network like a load balancer. Effective
-  caching in this front layer and ensuring our data pipline lives close
+  caching in this front layer and ensuring our data pipeline lives close
   to that cache might be sufficient in this case. An example of a
   front cache might be something like the Varnish HTTP cache:
   https://www.varnish-cache.org/}
 \end{itemize}
 
-Even with all the optimisations possible, it is unescapable that
+Even with all the optimisations possible, it is inescapable that
 multiple HTTP requests to assemble an RDF graph is slower than a
 single query to a data store's query engine (e.g. SQL) that returns
 all the information needed in a single response. The benefits of using
@@ -698,7 +698,7 @@ noise. In an enterprise, we need not exclude the benefits of
 enterprise integration development to \emph{support} this approach
 based on semantics and web standards.
 
-Whilst there is much gained
+While there is much gained
 from being able to reason about the entire breadth of an organisation's
 content using semantics, it does not preclude writing bespoke business
 rules that strip out known, erroneous data or provides a framework
@@ -734,7 +734,7 @@ Other data attributes such as the Twitter
 Cards metadata (see section~\ref{sec:smallest-cluster}) can contain
 very broad things that are declared on all pages that use this
 vocabulary (e.g. \texttt{card=summary} is always used to indicate that
-a given page is using these meta tags) might cause a greey algorithm
+a given page is using these meta tags) might cause a greedy algorithm
 to focus too long on grouping together all pages that happen to choose
 to implement this Twitter feature with less concern about the more
 interesting properties.

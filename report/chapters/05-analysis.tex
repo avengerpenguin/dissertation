@@ -232,7 +232,7 @@ value to the user here.
 Again, there is potential to call out a real benefit in the
 combination of in-page semantics for this ``hard'' categorical
 data (i.e. the page's content is of type ``Radio Episode'') with
-entity extraction for a looser, schemaless vocabulary of words that
+entity extraction for a looser, schema-less vocabulary of words that
 more qualitatively describe the topics covered in the content.
 
 In this case, the topics extracted appear to be the JavaScript
@@ -265,8 +265,8 @@ likely to be a bug in the library where it may have been more useful
 not to say anything.
 
 The result of this bug or unexpected behaviour is that variants
-of the data pipeline that use deferencing as an extraction method will
-have this propery for any page that does not use Microdata simply
+of the data pipeline that use dereferencing as an extraction method will
+have this property for any page that does not use Microdata simply
 because of the choice of RDF parsing library. There appears to be
 enough mix of BBC content pages that do and do not use Microdata such
 that this feature passed the feature selection filter that should
@@ -292,10 +292,10 @@ informative about the content in the page -- it appears to be a meta
 tag informing of a title to use for the page on iOS devices. This is
 again likely to be an artefact of how the BBC Sport section of the
 BBC website is developed with requirements relating to iOS devices,
-but it also -- perhaps inadvertantly -- tells us something semantic
+but it also -- perhaps inadvertently -- tells us something semantic
 about the page in that it is part of BBC Sport.
 
-This may not be groundbreaking insight as there are clearly more
+This may not be ground-breaking insight as there are clearly more
 definitive ways to distinguish BBC Sport content (e.g. all the URLs
 paths start with the word ``sport''), but it starts to showcase a
 potential advantage of unsupervised learning on semantics that it
@@ -306,7 +306,7 @@ It is also a showcase of how an unsupervised data mining process can
 be said to have ``learned'' that these are all BBC Sport articles
 without having to be instructed through bespoke business rules. This
 hints at some need for further research as to whether enterprises
-can truly adopt semantics and data mining to derice business rules
+can truly adopt semantics and data mining to derive business rules
 that survive organisational and systems changes due to being less
 brittle than bespoke enterprise integration software based on static
 business rules (i.e. rules that are true today but need updating when
@@ -363,7 +363,7 @@ enough to fault a particular configuration of our semantic data mining
 system, but there is a need to answer the question as to whether the
 noise is enough to overwhelm and confuse any machine learning
 attempts. The question we look to answer in this research is which
-of the variants of this experiemental system are more or less
+of the variants of this experimental system are more or less
 susceptible to noise and errors and recommend how we might research
 overcoming any false positives that do arise.
 
@@ -389,7 +389,7 @@ shown semantics are being included due to  pressures from social media
 organisations for content
 providers to describe summaries of their content for better display
 and discovery. Based on this and other observations in the clusters
-produced, clustering based on deferencing URLs and reading their
+produced, clustering based on dereferencing URLs and reading their
 embedded semantics has the following advantages:
 
 \begin{itemize}
@@ -563,7 +563,7 @@ consciousness that we perceive as uniquely human.
 \label{sec:anal-hyperlink}
 
 Exploratory analysis does not highlight any major strengths from
-hyperlink exraction alone. Common properties centre almost entirely
+hyperlink extraction alone. Common properties centre almost entirely
 around links to common pages such as FAQs, help pages, etc. due to the
 lack of constraints in the system implemented to narrow the extraction
 to ``interesting'' links from within the content itself.
@@ -596,7 +596,7 @@ RDF graphs and resulting feature sets is ultimately harmful to the
 data mining process.
 
 Enrichment via dereference was less dramatic for in-page semantics
-themselves extracted via dereference. Whilst not called out
+themselves extracted via dereference. While not called out
 specifically in section~\ref{sec:anal-comparison}, a general trend
 was for those semantics exclusively to contain literals as values.
 
@@ -646,7 +646,7 @@ before does not appear to be noted so much in the academic literature.
 
 Haas et al.\cite{haas2011enhanced} provided evidence in 2011 that
 fewer than four percent of pages retrieved via Yahoo US search
-contained RDFa markup. In a media organisastion that has no culture
+contained RDFa markup. In a media organisation that has no culture
 of technical employees with an interest in the semantic web or
 linked data, there may be no pages with semantic metadata purposely
 added. However, if we embrace meta tags intended for social media
@@ -657,7 +657,7 @@ academic push behind the Semantic Web and Linked Data.
 We can therefore see social media annotations as compromise between
 benefits of semantic markup and the pragmatic concerns that authors
 will not add hidden metadata without clear, immediate benefits. It is
-hoped that the reults of this research show that there are some
+hoped that the results of this research show that there are some
 baseline benefits to an initial round of data mining on those
 semantics alone and gaps and failures can create the incentives for
 web page authors and engineers to improve their semantics and see
@@ -679,7 +679,7 @@ cross-linked data where concepts are covered both in a news article
 and in a programme. This will emerge in organisations where distinct
 teams and divisions work on very distinct parts of their output, so
 any data mining concerned with the whole corpus needs to highlight
-issues from lack of cross-linking as much as possible, particuarly
+issues from lack of cross-linking as much as possible, particularly
 if that data mining is driving a real website feature that will see
 immediate improvement if such cross-linking is implemented.
 

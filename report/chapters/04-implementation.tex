@@ -58,8 +58,8 @@ For this, there is an
 appeal to designing such a system on a cloud computing platform such
 that it can be scaled up for the initial import of existing data and
 then back down for ongoing updates when that import completes. Such
-design is out of scope for this paper, but some discussion of
-limitations of the existing system in section~\ref{} highlights where
+design is out of scope for this paper, but some discussion in chapter~\ref{chp:evaluation}
+of performance limitations of the experiemtanl system highlights where
 this system may be architected differently to be more suitable for
 such a cloud-based deployment.
 
@@ -151,7 +151,7 @@ techniques is invoked only once and a power set function is used to
 generate all possible unions of those graphs and thus yield all
 possible usages or non-usages of each strategy to generate RDF
 graphs. The details of the three extraction functions are covered in
-section~\ref{impl-extraction}.
+section~\ref{sec:impl-extraction}.
 
 \section{Obtaining IRIs}
 
@@ -161,7 +161,7 @@ produced by a media organisation. An experimental system needs to
 focus on quick results and therefore is optimised to work only over
 a small sample of that content.
 
-As introduced in section~\ref{intro-problems}, all that content is
+As introduced in section~\ref{sec:intro-problems}, all that content is
 also likely to be distributed across multiple databases, content
 management systems and other stores. While it is hypothesised in
 this research that semantics and linked data provide a good way to
@@ -369,7 +369,7 @@ experimental system developed is already comparing seven ($2^n$ less
 the case where no extraction is employed).
 
 In order to maintain focus in the experiment, only one of the
-enrichment techniques described in chapter~\ref{design} was
+enrichment techniques described in chapter~\ref{chp:design} was
 implemented and its usage and non-usage merely doubled the
 number of systems for comparison to fourteen.
 
@@ -380,6 +380,7 @@ certainly compare the merits of different enrichment approaches.
 \begin{centering}
   \begin{lstlisting}[
       label=lst:enrich,
+      showstringspaces=false,
       language=python,
       caption={Python function that enriches a graph via dereferencing objects}]
 import rfc3987

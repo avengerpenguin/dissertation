@@ -72,7 +72,7 @@ describing that topic in greater details (e.g. a press release about
 a science discovery leading to a full, informative guide on that
 field of science).
 
-\section{Technical Architecture}
+\section{High-Level Architecture}
 
 The use cases depicted and described in Section~\ref{sec:usecases} naturally
 lead to an application with two distinct interfaces: notification of new
@@ -357,7 +357,7 @@ executed in parallel.
       }
     \end{dot2tex}
   \end{center}
-  \caption{\label{fig:object.-deref}Semantic web content miner with additional dereferencing of linked entities}
+  \caption{\label{fig:object-deref}Semantic web content miner with additional dereferencing of linked entities}
 \end{sidewaysfigure}
 
 So far in this section, we have inductively built up a data pipeline from
@@ -547,8 +547,8 @@ object is either associated or not associated with a series of \emph{tags}.
 One of the advantages of the RDF graph model is that we are not constrained
 necessarily to properties and attributes directly applicable to the entity. We
 could imagine adding a level of indirection to the query in
-Listings~\ref{simple-sparql} to create the query in
-Listings~\ref{level2-sparql}.
+Listings~\ref{lst:simple-sparql} to create the query in
+Listings~\ref{lst:level2-sparql}.
 
 
 \begin{lstlisting}[label=lst:level2-sparql,caption={Generates field \texttt{content\_?p1\_?p2\_?v} with value \texttt{true}},language=sparql]

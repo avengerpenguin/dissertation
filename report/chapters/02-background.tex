@@ -18,10 +18,12 @@ The rest of this chapter will show:
 \begin{enumerate}
 \item that extracting feature sets from
   RDF\footnote{http://www.w3.org/TR/PR-rdf-syntax/} graphs can be done
-  elegantly and follows naturally from some previous work in this area; and
+  elegantly and follows naturally from some previous work in this area;
 \item that the RDF graph is a suitable and even desirable data model for content
   metadata in terms of acquiring, enriching and even transforming that data ahead
-  of feature extraction.
+  of feature extraction;
+  \item the use of semantics and RDF models has many benefits in general
+  for an organisation needing to reason across all of its data.
 \end{enumerate}
 
 \section{Data Mining}
@@ -31,7 +33,7 @@ The rest of this chapter will show:
 in data sets by drawing on research from artificial intelligence,
 machine learning and statistics.\cite{han2011data} In this research,
 the focus is on the machine learning aspect with
-the data extraction phase implemented using semantics and RDF.
+the feature extraction phase implemented using semantics and RDF.
 
 \subsection{Supervised Learning}
 
@@ -52,7 +54,7 @@ which we already know the answers. We can see supervised learning
 thus as a computational attempt to extrapolate human knowledge into
 a reusable model that can predict or determine things at a speed
 and scale humans would not normally be able to work through manually
-(e.g. predicting weather with manual calculations or diagnosing
+(e.g. predicting weather without manual calculations or diagnosing
 patients more quickly and with greater accuracy).
 
 \subsection{Unsupervised Learning}
@@ -60,9 +62,12 @@ patients more quickly and with greater accuracy).
 In unsupervised learning, there is not necessarily a specific goal
 against which we can judge the models, but instead we are applying
 more exploratory methods to tell us patterns in the data that maybe
-we could not see for ourselves (e.g. if we would have to graph trends
+we could not easily see for ourselves. If we would have to graph trends
 over more than two or three dimensions, it is usually difficult to
-visualise).
+visualise. When we considered items using a tag-based taxonomy to be
+multi-dimensional vectors of binary attributes (presence or non-presence
+of a tag), we easily open up the need to reason across thousands or even
+millions of dimensions.
 
 A well-known example is association rule mining that can find
 interesting relations in data sets that were perhaps previously
@@ -77,7 +82,7 @@ purchase.
 
 Another major unsupervised learning technique -- and the focus of
 this research -- is \emph{clustering}. In clustering algorithm, we
-seek to group similar items or entities together in groups or
+seek to group similar items or entities together into groups or
 \emph{clusters}. Clustering has many applications, but in this
 work the focus will be around \emph{hierarchical} clustering which
 is effective for grouping together items that appear to be
@@ -127,11 +132,11 @@ cluster whose cohesion falls below some threshold.
 \subsection{Distance and Linkage}
 
 Clustering relies on grouping items that seem close, which creates
-a necessity to define what is meant by close. The distance between
+a necessity to define what is meant by ``close''. The distance between
 any two items is normally determined by a distance
 function.\cite{witten2005data} Such a function will normally take
-two items and return a value between 0 (items are the same) up to an
-an unbounded value as the items are considering further and further
+two items and return a value between $0$ (items are the same) up to an
+an unbounded value as the items are considered further and further
 apart.
 
 Related to distance and specific to clustering is the concept of
@@ -174,8 +179,9 @@ practical reasons:
   old).
 \end{enumerate}
 
-In this experiment, Jaccard distance\cite{witten2005data}
-based on its suitability for binary, asymmetric data. It is argued
+In this experiment, Jaccard distance\cite{witten2005data} is used
+based on its suitability for binary, asymmetric data.\cite{choi2010survey}
+It is argued
 that the vast vocabulary offered by all potential semantic web
 RDF triples will lead to very asymmetric binary values based on the
 presence or non-presence of that triple.
@@ -204,9 +210,10 @@ names and email address of all ``Person'' entities therein.
 Notably, Kiefer, Bernstein and Locher\cite{kiefer2008adding} proposed a novel
 approach called SPARQL-ML -- an extension to the
 SPARQL\cite{segaran2009programming} query language with new keywords to
-facilitate both generating and applying models. This means that the system
+facilitate both generating and applying models. However, this means that the system
 capable of parsing and running standard queries must also run machine learning
-algorithms.
+algorithms -- it may be better to decouple these functions in a distributed
+system for the ability to tune and scale each independently.
 
 Their work involved developing an extension to the SPARQL query
 engine for \emph{Apache Jena}\footnote{https://jena.apache.org/} that integrates
@@ -225,6 +232,12 @@ WHERE {
 }
 \end{lstlisting}
 
+We might be able to think of the set of variable bindings returned from a
+SPARQL query as a feature set in their own right. In the example in
+listings~\ref{lst:sparqlfoaf}, we can think of the name-email result pair
+as feature sets or vectors $(n,e) \in (S \times S)$ where $S$ is the set of
+all possible strings.
+
 If we consider an RDF graph, $g$, to be expressed as a set of triples:
 
 \begin{displaymath}
@@ -233,7 +246,7 @@ If we consider an RDF graph, $g$, to be expressed as a set of triples:
 
 \noindent this query could then be
 expressed as function $f: G \rightarrow (S \times S)$ where $G$ is the set of
-all possible RDF graphs and $S$ is a set of all possible strings.
+all possible RDF graphs.
 This allows the result of the
 SPARQL query to be expressed as a set of all SELECT variable bindings that
 satisfy the WHERE clause:
@@ -269,8 +282,8 @@ WHERE {
 This might allow a query that extracts a country's population, GDP, etc.
 provide feature extraction for learning patterns in economics, for example.
 However, this is limited to features derived from single-valued predicates
-with literal-valued ranges. It is not clear how to formulate a query that
-expresses whether or not a content item is about a given topic.
+with literal-valued ranges. It is not immediately clear how to formulate a
+query that expresses whether or not a content item is about a given topic.
 
 In the RDF
 model, it would be more appropriate to use a query like that in
@@ -293,6 +306,10 @@ relational database) and using \emph{Linked Open Data} to identify entities
 within literal values in those relations and generated attributes from
 SPARQL queries over those entities.
 
+The use of SPARQL in their work has many similarties to the model proposed
+above to create feature sets based on query results, so this research uses
+that work as the main inspiration for feature set generation.
+
 For a large content-producer, there is a more general problem where many content
 items do not have a relational representation and the content source is a body
 of text or even a raw HTML page. However, the feature generation from Paulheim
@@ -306,7 +323,7 @@ At the end of chapter~\ref{chp:intro}, there is some discussion of the
 benefits of using semantics and linked data for any process that we wish
 to apply across the entire corpus.
 
-In this section, the goal is to strengthen that case and review other
+In the following sections, the goal is to strengthen that case and review other
 previous work around using linked data in the enterprise. This is a more
 general argument for any enterprise with data (e.g. internal information
 about staff or business processes) and not just media organisations.
@@ -319,8 +336,8 @@ contained in a single database, it is relatively simple to develop software
 that extracts all that data in a single query and processes it in some way.
 
 It is rare, however, for any large business to keep all data stored in
-one location and in one format. Even fairly simple businesses will have
-separate data stores for their employee data, for example, and all
+one location and in one format. For example, even fairly simple businesses will have
+separate data stores for their employee data and all
 user names and passwords for the corporate email system. Without much effort,
 a business that implements or purchases two distinct systems for personnel
 and email has already fragmented its data.

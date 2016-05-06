@@ -432,7 +432,9 @@ item's IRI as the initial subject.
       caption={Python function that generates feature sets from RDF graphs}]
 from rdflib Literal, URIRef
     
-def generate(g, subject=None, depth=3, features=None, prefix=''):
+def generate(
+    g, subject=None, depth=3, features=None, prefix=''
+    ):
     if depth <= 0:
         return
     if not features:
@@ -443,7 +445,12 @@ def generate(g, subject=None, depth=3, features=None, prefix=''):
         if type(o) == URIRef:
             new_prefix = prefix + clean(p) + '_'
             features[new_prefix + clean(o)] = True
-            generate(g, depth=(depth - 1), features=features, prefix=new_prefix, subject=o)
+            generate(
+                g,
+                depth=(depth - 1),
+                features=features,
+                prefix=new_prefix,
+                subject=o)
         elif type(o) == Literal:
             features[clean(p)] = str(o)
 

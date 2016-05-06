@@ -52,26 +52,29 @@ The most stark difference between the results produced is the large
 range in terms of number of clusters produced for each approach
 respectively.
 
+Table~\ref{tbl:cluster-counts} shows the number of clusters produced
+by each combination of techniques. The range here is explained by
+some variants of the system produced few, very large clusters and
+some a large number of smaller clusters.
+
 \begin{table}[h]
   \centering
-  \caption{Number of clusters produced by each combination of approaches}
-  \label{tbl:cluster-counts}
-  \begin{tabular}{lll}
-    & Not enriched & Enriched \\
+  \begin{tabular}{|l|ll|}
+    \hline
+     & Not enriched & Enriched \\
+    \hline
     Deference                                     & 5            & 249      \\
     Entity Extraction                             & 35           & 32       \\
     Hyperlink Relationships                       & 2            & 56       \\
     Dereference and Entity Extraction             & 329          & 340      \\
     Entity Extraction and Hyperlink Relationships & 199          & 233      \\
     Dereference and Hyperlink Relationships       & 53           & 117      \\
-    All three extractions                         & 184          & 223     
+    All three extractions                         & 184          & 223     \\
+    \hline
   \end{tabular}
+  \caption{Number of clusters produced by each combination of approaches}
+  \label{tbl:cluster-counts}
 \end{table}
-
-Table~\ref{tbl:cluster-counts} shows the number of clusters produced
-by each combination of techniques. The range here is explained by
-some variants of the system produced few, very large clusters and
-some a large number of smaller clusters.
 
 \subsection{Few, Large Clusters}
 \label{sec:few-large}
@@ -140,6 +143,7 @@ and one of the mean-sized clusters.
 
 \begin{sidewaystable}[p]
   \centering
+  \renewcommand{\arraystretch}{1.5}
   \begin{tabular}{|l|l|l|}
     $N=2$                                 & $N=9$                                                   & $N=265$                                     \\
     \hline

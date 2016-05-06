@@ -19,6 +19,6 @@ guard :shell, :all_on_start => true do
   watch /^report\/.*\.(tex|puml)/ do |m|
     puts "File changed: #{m}"
     `make report`
-    `pdftotext report/report.pdf - | wc -w`
+    `make count`
   end
 end

@@ -41,3 +41,14 @@ out/paper.pdf: paper
 
 github: out/report.pdf out/paper.pdf venv/pip.touch
 	venv/bin/ghp-import -n -p out
+
+count:
+	@echo "Word counts:"
+	@echo "Chapter 1: `sh wordcount.sh report/chapters/01-*.tex`\t/   500 -   750"
+	@echo "Chapter 2: `sh wordcount.sh report/chapters/02-*.tex`\t/  1500 -  2250"
+	@echo "Chapter 3: `sh wordcount.sh report/chapters/03-*.tex`\t/  2500 -  3750"
+	@echo "Chapter 4: `sh wordcount.sh report/chapters/04-*.tex`\t/  2500 -  3750"
+	@echo "Chapter 5: `sh wordcount.sh report/chapters/05-*.tex`\t/  2500 -  3750"
+	@echo "Chapter 6: `sh wordcount.sh report/chapters/06-*.tex`\t/   500 -   750"
+	@echo "Chapter 7: `sh wordcount.sh report/chapters/07-*.tex`\t/   500 -   750"
+	@echo "Total    : `sh wordcount.sh report/report.tex report/chapters/*.tex`/ 10000 - 15000"

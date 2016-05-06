@@ -74,30 +74,77 @@ The question remaining from all of this for the media enterprise, is whether
 this combination of semantics and data mining has real application that is
 useful.
 
-TODO: Build on survey results
+The results of the survey discussed in chapter~\ref{chp:evaluation}
+suggest the example application of driving related content suggests
+was successful enough to get positive feedback for certain permutations
+of the data pipeline. It was argued in analysis of the results that
+there is a strong cost-benefit justification in creating a
+general-purpose system capable of using embedded semantics on which
+a clustering process can at least learn basic categorical structure.
+This can then be made more nuanced and topic-drive over time with
+entity extraction, when introduced in a supervised way so that it can
+be tuned to behave desirably.
 
-\section{Suggestions for Initial Implementations in the Enterprise}
+The development time on the extraction of embedded semantics is
+far less than a series of bespoke enterprise integation efforts
+against each data store and there are immediate results in some
+of the clusters it can produce.
 
-Section~\ref{sec:production-recommendations} covers some recoomedations
-for real implementations of semantics for data mining an organisation's
-content.
-
-In summary, an organisation can deliver initial value quickly with embedded
-semantics (e.g. RDFa) extraction as a general-purpose solution is simple
-to implement. The perhaps na\"ive mapping presented in this research for
-converting RDF to feature sets performs well enough if the gaps and noise
-in the data have a tolerable effect on the outcomes.
-
-Media organisations can iterate very quickly on this simple idea and find
-approaches that work for them and at each iteration consider the following:
-
-\begin{itemize}
-\item Can we implement entity extraction to supplement the embedded semantics?
-\item How do we best tune any entity extaction over time?
-\end{itemize}
+There is still much need for further research to improve these
+extraction processes however. This is discussed in section~\ref{sec:con-future}.
 
 \section{Future Research}
+\label{sec:con-future}
 \subsection{Better Enrichment}
+
+As discussed in chapter~\ref{chp:evaluation}, enrichment by
+deference fell down on some of the drawbacks of extraction via
+dereference and did not seem to add much value to the clusters
+produced.
+
+The data pipeline designed theoretically in chapter~\ref{chp:design}
+described many more suggestions for how we might enrich RDF graphs
+in the middle of the pipeline, but this research only allowed time
+to experiment with the simplest to implement.
+
+One idea that could have a lot of potential is using OWL and RDFS
+ontologies to infer facts not outright stated, which can find
+generalisations (e.g. an article about tigers and an article about
+lions are both about big cats even if we cannot find the word ``cat''
+in their respective text content). Where the application in an
+enterprise may be truly powerful is how such reasoning opens up
+possibilities to include bespoke business rules to complement the
+basic inferences. Here, there are possibilities to find a
+balanced compromise from avoiding writing bespoke software to
+transform multiple types of content, but still allow for experts
+within the organisation to codify their knowledge and guide how the
+data is transformed and enriched.
+
 \subsection{Patterns for Reducing Data Noise}
+
+The idea of bespoke inference rules in the previous section can help
+reduce noise, but there may be great scope for experimental research
+into more generally-applicable ways to strip out semantics we can
+broadly identify as not useful for machine learning.
+
+There may be trends or patterns in which vocabularies provide the
+most useful data as well. The RDFS and OWL vocabularies focus on
+describing ontologies, class hierarchies and schemas, which is more
+abstract than describing the actual content and entities therein. Such
+research might be able to confirm this is the case and we can indeed
+cut back or filter out entirely such vocabularies in favour of, say,
+Schema.org that is well-used for describing web content.
+
 \subsection{Deeper Study of Machine Learning on Semantics}
 
+This research presented only clustering as the machine learning
+process used for experimentation as the focus was primarily on the
+data pipeline upstream of the machine learning itself. Further
+research could repeat the same data extraction processes, but explore
+which other machine learning algorithms can provide useful insight
+into an organisation's content.
+
+Supervised learning techniques could start from known groups of
+related content and be trained to identify more of such groups.
+Association rule mining could find trends and patterns within
+the content.

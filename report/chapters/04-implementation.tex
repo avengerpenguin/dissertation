@@ -480,15 +480,9 @@ yet in a cluster are implicitly in a singleton cluster and the ability
 to merge one at a time allowed for control of when to cease merging.
 
 The closeness of two potential, candidate clusters was calculated via
-a max linkage on the basis that it ensures that any two content items
-within a cluster to be considered related. This avoids the so-called
-\emph{chaining phenomenum} where single linkage may create clusters
-where two unrelated items are members because they are each related
-to an item of chain of related items
-therebetween.\cite{everitt2011hierarchical}
-
-The distance between content items was defined by the Jaccard distance
-due to its suitability for binary and categorical data.
+a the complete linkage function as chosen in section~\ref{sec:clustering-media}.
+This made use of an implementation of the Jaccard distance as also
+justified in that same section.
 
 \section{Results Generation Strategy}
 

@@ -25,12 +25,15 @@ The rest of this chapter will show:
 \end{enumerate}
 
 \section{Data Mining}
+\subsection{Overview}
 
 \emph{Data Mining} is a process for finding knowledge and information
 in data sets by drawing on research from artificial intelligence,
 machine learning and statistics.\cite{han2011data} In this research,
 the focus is on the machine learning aspect with
 the data extraction phase implemented using semantics and RDF.
+
+\subsection{Supervised Learning}
 
 \emph{Machine Learning} broadly breaks down into \emph{supervised}
 and \emph{unsupervised} learning. In supervised learning, we have
@@ -52,6 +55,8 @@ and scale humans would not normally be able to work through manually
 (e.g. predicting weather with manual calculations or diagnosing
 patients more quickly and with greater accuracy).
 
+\subsection{Unsupervised Learning}
+
 In unsupervised learning, there is not necessarily a specific goal
 against which we can judge the models, but instead we are applying
 more exploratory methods to tell us patterns in the data that maybe
@@ -67,6 +72,8 @@ organisations seek to find rules and patterns in consumer purchasing
 habits so that they can try to promote items that customers might
 want to buy based on other items they are currently trying to
 purchase.
+
+\subsection{Clustering}
 
 Another major unsupervised learning technique -- and the focus of
 this research -- is \emph{clustering}. In clustering algoriths, we
@@ -117,6 +124,34 @@ The two ``nearest'' clusters are then recursively merged until, again,
 we have a full dendrogam or stop before we are about to create a
 cluster whose cohesion falls below some threshold.
 
+\subsection{Distance and Linkage}
+
+Clustering relies on grouping items that seem close, which creates
+a necessity to define what is meant by close. The distance between
+any two items is normally determined by a distance
+function.\cite{witten2005data} Such a function will normally take
+two items and return a value between 0 (items are the same) up to an
+an unbounded value as the items are considering further and further
+apart.
+
+Related to distance and specific to clustering is the concept of
+linkage, which describes the distance between two clusters. A linkage
+function will make use of a distance function. Three examples
+of linkage functions include:
+
+\begin{itemize}
+\item \emph{Complete linkage} between two clusters is defined as the
+  greatest distance of all possible pairs of items, one from each
+  cluster.
+\item \emph{Single linkage} is similar to complete, but the smallest
+  distance is used.
+\item \emph{Mean linkage} uses the mean where minimum or maximum
+  are used above.
+\end{itemize}
+
+\subsection{Clustering Media Content}
+\label{sec:clustering-media}
+
 For media content, agglomerative clustering is a good match for two
 practical reasons:
 
@@ -139,7 +174,19 @@ practical reasons:
   old).
 \end{enumerate}
 
-TODO: linkage and distance
+In this experiment, Jaccard distance\cite{witten2005data}
+based on its suitability for binary, asymmetric data. It is argued
+that the vast vocabularly offered by all potential semantic web
+RDF triples will lead to very asymmetric binary values based on the
+presence or non-presence of that triple.
+
+The chosen linkage function was the complete linkage
+on the basis that it ensures that any two content items
+within a cluster to be considered related. This avoids the so-called
+\emph{chaining phenomenum} where single linkage may create clusters
+where two unrelated items are members because they are each related
+to an item of chain of related items
+therebetween.\cite{everitt2011hierarchical}
 
 \section{RDF and Feature Extraction}
 \label{sec:rdf-and-features}

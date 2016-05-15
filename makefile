@@ -1,6 +1,9 @@
-.PHONY: report proposal watch default github paper
+.PHONY: report proposal watch default github paper slides
 
 default: github
+
+slides:
+	cd slides && $(MAKE)
 
 paper:
 	cd paper && $(MAKE)
@@ -39,7 +42,11 @@ out/paper.pdf: paper
 	mkdir -p out
 	cp paper/paper.pdf out/paper.pdf
 
-github: out/report.pdf out/paper.pdf venv/pip.touch
+out/slides.pdf: slides
+	mkdir -p out
+	cp slides/slides.pdf out/slides.pdf
+
+github: out/report.pdf out/paper.pdf venv/pip.touch out/slides.pdf
 	venv/bin/ghp-import -n -p out
 
 count:
